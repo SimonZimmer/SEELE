@@ -30,3 +30,24 @@
 *.exe
 *.out
 *.app
+
+# CMake
+build.ninja
+cmake-build-debug
+cmake-build-release
+CmakeCache.txt
+.ninja_deps
+.ninja_log
+build.ninja
+Makefile
+rules.ninja
+cmake_install.cmake
+CMakeFiles
+
+pupil/juce
+pupil/pupilPlugin_artefacts
+
+.idea
+.ccls-cache
+.cmake
+

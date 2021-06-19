@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="pupilCore"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\ThirdParty\;CMake Files\ThirdParty\JUCE\;CMake Files\ThirdParty\JUCE\extras\;CMake Files\ThirdParty\JUCE\extras\Build\;CMake Files\ThirdParty\JUCE\extras\Build\CMake\;CMake Files\ThirdParty\JUCE\extras\Build\juceaide\;CMake Files\ThirdParty\JUCE\modules\;CMake Files\ThirdParty\googletest\;CMake Files\ThirdParty\googletest\googlemock\;CMake Files\ThirdParty\googletest\googlemock\cmake\;CMake Files\ThirdParty\googletest\googletest\;CMake Files\ThirdParty\googletest\googletest\cmake\;CMake Files\pupil\;CMake Files\pupil\juce\;CMake Files\pupil\juce\tools\;CMake Files\pupil\pupilPlugin_artefacts\;CMake Files\pupil\pupilPlugin_artefacts\JuceLibraryCode\;CMake Files\pupil\pupilPlugin_artefacts\JuceLibraryCode\pupilPlugin_VST3\;CMake Files\pupil\pupilPlugin_artefacts\JuceLibraryCode\pupilPlugin_AU\;CMake Files\pupil\pupilCore\;CMake Files\pupil\pupilCore\tests\;CMake Files\pupil\pupilCore\mocks\;CMake Files\pupil\tests\;CMake Files\pupil\mocks\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/simonzimmermann/dev/pupil/pupil/pupilCore"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pupilCore">
+				<Option output="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/libpupilCore.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/simonzimmermann/dev/pupil/pupil/pupilCore"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/inc"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 pupilCore"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pupilCore/fast">
+				<Option output="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/libpupilCore.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/simonzimmermann/dev/pupil/pupil/pupilCore"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/inc"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 pupilCore/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pupilCoreTestHost">
+				<Option output="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/pupilCoreTestHost" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/include"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock/include"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 pupilCoreTestHost"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pupilCoreTestHost/fast">
+				<Option output="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/pupilCoreTestHost" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/include"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock/include"/>
+					<Add directory="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 pupilCoreTestHost/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/src/DelayProcessor.cpp">
+			<Option target="pupilCore"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/src/Main.cpp">
+			<Option target="pupilCoreTestHost"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/CMake/JUCECheckAtomic.cmake">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/CMake/JUCEConfig.cmake.in">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/CMake/JUCEHelperTargets.cmake">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/CMake/JUCEUtils.cmake">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\CMake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/extras/Build/juceaide/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\extras\Build\juceaide\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/JUCE/modules/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\JUCE\modules\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googlemock\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock/cmake/gmock.pc.in">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googlemock\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googlemock/cmake/gmock_main.pc.in">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googlemock\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googletest\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/cmake/gtest.pc.in">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/cmake/gtest_main.pc.in">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/ThirdParty/googletest/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\ThirdParty\googletest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/juce/tools/JUCEToolsExport.cmake">
+			<Option virtualFolder="CMake Files\pupil\juce\tools\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilPlugin_artefacts/JuceLibraryCode/pupilPlugin_VST3/Info.plist">
+			<Option virtualFolder="CMake Files\pupil\pupilPlugin_artefacts\JuceLibraryCode\pupilPlugin_VST3\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilPlugin_artefacts/JuceLibraryCode/pupilPlugin_AU/Info.plist">
+			<Option virtualFolder="CMake Files\pupil\pupilPlugin_artefacts\JuceLibraryCode\pupilPlugin_AU\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\pupilCore\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\pupilCore\tests\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/pupilCore/mocks/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\pupilCore\mocks\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\tests\"/>
+		</Unit>
+		<Unit filename="/Users/simonzimmermann/dev/pupil/pupil/mocks/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\pupil\mocks\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
