@@ -68,7 +68,7 @@ namespace sz
         const auto noChannels = GetParam().noChannels;
         const auto noSamples = GetParam().noSamples;
 
-        const core::AudioBuffer<float> buffer(noChannels, noSamples);
+        core::AudioBuffer<float> buffer(noChannels, noSamples);
 
         EXPECT_EQ(noChannels, buffer.getNumChannels());
         EXPECT_EQ(noSamples, buffer.getNumSamples());

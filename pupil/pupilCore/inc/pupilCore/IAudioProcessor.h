@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <core/AudioBuffer.h>
 
 namespace sz
@@ -11,4 +13,6 @@ namespace sz
 
         virtual void process(core::AudioBuffer<float>& inputBuffer) = 0;
     };
+
+    using AudioProcessorPtr = std::unique_ptr<IAudioProcessor>;
 }

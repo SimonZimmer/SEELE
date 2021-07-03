@@ -1,12 +1,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include <pupilCore/DelayProcessor.h>
+#include <pupilCore/Factory.h>
 
 NewProjectAudioProcessor::NewProjectAudioProcessor()
-        : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
-                                           .withOutput("Output", juce::AudioChannelSet::stereo(), true)
-),
+: AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
+                                   .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     parameters_(*this, nullptr, juce::Identifier ("mockPlugin"),
         {
             std::make_unique<juce::AudioParameterFloat>("gain",
@@ -20,6 +19,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                                     return juce::String(value, 1) + " dB";
                                                 })
         })
+        , delayProcessor_(sz::Factory().createDelayProcessor(*parameters_.getRawParameterValue("gain")))
 {
     setLatencySamples(latency_);
 
@@ -96,7 +96,18 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    //float gain = *parameters_.getRawParameterValue("gain");
+    auto&& inputBuffer = sz::core::AudioBuffer<float>(buffer.getNumChannels(),
+                                                      buffer.getNumSamples());
+
+    for(auto ch = 0; ch < inputBuffer.getNumChannels(); ++ch)
+        for(auto sa = 0; sa < inputBuffer.getNumSamples(); ++sa)
+            inputBuffer.setSample(ch, sa, buffer.getSample(ch, sa));
+
+    delayProcessor_->process(inputBuffer);
+
+    for(auto ch = 0; ch < inputBuffer.getNumChannels(); ++ch)
+        for(auto sa = 0; sa < inputBuffer.getNumSamples(); ++sa)
+            buffer.setSample(ch, sa, inputBuffer.getSample(ch, sa));
 }
 
 bool NewProjectAudioProcessor::hasEditor() const

@@ -2,6 +2,7 @@
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
+#include <pupilCore/DelayProcessor.h>
 
 class NewProjectAudioProcessor  : public juce::AudioProcessor
 {
@@ -42,4 +43,5 @@ private:
     int currentProgram_{1};
     const int latency_{16};
     juce::AudioBuffer<float> internalBuffer_{};
+    sz::AudioProcessorPtr delayProcessor_;
 };

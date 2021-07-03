@@ -21,7 +21,8 @@ target_compile_features(pupilPlugin PUBLIC cxx_std_17)
 
 target_sources(pupilPlugin PRIVATE
         src/PluginEditor.cpp
-        src/PluginProcessor.cpp)
+        src/PluginProcessor.cpp
+        )
 
 target_include_directories(pupilPlugin PRIVATE inc)
 

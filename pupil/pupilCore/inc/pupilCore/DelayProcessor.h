@@ -9,12 +9,12 @@ namespace sz
     class DelayProcessor : public IAudioProcessor
     {
     public:
-        DelayProcessor(float& parameterValue);
+        DelayProcessor(std::atomic<float>& parameterValue);
         ~DelayProcessor() = default;
 
         void process(core::AudioBuffer<float>& inputBuffer) override;
 
     private:
-        float& parameterValue_;
+        std::atomic<float>& parameterValue_;
     };
 }
