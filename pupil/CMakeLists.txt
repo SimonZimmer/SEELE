@@ -5,6 +5,8 @@ if (NOT TARGET juceaide)
     add_subdirectory(../ThirdParty/JUCE juce)
 endif()
 
+add_subdirectory(pupilCore)
+
 set(PLUGIN_NAME "Pupil")
 set(FORMATS VST3 AU)
 juce_add_plugin(pupilPlugin
@@ -32,7 +34,9 @@ target_compile_definitions(pupilPlugin PUBLIC
 target_link_libraries(pupilPlugin
         PRIVATE
             juce::juce_core
-            juce::juce_audio_utils)
+            juce::juce_audio_utils
+            pupilCore
+        )
 
 set(common_definitions
         JUCE_QUICKTIME=0

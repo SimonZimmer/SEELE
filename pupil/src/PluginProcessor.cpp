@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include <pupilCore/DelayProcessor.h>
 
 NewProjectAudioProcessor::NewProjectAudioProcessor()
         : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
@@ -95,8 +96,7 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    float gain = *parameters_.getRawParameterValue("gain");
-    buffer.applyGain(gain);
+    //float gain = *parameters_.getRawParameterValue("gain");
 }
 
 bool NewProjectAudioProcessor::hasEditor() const

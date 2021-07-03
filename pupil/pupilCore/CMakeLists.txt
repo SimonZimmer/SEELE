@@ -2,13 +2,22 @@ cmake_minimum_required(VERSION 3.16)
 
 project(pupilCore)
 
-add_library(pupilCore STATIC
-    src/DelayProcessor.cpp
+add_library(pupilCore
+        STATIC
+            src/DelayProcessor.cpp
     )
 
 target_include_directories(pupilCore
-    PUBLIC inc
+    PRIVATE
+        inc/pupilCore
+    PUBLIC
+        inc
     )
+
+target_link_libraries(pupilCore
+   PUBLIC
+        core
+        )
 
 target_compile_features(pupilCore PUBLIC cxx_std_17)
 

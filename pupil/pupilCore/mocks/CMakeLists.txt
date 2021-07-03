@@ -4,5 +4,7 @@ target_include_directories(pupilCore_mocks INTERFACE inc)
 
 target_link_libraries(pupilCore_mocks
     INTERFACE
-        gmock)
+        gmock
+        pupilCore
+        )
 

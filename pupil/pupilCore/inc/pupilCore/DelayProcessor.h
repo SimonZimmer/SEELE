@@ -1,0 +1,20 @@
+#pragma once
+
+#include <core/AudioBuffer.h>
+
+#include "IAudioProcessor.h"
+
+namespace sz
+{
+    class DelayProcessor : public IAudioProcessor
+    {
+    public:
+        DelayProcessor(float& parameterValue);
+        ~DelayProcessor() = default;
+
+        void process(core::AudioBuffer<float>& inputBuffer) override;
+
+    private:
+        float& parameterValue_;
+    };
+}

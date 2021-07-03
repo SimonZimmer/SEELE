@@ -7,6 +7,8 @@ namespace sz
     class IAudioProcessor
     {
     public:
-        virtual process(AudioBuffer<float>& inputBuffer) = 0;
+        virtual ~IAudioProcessor() = default;
+
+        virtual void process(core::AudioBuffer<float>& inputBuffer) = 0;
     };
 }
