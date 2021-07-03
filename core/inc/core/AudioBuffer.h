@@ -9,26 +9,28 @@ namespace sz::core
     {
     public:
         AudioBuffer(int numChannels, int numSamples)
-        : data_(numChannels * numSamples, T(0))
-        , numChannels_(numChannels)
+        : numChannels_(numChannels)
         , numSamples_(numSamples)
-        , channels_(numChannels, nullptr)
+        , memoryBlock_(numChannels, numSamples)
+        , data_(memoryBlock_.getData())
         {
-            if (numSamples == 0 && numChannels > 0)
-                return;
+        }
 
-            for (int c = 0; c < channels_.size(); ++c)
-                channels_[c] = &data_[c * numSamples];
+        AudioBuffer(T** dataToReferTo, int numChannels, int numSamples)
+        : numChannels_(numChannels)
+        , numSamples_(numSamples)
+        , data_(dataToReferTo)
+        {
         }
 
         T getSample(int channelIndex, int sampleIndex) const noexcept
         {
-            return *(channels_[channelIndex] + sampleIndex);
+            return *(data_[channelIndex] + sampleIndex);
         }
 
         void setSample(int destChannel, int destSample, T newValue)
         {
-            *(channels_[destChannel] + destSample) = newValue;
+            *(data_[destChannel] + destSample) = newValue;
         }
 
         int getNumChannels() const
@@ -42,9 +44,40 @@ namespace sz::core
         }
 
         private:
+            class MemoryBlock
+            {
+            public:
+                MemoryBlock() = default;
+
+                MemoryBlock(int numChannels, int numSamples)
+                : data_(numChannels * numSamples, T(0))
+                , channels_(numChannels, nullptr)
+                {
+                    if (numSamples == 0 && numChannels > 0)
+                        return;
+
+                    for (size_t c = 0; c < channels_.size(); ++c)
+                        channels_[c] = &data_[c * numSamples];
+                }
+
+                T** getData()
+                {
+                    if (channels_.empty())
+                        return nullptr;
+
+                    return &channels_[0];
+                }
+
+            private:
+                std::vector<T> data_;
+                std::vector<T*> channels_;
+            };
+
+        private:
             int numChannels_ = 0;
             int numSamples_ = 0;
-            std::vector<T> data_;
-            std::vector<T*> channels_;
+
+            MemoryBlock memoryBlock_;
+            T** data_;
         };
 }
