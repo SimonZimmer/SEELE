@@ -6,15 +6,16 @@
 
 namespace sz
 {
-    class DelayProcessor : public IAudioProcessor
+    class Chopper : public IAudioProcessor
     {
     public:
-        DelayProcessor(std::atomic<float>& parameterValue);
-        ~DelayProcessor() = default;
+        Chopper(std::atomic<float>& parameterValue, std::atomic<float>& chopGain);
+        ~Chopper() = default;
 
         void process(core::AudioBuffer<float>& inputBuffer) override;
 
     private:
         std::atomic<float>& parameterValue_;
+        std::atomic<float>& chopGain_;
     };
 }

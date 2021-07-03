@@ -8,9 +8,15 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                    .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     parameters_(*this, nullptr, juce::Identifier ("mockPlugin"),
         {
-            std::make_unique<juce::AudioParameterFloat>("gain",
-                                                "Gain",
+            std::make_unique<juce::AudioParameterFloat>("chopLength",
+                                                "ChopLength",
                                                 juce::NormalisableRange<float>(0.0f, 1.0f),
+                                                0.5f,
+                                                "",
+                                                juce::AudioProcessorParameter::genericParameter),
+            std::make_unique<juce::AudioParameterFloat>("chopGain",
+                                                "ChopGain",
+                                                juce::NormalisableRange<float>(0.0f, 1.f),
                                                 0.5f,
                                                 "dB",
                                                 juce::AudioProcessorParameter::genericParameter,
@@ -19,7 +25,8 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                                     return juce::String(value, 1) + " dB";
                                                 })
         })
-        , delayProcessor_(sz::Factory().createDelayProcessor(*parameters_.getRawParameterValue("gain")))
+        , engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("chopLength"),
+                                             *parameters_.getRawParameterValue("chopGain")))
 {
     setLatencySamples(latency_);
 
@@ -100,7 +107,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                                                       buffer.getNumChannels(),
                                                       buffer.getNumSamples());
 
-    delayProcessor_->process(inputBuffer);
+    engine_->process(inputBuffer);
 }
 
 bool NewProjectAudioProcessor::hasEditor() const

@@ -4,8 +4,9 @@ project(pupilCore)
 
 add_library(pupilCore
         STATIC
-            src/DelayProcessor.cpp
-            src/Factory.cpp
+        src/Chopper.cpp
+        src/Factory.cpp
+        src/Engine.cpp
     )
 
 target_include_directories(pupilCore

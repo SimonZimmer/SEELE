@@ -28,6 +28,11 @@ namespace sz::core
             return *(data_[channelIndex] + sampleIndex);
         }
 
+        const T*& operator[](size_t sample) const { return data_[sample]; };
+
+        T*& operator[](size_t sample) { return data_[sample]; };
+
+
         void setSample(int destChannel, int destSample, T newValue)
         {
             *(data_[destChannel] + destSample) = newValue;
