@@ -52,7 +52,7 @@ namespace sz
 
         for (size_t c = 0; c < noChannels; c++)
             for (size_t i = 0; i < noSamples; ++i)
-                EXPECT_EQ(0.0f, buffer.getSample(c, i));
+                EXPECT_EQ(0.f, buffer[c][i]);
     }
 
     TEST(AudioBufferTest, construction_empty)
@@ -79,7 +79,7 @@ namespace sz
             {
                 const auto incrementedValue = sampleValue++;
                 buffer.setSample(c, i, incrementedValue);
-                EXPECT_EQ(incrementedValue, buffer.getSample(c, i));
+                EXPECT_EQ(incrementedValue, buffer[c][i]);
             }
     }
 }

@@ -23,15 +23,7 @@ namespace sz::core
         {
         }
 
-        T getSample(int channelIndex, int sampleIndex) const noexcept
-        {
-            return *(data_[channelIndex] + sampleIndex);
-        }
-
-        const T*& operator[](size_t sample) const { return data_[sample]; };
-
-        T*& operator[](size_t sample) { return data_[sample]; };
-
+        T*& operator[](size_t sample) const { return data_[sample]; };
 
         void setSample(int destChannel, int destSample, T newValue)
         {
