@@ -1,30 +1,31 @@
 #include "Chopper.h"
+#include "SampleRamp.h"
 
 #include <cmath>
 
 namespace sz
 {
-    Chopper::Chopper(std::atomic<float>& parameterValue, std::atomic<float>& chopGain)
-    : parameterValue_(parameterValue)
-    , chopGain_(chopGain)
+    using namespace std::chrono_literals;
+
+    Chopper::Chopper(std::atomic<float>& chopFrequency)
+    : chopFrequency_(chopFrequency)
+    , startValue_(0.f)
     {
     }
 
     void Chopper::process(core::AudioBuffer<float>& inputBuffer)
     {
-        const auto numSamples = inputBuffer.getNumSamples();
-        const auto chopLength = std::max(1.f, std::floor(parameterValue_ * numSamples));
-        const auto padding = std::max(1.f, std::floor(parameterValue_ * chopLength));
+        double currentSampleRate = 44100.0;
+        auto currentAngle = 0.0;
+        auto cyclesPerSample = chopFrequency_ / currentSampleRate;
+        auto angleDelta = cyclesPerSample * 2.0 * M_PI;
 
-        for(auto ch = 0; ch < inputBuffer.getNumChannels(); ++ch)
+        for (auto sa = 0; sa <= inputBuffer.getNumSamples(); ++sa)
         {
-            auto offset = 1;
-            while(offset < numSamples)
-            {
-                for (auto sa = offset; sa <= padding; ++sa)
-                    inputBuffer.setSample(ch, sa, inputBuffer[ch][sa] * chopGain_);
-                offset += chopLength;
-            }
+            auto currentSample = std::abs(static_cast<float>(std::sin(currentAngle)));
+            currentAngle += angleDelta;
+            for(auto ch = 0; ch < inputBuffer.getNumChannels(); ++ch)
+                inputBuffer[ch][sa] = currentSample * inputBuffer[ch][sa];
         }
     }
 }

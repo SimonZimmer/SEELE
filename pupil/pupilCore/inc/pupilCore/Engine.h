@@ -11,8 +11,7 @@ namespace sz
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& parameterValue,
-               std::atomic<float>& chopGain,
+        Engine(std::atomic<float>& chopFrequency,
                const IFactory& factory = Factory());
 
         ~Engine() = default;

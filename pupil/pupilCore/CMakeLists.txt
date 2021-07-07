@@ -7,6 +7,7 @@ add_library(pupilCore
         src/Chopper.cpp
         src/Factory.cpp
         src/Engine.cpp
+        src/SampleRamp.cpp
     )
 
 target_include_directories(pupilCore

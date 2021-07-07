@@ -11,11 +11,9 @@ namespace sz
     public:
         ~IFactory() = default;
 
-        virtual AudioProcessorPtr createChopper(std::atomic<float>& chopLength,
-                                                std::atomic<float>& chopGain) const = 0;
+        virtual AudioProcessorPtr createChopper(std::atomic<float>& chopFrequency) const = 0;
 
-        virtual AudioProcessorPtr createEngine(std::atomic<float>& chopLength,
-                                               std::atomic<float>& chopGain) const = 0;
+        virtual AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency) const = 0;
     };
 
     using FactoryPtr = std::unique_ptr<IFactory>;

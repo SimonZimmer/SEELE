@@ -2,11 +2,10 @@
 
 namespace sz
 {
-    Engine::Engine(std::atomic<float>& parameterValue,
-                   std::atomic<float>& chopGain,
+    Engine::Engine(std::atomic<float>& chopFrequency,
                    const IFactory& factory)
     : factory_(factory)
-    , chopper_(factory_.createChopper(parameterValue, chopGain))
+    , chopper_(factory_.createChopper(chopFrequency))
     {
     }
 

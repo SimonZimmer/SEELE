@@ -19,7 +19,7 @@ namespace sz
            chopperMockPtr_ = chopperMock_.get();
            factoryMock_ = std::make_unique<NiceMock<FactoryMock>>();
 
-           ON_CALL(*factoryMock_, createChopper(_, _))
+           ON_CALL(*factoryMock_, createChopper(_))
                .WillByDefault(Return(ByMove(std::move(chopperMock_))));
        }
 
@@ -39,20 +39,18 @@ namespace sz
 
     TEST_F(UnitTest_Engine, create)
     {
-        auto&& parameterValue = std::atomic<float>(0.5f);
-        auto&& chopGain = std::atomic<float>(0.5f);
+        auto&& chopFrequency = std::atomic<float>(100);
 
-        EXPECT_CALL(*factoryMock_, createChopper(_, _));
+        EXPECT_CALL(*factoryMock_, createChopper(_));
 
-        Engine(parameterValue, chopGain, *factoryMock_);
+        Engine(chopFrequency, *factoryMock_);
     }
 
     TEST_F(UnitTest_Engine, process)
     {
-        auto&& parameterValue = std::atomic<float>(0.5f);
-        auto&& chopGain = std::atomic<float>(0.5f);
+        auto&& chopFrequency = std::atomic<float>(100);
         auto&& buffer = core::AudioBuffer<float>(2, 64);
-        auto&& engine = Engine(parameterValue, chopGain, *factoryMock_);
+        auto&& engine = Engine(chopFrequency, *factoryMock_);
         const auto fakeValue = 0.35f;
 
         ON_CALL(*chopperMockPtr_, process)

@@ -9,10 +9,8 @@ namespace sz
     public:
         ~Factory() = default;
 
-        AudioProcessorPtr createChopper(std::atomic<float>& chopLength,
-                                        std::atomic<float>& chopGain) const override;
+        AudioProcessorPtr createChopper(std::atomic<float>& chopFrequency) const override;
 
-        AudioProcessorPtr createEngine(std::atomic<float>& chopLength,
-                                       std::atomic<float>& chopGain) const override;
+        AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency) const override;
     };
 }

@@ -8,25 +8,12 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                    .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     parameters_(*this, nullptr, juce::Identifier ("mockPlugin"),
         {
-            std::make_unique<juce::AudioParameterFloat>("chopLength",
-                                                "ChopLength",
-                                                juce::NormalisableRange<float>(0.0f, 1.0f),
-                                                0.5f,
-                                                "",
-                                                juce::AudioProcessorParameter::genericParameter),
-            std::make_unique<juce::AudioParameterFloat>("chopGain",
-                                                "ChopGain",
-                                                juce::NormalisableRange<float>(0.0f, 1.f),
-                                                0.5f,
-                                                "dB",
-                                                juce::AudioProcessorParameter::genericParameter,
-                                                [](float value, int index)
-                                                {
-                                                    return juce::String(value, 1) + " dB";
-                                                })
+            std::make_unique<juce::AudioParameterInt>("chopFrequency",
+                                                "Chop Frequency",
+                                                10, 10000,
+                                                100)
         })
-        , engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("chopLength"),
-                                             *parameters_.getRawParameterValue("chopGain")))
+        , engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("chopFrequency")))
 {
     setLatencySamples(latency_);
 
