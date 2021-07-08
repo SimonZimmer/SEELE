@@ -4,7 +4,7 @@ project(pupilCore)
 
 add_library(pupilCore
         STATIC
-        src/Chopper.cpp
+        src/AmplitudeModulation.cpp
         src/Factory.cpp
         src/Engine.cpp
         src/SampleRamp.cpp

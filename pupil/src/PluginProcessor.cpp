@@ -8,10 +8,10 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                    .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     parameters_(*this, nullptr, juce::Identifier ("mockPlugin"),
         {
-            std::make_unique<juce::AudioParameterInt>("chopFrequency",
+            std::make_unique<juce::AudioParameterFloat>("chopFrequency",
                                                 "Chop Frequency",
-                                                10, 10000,
-                                                100)
+                                                0.001f, 10000.f,
+                                                10.f)
         })
         , engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("chopFrequency")))
 {

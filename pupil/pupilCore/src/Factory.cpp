@@ -1,12 +1,12 @@
 #include "Factory.h"
-#include "Chopper.h"
+#include "AmplitudeModulation.h"
 #include "Engine.h"
 
 namespace sz
 {
     AudioProcessorPtr Factory::createChopper(std::atomic<float>& chopFrequency) const
     {
-        return std::make_unique<Chopper>(chopFrequency);
+        return std::make_unique<AmplitudeModulation>(chopFrequency);
     }
 
     AudioProcessorPtr Factory::createEngine(std::atomic<float>& chopFrequency) const

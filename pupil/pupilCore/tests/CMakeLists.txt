@@ -4,7 +4,7 @@ target_sources(pupilCoreTestHost PRIVATE
         src/Main.cpp
         src/EngineTestCase.cpp
         src/SampleRampTestCase.cpp
-        src/ChopperTestCase.cpp
+        src/AmplitudeModulationTestCase.cpp
         )
 
 target_compile_features(pupilCoreTestHost PUBLIC cxx_std_17)

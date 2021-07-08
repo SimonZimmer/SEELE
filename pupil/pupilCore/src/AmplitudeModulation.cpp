@@ -1,4 +1,4 @@
-#include "Chopper.h"
+#include "AmplitudeModulation.h"
 #include "SampleRamp.h"
 
 #include <cmath>
@@ -7,13 +7,13 @@ namespace sz
 {
     using namespace std::chrono_literals;
 
-    Chopper::Chopper(std::atomic<float>& chopFrequency)
+    AmplitudeModulation::AmplitudeModulation(std::atomic<float>& chopFrequency)
     : chopFrequency_(chopFrequency)
     , startValue_(0.f)
     {
     }
 
-    void Chopper::process(core::AudioBuffer<float>& inputBuffer)
+    void AmplitudeModulation::process(core::AudioBuffer<float>& inputBuffer)
     {
         double currentSampleRate = 44100.0;
         auto currentAngle = 0.0;

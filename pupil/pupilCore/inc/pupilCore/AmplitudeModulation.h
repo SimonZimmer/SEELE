@@ -8,11 +8,11 @@
 
 namespace sz
 {
-    class Chopper : public IAudioProcessor
+    class AmplitudeModulation : public IAudioProcessor
     {
     public:
-        Chopper(std::atomic<float>& chopFrequency);
-        ~Chopper() = default;
+        AmplitudeModulation(std::atomic<float>& chopFrequency);
+        ~AmplitudeModulation() = default;
 
         void process(core::AudioBuffer<float>& inputBuffer) override;
 
