@@ -82,4 +82,18 @@ namespace sz
                 EXPECT_EQ(incrementedValue, buffer[c][i]);
             }
     }
+
+    TEST_P(AudioBufferTest, fill)
+    {
+        const auto noChannels = GetParam().noChannels;
+        const auto noSamples = GetParam().noSamples;
+
+        core::AudioBuffer<float> buffer(noChannels, noSamples);
+
+        buffer.fill(0.33f);
+
+        for (size_t c = 0; c < noChannels; c++)
+            for (size_t i = 0; i < noSamples; ++i)
+                EXPECT_EQ(0.33f, buffer[c][i]);
+    }
 }

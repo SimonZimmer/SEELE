@@ -13,7 +13,8 @@ namespace sz
 
         virtual AudioProcessorPtr createChopper(std::atomic<float>& chopFrequency) const = 0;
 
-        virtual AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency) const = 0;
+        virtual AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency,
+                                               std::atomic<float>& pitchRatio) const = 0;
     };
 
     using FactoryPtr = std::unique_ptr<IFactory>;

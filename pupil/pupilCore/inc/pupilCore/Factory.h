@@ -11,6 +11,7 @@ namespace sz
 
         AudioProcessorPtr createChopper(std::atomic<float>& chopFrequency) const override;
 
-        AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency) const override;
+        AudioProcessorPtr createEngine(std::atomic<float>& chopFrequency,
+                                       std::atomic<float>& pitchRatio) const override;
     };
 }

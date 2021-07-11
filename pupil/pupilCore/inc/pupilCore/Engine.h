@@ -5,6 +5,7 @@
 #include "IAudioProcessor.h"
 #include "IFactory.h"
 #include "Factory.h"
+#include "PitchShifter.h"
 
 namespace sz
 {
@@ -12,6 +13,7 @@ namespace sz
     {
     public:
         Engine(std::atomic<float>& chopFrequency,
+               std::atomic<float>& pitchRatio,
                const IFactory& factory = Factory());
 
         ~Engine() = default;
@@ -21,5 +23,8 @@ namespace sz
     private:
         const IFactory& factory_;
         AudioProcessorPtr chopper_;
+        PitchShifter<float> pitchShifter_{};
+        juce::AudioBuffer<float> buffer_;
+        std::atomic<float>& pitchRatio_;
     };
 }

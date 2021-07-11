@@ -9,8 +9,9 @@ namespace sz
         return std::make_unique<AmplitudeModulation>(chopFrequency);
     }
 
-    AudioProcessorPtr Factory::createEngine(std::atomic<float>& chopFrequency) const
+    AudioProcessorPtr Factory::createEngine(std::atomic<float>& chopFrequency,
+                                            std::atomic<float>& pitchRatio) const
     {
-        return std::make_unique<Engine>(chopFrequency);
+        return std::make_unique<Engine>(chopFrequency, pitchRatio);
     }
 }

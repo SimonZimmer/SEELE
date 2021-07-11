@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 
 project(pupilCore)
 
+if (NOT TARGET juceaide)
+    add_subdirectory(../ThirdParty/JUCE juce)
+endif()
+
 add_library(pupilCore
         STATIC
         src/AmplitudeModulation.cpp
@@ -20,6 +24,9 @@ target_include_directories(pupilCore
 target_link_libraries(pupilCore
    PUBLIC
         core
+        juce::juce_core
+        juce::juce_audio_basics
+        juce::juce_dsp
         )
 
 target_compile_features(pupilCore PUBLIC cxx_std_17)

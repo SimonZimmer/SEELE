@@ -40,6 +40,18 @@ namespace sz::core
             return numSamples_;
         }
 
+        float* getDataPointer() const
+        {
+            return *data_;
+        }
+
+        void fill(float value)
+        {
+            for(auto ch = 0; ch < numChannels_; ++ch)
+                for(auto sa = 0; sa < numSamples_; ++sa)
+                    setSample(ch, sa, value);
+        }
+
         private:
             class MemoryBlock
             {
