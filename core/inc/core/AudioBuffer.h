@@ -52,7 +52,29 @@ namespace sz::core
                     setSample(ch, sa, value);
         }
 
-        private:
+        void copyFrom(const AudioBuffer<T>& other)
+        {
+            if (other.getNumChannels() == numChannels_ && other.getNumSamples() == numSamples_)
+                memcpy(data_[0], other.data_[0], numChannels_ * numSamples_ * sizeof(T));
+            else
+            {
+                const auto channelsToCopy = std::min(other.getNumChannels(), numChannels_);
+                const auto samplesToCopy = std::min(numSamples_, other.getNumSamples());
+
+                for (auto c = size_t{ 0 }; c < channelsToCopy; ++c)
+                    memcpy(data_[c], other.data_[c], samplesToCopy * sizeof(T));
+            }
+        }
+
+        void setSize(size_t channelCount, size_t sampleCountPerChannel)
+        {
+            memoryBlock_ = MemoryBlock(channelCount, sampleCountPerChannel);
+            data_ = memoryBlock_.getData();
+            numChannels_ = channelCount;
+            numSamples_ = sampleCountPerChannel;
+        }
+
+    private:
             class MemoryBlock
             {
             public:
