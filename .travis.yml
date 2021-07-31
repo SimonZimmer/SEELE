@@ -1,0 +1,13 @@
+os: osx
+compiler: clang
+env: T=cmake
+
+addons:
+  homebrew:
+    packages:
+    - cmake
+
+script:
+  - cmake .
+  - cmake --build .
+

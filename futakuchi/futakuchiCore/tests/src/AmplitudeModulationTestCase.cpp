@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <pupilCore/AmplitudeModulation.h>
+#include <futakuchiCore/AmplitudeModulation.h>
 
 namespace sz
 {

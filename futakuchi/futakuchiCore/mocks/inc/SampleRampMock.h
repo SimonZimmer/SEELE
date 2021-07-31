@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include <pupilCore/ISampleRamp.h>
+#include <futakuchiCore/ISampleRamp.h>
 
 namespace sz
 {

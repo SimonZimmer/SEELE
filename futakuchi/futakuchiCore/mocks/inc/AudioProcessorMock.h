@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include <pupilCore/IAudioProcessor.h>
+#include <futakuchiCore/IAudioProcessor.h>
 
 namespace sz
 {

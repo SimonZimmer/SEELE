@@ -4,7 +4,7 @@
 #include <AudioProcessorMock.h>
 #include <FactoryMock.h>
 
-#include <pupilCore/Engine.h>
+#include <futakuchiCore/Engine.h>
 
 namespace sz
 {
@@ -40,17 +40,19 @@ namespace sz
     TEST_F(UnitTest_Engine, create)
     {
         auto&& chopFrequency = std::atomic<float>(100);
+        auto&& pitchRatio = std::atomic<float>(0.5);
 
         EXPECT_CALL(*factoryMock_, createChopper(_));
 
-        Engine(chopFrequency, *factoryMock_);
+        Engine(chopFrequency, pitchRatio, *factoryMock_);
     }
 
     TEST_F(UnitTest_Engine, process)
     {
         auto&& chopFrequency = std::atomic<float>(100);
+        auto&& pitchRatio = std::atomic<float>(0.5);
         auto&& buffer = core::AudioBuffer<float>(2, 64);
-        auto&& engine = Engine(chopFrequency, *factoryMock_);
+        auto&& engine = Engine(chopFrequency, pitchRatio, *factoryMock_);
         const auto fakeValue = 0.35f;
 
         ON_CALL(*chopperMockPtr_, process)

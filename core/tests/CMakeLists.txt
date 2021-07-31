@@ -5,6 +5,7 @@ if (NOT TARGET gtest)
 endif ()
 
 add_executable(coreTestHost)
+add_test(coreTestHost, coreTestHost)
 
 target_sources(coreTestHost PRIVATE
         src/Main.cpp

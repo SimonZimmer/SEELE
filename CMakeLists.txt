@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.13)
 
-project(pupil)
+project(futakuchi)
 
-add_subdirectory(pupil)
+add_subdirectory(futakuchi)
 add_subdirectory(core)

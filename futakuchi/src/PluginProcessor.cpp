@@ -1,7 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include <pupilCore/Factory.h>
+#include <futakuchiCore/Factory.h>
 
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)

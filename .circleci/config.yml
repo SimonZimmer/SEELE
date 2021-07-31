@@ -1,0 +1,23 @@
+version: 2.1
+
+jobs:
+  build:
+    macos:
+      xcode: 12.4
+    steps:
+      - checkout
+      - run: git submodule update --init
+      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run: brew install cmake
+      - run:
+          name: Create build directories
+          command: |
+            mkdir -p build
+      - run:
+          name: Setup cmake and build artifacts
+          command: |
+            cd build
+            cmake --build .
+      - persist_to_workspace:
+          root: .
+          paths: build

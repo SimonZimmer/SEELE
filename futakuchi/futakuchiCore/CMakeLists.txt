@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.13)
 
-project(pupilCore)
+project(futakuchiCore)
 
 if (NOT TARGET juceaide)
     add_subdirectory(../ThirdParty/JUCE juce)
 endif()
 
-add_library(pupilCore
+add_library(futakuchiCore
         STATIC
         src/AmplitudeModulation.cpp
         src/Factory.cpp
@@ -14,14 +14,14 @@ add_library(pupilCore
         src/SampleRamp.cpp
     )
 
-target_include_directories(pupilCore
+target_include_directories(futakuchiCore
     PRIVATE
-        inc/pupilCore
+        inc/futakuchiCore
     PUBLIC
         inc
     )
 
-target_link_libraries(pupilCore
+target_link_libraries(futakuchiCore
    PUBLIC
         core
         juce::juce_core
@@ -29,7 +29,8 @@ target_link_libraries(pupilCore
         juce::juce_dsp
         )
 
-target_compile_features(pupilCore PUBLIC cxx_std_17)
+target_compile_features(futakuchiCore PUBLIC cxx_std_17)
 
+enable_testing()
 add_subdirectory(tests)
 add_subdirectory(mocks)

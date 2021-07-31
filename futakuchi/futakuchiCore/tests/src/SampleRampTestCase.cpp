@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <pupilCore/SampleRamp.h>
+#include <futakuchiCore/SampleRamp.h>
 
 namespace sz
 {
