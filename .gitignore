@@ -44,8 +44,8 @@ rules.ninja
 cmake_install.cmake
 CMakeFiles
 
-futakuchi/juce
-futakuchi/futakuchiPlugin_artefacts
+seele/juce
+seele/seelePlugin_artefacts
 
 .idea
 .ccls-cache

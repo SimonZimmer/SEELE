@@ -2,7 +2,7 @@
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
-#include <futakuchiCore/AmplitudeModulation.h>
+#include <seeleCore/AmplitudeModulation.h>
 
 class NewProjectAudioProcessor  : public juce::AudioProcessor
 {

@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include <futakuchiCore/IFactory.h>
+#include <seeleCore/IFactory.h>
 
 namespace sz
 {

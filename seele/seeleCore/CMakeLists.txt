@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(futakuchiCore)
+project(seeleCore)
 
 if (NOT TARGET juceaide)
     add_subdirectory(../ThirdParty/JUCE juce)
 endif()
 
-add_library(futakuchiCore
+add_library(seeleCore
         STATIC
         src/AmplitudeModulation.cpp
         src/Factory.cpp
@@ -14,14 +14,14 @@ add_library(futakuchiCore
         src/SampleRamp.cpp
     )
 
-target_include_directories(futakuchiCore
+target_include_directories(seeleCore
     PRIVATE
-        inc/futakuchiCore
+        inc/seeleCore
     PUBLIC
         inc
     )
 
-target_link_libraries(futakuchiCore
+target_link_libraries(seeleCore
    PUBLIC
         core
         juce::juce_core
@@ -29,7 +29,7 @@ target_link_libraries(futakuchiCore
         juce::juce_dsp
         )
 
-target_compile_features(futakuchiCore PUBLIC cxx_std_17)
+target_compile_features(seeleCore PUBLIC cxx_std_17)
 
 enable_testing()
 add_subdirectory(tests)
