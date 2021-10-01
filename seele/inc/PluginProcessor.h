@@ -2,7 +2,7 @@
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
-#include <seeleCore/AmplitudeModulation.h>
+#include <seeleCore/Engine.h>
 
 class NewProjectAudioProcessor  : public juce::AudioProcessor
 {
@@ -42,6 +42,5 @@ private:
     std::vector<std::string> programs_;
     int currentProgram_{1};
     const int latency_{16};
-    juce::AudioBuffer<float> internalBuffer_{};
     sz::AudioProcessorPtr engine_;
 };

@@ -10,8 +10,8 @@ add_subdirectory(seeleCore)
 set(PLUGIN_NAME "SEELE")
 set(FORMATS VST3 AU)
 juce_add_plugin(seelePlugin
-        PLUGIN_MANUFACTURER_CODE SZ
-        PLUGIN_CODE SEELE
+        PLUGIN_MANUFACTURER_CODE HDNS
+        PLUGIN_CODE SLPL
         FORMATS ${FORMATS}
         PRODUCT_NAME ${PLUGIN_NAME}
         COMPANY_NAME "Hidonash (Simon Zimmermann)"
@@ -37,6 +37,8 @@ target_link_libraries(seelePlugin
             juce::juce_core
             juce::juce_audio_utils
             seeleCore
+        INTERFACE
+            matplotlib_cpp
         )
 
 set(common_definitions
