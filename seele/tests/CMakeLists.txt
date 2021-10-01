@@ -1,3 +1,6 @@
+include(GoogleTest)
+include(CTest)
+
 add_executable(seeleTestHost)
 
 target_sources(seeleTestHost PRIVATE
@@ -13,3 +16,6 @@ target_link_libraries(seeleTestHost PRIVATE
 target_compile_options(seeleTestHost PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>: /wd4244>
         $<$<CXX_COMPILER_ID:MSVC>: /wd4250>)
+
+gtest_discover_tests(seeleTestHost)
+

@@ -5,7 +5,7 @@
 #include "IAudioProcessor.h"
 #include "IFactory.h"
 #include "Factory.h"
-#include "PitchShifter.h"
+#include "PhaseVocoder.h"
 
 namespace sz
 {
@@ -22,9 +22,7 @@ namespace sz
 
     private:
         const IFactory& factory_;
-        AudioProcessorPtr chopper_;
-        PitchShifter<float> pitchShifter_{};
-        juce::AudioBuffer<float> buffer_;
+        PhaseVocoder phaseVocoder_{2048, 2048, JuceWindowTypes::hann};
         std::atomic<float>& pitchRatio_;
     };
 }

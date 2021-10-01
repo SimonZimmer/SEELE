@@ -15,6 +15,7 @@ namespace sz
 
     void AmplitudeModulation::process(core::AudioBuffer<float>& inputBuffer)
     {
+        //TODO get actual sampleRate
         double currentSampleRate = 44100.0;
         auto currentAngle = 0.0;
         auto cyclesPerSample = chopFrequency_ / currentSampleRate;

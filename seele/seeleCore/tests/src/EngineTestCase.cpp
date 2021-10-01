@@ -37,7 +37,7 @@ namespace sz
         std::unique_ptr<NiceMock<FactoryMock>> factoryMock_;
     };
 
-    TEST_F(UnitTest_Engine, create)
+    TEST_F(UnitTest_Engine, DISABLED_create)
     {
         auto&& chopFrequency = std::atomic<float>(100);
         auto&& pitchRatio = std::atomic<float>(0.5);
@@ -47,7 +47,7 @@ namespace sz
         Engine(chopFrequency, pitchRatio, *factoryMock_);
     }
 
-    TEST_F(UnitTest_Engine, process)
+    TEST_F(UnitTest_Engine, DISABLED_process)
     {
         auto&& chopFrequency = std::atomic<float>(100);
         auto&& pitchRatio = std::atomic<float>(0.5);

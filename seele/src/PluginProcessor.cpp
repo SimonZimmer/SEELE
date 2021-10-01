@@ -94,6 +94,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                                                       buffer.getNumSamples());
 
     engine_->process(inputBuffer);
+    buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
 }
 
 bool NewProjectAudioProcessor::hasEditor() const

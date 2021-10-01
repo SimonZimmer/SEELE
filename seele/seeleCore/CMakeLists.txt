@@ -12,6 +12,7 @@ add_library(seeleCore
         src/Factory.cpp
         src/Engine.cpp
         src/SampleRamp.cpp
+        src/PhaseVocoder.cpp
     )
 
 target_include_directories(seeleCore
