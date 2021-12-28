@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 
 #include <AudioProcessorMock.h>
-#include <FactoryMock.h>
 
 #include <seeleCore/Engine.h>
 
@@ -278,10 +277,8 @@ namespace sz
 
     TEST_F(IntegrationTest_Engine, process_lowPitched)
     {
-        auto&& chopFrequency = std::atomic<float>(100);
         auto&& pitchRatio = std::atomic<float>(0.5f);
-
-        auto&& engine = Engine(chopFrequency, pitchRatio);
+        auto&& engine = Engine(pitchRatio);
         auto&& buffer = core::AudioBuffer<float>(2, 128);
         auto currentAngle = 0.f;
 
@@ -302,10 +299,8 @@ namespace sz
 
     TEST_F(IntegrationTest_Engine, process_highPitched)
     {
-        auto&& chopFrequency = std::atomic<float>(100);
         auto&& pitchRatio = std::atomic<float>(1.5f);
-
-        auto&& engine = Engine(chopFrequency, pitchRatio);
+        auto&& engine = Engine(pitchRatio);
         auto&& buffer = core::AudioBuffer<float>(2, 128);
         auto&& reference = core::AudioBuffer<float>(2, 128);
         auto currentAngle = 0.f;
@@ -318,7 +313,6 @@ namespace sz
                 reference.setSample(c, i, std::sin(currentAngle));
                 currentAngle += angleDelta;
             }
-        
 
         for(auto i = 0; i < 20; ++i)
             engine.process(buffer);

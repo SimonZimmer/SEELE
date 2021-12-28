@@ -6,8 +6,6 @@ add_executable(seeleCoreTestHost)
 target_sources(seeleCoreTestHost PRIVATE
         src/Main.cpp
         src/EngineTestCase.cpp
-        src/SampleRampTestCase.cpp
-        src/AmplitudeModulationTestCase.cpp
         src/BlockCircularBufferTestCase.cpp
         src/integration/EngineTestCase.cpp
         )

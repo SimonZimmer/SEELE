@@ -6,13 +6,11 @@
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
                                    .withOutput("Output", juce::AudioChannelSet::stereo(), true))
-, parameters_(*this, nullptr, juce::Identifier ("pupil"),
+, parameters_(*this, nullptr, juce::Identifier ("seele"),
   {
-    std::make_unique<juce::AudioParameterFloat>("chopFrequency","Chop Frequency",0.001f, 10000.f,10.f),
-    std::make_unique<juce::AudioParameterFloat>("pitchRatio","Pitch Ratio", 0.f, 2.f, 1.f)
+    std::make_unique<juce::AudioParameterFloat>("pitchRatio", "Pitch Ratio", 0.f, 2.f, 1.f)
   })
-, engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("chopFrequency"),
-                                     *parameters_.getRawParameterValue("pitchRatio")))
+, engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio")))
 {
     setLatencySamples(latency_);
 

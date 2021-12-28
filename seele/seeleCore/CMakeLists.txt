@@ -8,10 +8,8 @@ endif()
 
 add_library(seeleCore
         STATIC
-        src/AmplitudeModulation.cpp
         src/Factory.cpp
         src/Engine.cpp
-        src/SampleRamp.cpp
         src/PhaseVocoder.cpp
     )
 

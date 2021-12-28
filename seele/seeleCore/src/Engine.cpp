@@ -2,9 +2,7 @@
 
 namespace sz
 {
-    Engine::Engine(std::atomic<float>& chopFrequency,
-                   std::atomic<float>& pitchRatio,
-                   const IFactory& factory)
+    Engine::Engine(std::atomic<float>& pitchRatio, const IFactory& factory)
     : factory_(factory)
     , pitchRatio_(pitchRatio)
     {
