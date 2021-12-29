@@ -36,20 +36,6 @@ namespace sz
             }
         }
 
-        int getOverlapsRequiredForWindowType(JuceWindowTypes windowType)
-        {
-            switch(windowType)
-            {
-                case JuceWindowTypes::hann:
-                case JuceWindowTypes::hamming:
-                    return 4;
-                case JuceWindowTypes::kaiser:
-                    return 8;
-                default:
-                    return -1;
-            }
-        }
-
         int nearestPower2(int value)
         {
             return static_cast<int>(log2(juce::nextPowerOfTwo(value)));
@@ -75,9 +61,8 @@ namespace sz
     , synthPhaseIncrements(windowSize, 0)
     , previousFramePhases(windowSize, 0)
     {
-        windowOverlaps = getOverlapsRequiredForWindowType(windowType);
-        analysisHopSize = windowLength / windowOverlaps;
-        synthesisHopSize = windowLength / windowOverlaps;
+        analysisHopSize = windowLength / config::window::overlaps;
+        synthesisHopSize = windowLength / config::window::overlaps;
 
         JuceWindow::fillWindowingTables(windowFunction.data(), windowSize, windowType, false);
 
@@ -211,7 +196,7 @@ namespace sz
     void PhaseVocoder::setPitchRatio(float newPitchRatio)
     {
         pitchRatio = std::clamp(newPitchRatio, minPitchRatio, maxPitchRatio);
-        synthesisHopSize = (int)(windowSize / (float) windowOverlaps);
+        synthesisHopSize = (int)(windowSize / (float) config::window::overlaps);
         analysisHopSize = (int)round(synthesisHopSize / pitchRatio);
 
         // Rescaling due to OLA processing gain

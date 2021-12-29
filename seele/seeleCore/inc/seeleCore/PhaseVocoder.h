@@ -38,8 +38,8 @@ namespace sz
         std::unique_ptr<juce::dsp::FFT> fft;
 
         // Buffers
-        BlockCircularBuffer<float> analysisBuffer;
-        BlockCircularBuffer<float> synthesisBuffer;
+        BlockCircularBuffer analysisBuffer;
+        BlockCircularBuffer synthesisBuffer;
         core::AudioBuffer<float> spectralBuffer{1, config::fft::size};
         core::AudioBuffer<float> resampleBuffer{1, config::fft::size};
 

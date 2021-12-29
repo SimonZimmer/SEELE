@@ -66,6 +66,12 @@ namespace sz::core
             }
         }
 
+        void copy(const AudioBuffer<T>& from, size_t fromOffset, size_t internalOffset, size_t copyLength)
+        {
+            //for (auto ch = 0; ch < numChannels_; ++ch)
+            memcpy(getDataPointer() + internalOffset, from.getDataPointer() + fromOffset, copyLength * sizeof(T));
+        }
+
         void setSize(size_t channelCount, size_t sampleCountPerChannel)
         {
             memoryBlock_ = MemoryBlock(channelCount, sampleCountPerChannel);
@@ -75,34 +81,34 @@ namespace sz::core
         }
 
     private:
-            class MemoryBlock
+        class MemoryBlock
+        {
+        public:
+            MemoryBlock() = default;
+
+            MemoryBlock(int numChannels, int numSamples)
+            : data_(numChannels * numSamples, T(0))
+            , channels_(numChannels, nullptr)
             {
-            public:
-                MemoryBlock() = default;
+                if (numSamples == 0 && numChannels > 0)
+                    return;
 
-                MemoryBlock(int numChannels, int numSamples)
-                : data_(numChannels * numSamples, T(0))
-                , channels_(numChannels, nullptr)
-                {
-                    if (numSamples == 0 && numChannels > 0)
-                        return;
+                for (size_t c = 0; c < channels_.size(); ++c)
+                    channels_[c] = &data_[c * numSamples];
+            }
 
-                    for (size_t c = 0; c < channels_.size(); ++c)
-                        channels_[c] = &data_[c * numSamples];
-                }
+            T** getData()
+            {
+                if (channels_.empty())
+                    return nullptr;
 
-                T** getData()
-                {
-                    if (channels_.empty())
-                        return nullptr;
+                return &channels_[0];
+            }
 
-                    return &channels_[0];
-                }
-
-            private:
-                std::vector<T> data_;
-                std::vector<T*> channels_;
-            };
+        private:
+            std::vector<T> data_;
+            std::vector<T*> channels_;
+        };
 
         private:
             int numChannels_ = 0;
