@@ -8,6 +8,8 @@
 
 namespace sz
 {
+    using namespace config;
+
     namespace
     {
         // Resample a signal to a new size using linear interpolation
@@ -49,35 +51,35 @@ namespace sz
         }
     }
 
-    PhaseVocoder::PhaseVocoder(int windowLength, int fftSize, JuceWindowTypes windowType)
-    : samplesTilNextProcess(windowLength)
-    , windowSize(windowLength)
-    , resampleBufferSize(windowLength)
-    , spectralBufferSize(windowLength * 2)
-    , analysisBuffer(windowLength)
-    , synthesisBuffer(windowLength * 3)
-    , windowFunction(windowLength)
-    , fft(std::make_unique<juce::dsp::FFT>(nearestPower2(fftSize)))
-    , synthPhaseIncrements(windowSize, 0)
-    , previousFramePhases(windowSize, 0)
+    PhaseVocoder::PhaseVocoder()
+    : samplesTilNextProcess(window::length)
+    , resampleBufferSize(window::length)
+    , spectralBufferSize(window::length * 2)
+    , analysisBuffer(window::length)
+    , synthesisBuffer(window::length * 3)
+    , windowFunction(window::length)
+    , fft(std::make_unique<juce::dsp::FFT>(nearestPower2(fft::size)))
+    , synthPhaseIncrements(window::length, 0)
+    , previousFramePhases(window::length, 0)
     {
-        analysisHopSize = windowLength / config::window::overlaps;
-        synthesisHopSize = windowLength / config::window::overlaps;
+        analysisHopSize = window::length / window::overlaps;
+        synthesisHopSize = window::length / window::overlaps;
 
-        JuceWindow::fillWindowingTables(windowFunction.data(), windowSize, windowType, false);
+        JuceWindow::fillWindowingTables(windowFunction.data(), window::length,
+                                        JuceWindowTypes::hann, false);
 
         // Processing reuses the spectral buffer to resize the output grain
         // It must be the at least the size of the min pitch ratio
         // TODO FFT size must be big enough also
-        spectralBufferSize = windowLength * (1 / minPitchRatio) < spectralBufferSize ?
-                             (int) ceil (windowLength * (1 / minPitchRatio)) : spectralBufferSize;
+        spectralBufferSize = window::length * (1 / parameters::minPitchRatio) < spectralBufferSize ?
+                             (int) ceil (window::length * (1 / parameters::minPitchRatio)) : spectralBufferSize;
 
         spectralBuffer.setSize(1, spectralBufferSize);
         spectralBuffer.fill(0.f);
 
         // Calculate maximium size resample signal can be
-        const auto maxResampleSize = (int)std::ceil (std::max (this->windowSize * maxPitchRatio,
-                                                               this->windowSize / minPitchRatio));
+        const auto maxResampleSize = (int)std::ceil (std::max(window::length * parameters::maxPitchRatio,
+                                                                     window::length / parameters::minPitchRatio));
 
         resampleBuffer.setSize(1, maxResampleSize);
         resampleBuffer.fill(0.f);
@@ -85,7 +87,7 @@ namespace sz
 
     void PhaseVocoder::updateResampleBufferSize()
     {
-        resampleBufferSize = static_cast<int>(std::ceil(windowSize * analysisHopSize / static_cast<float>(synthesisHopSize)));
+        resampleBufferSize = static_cast<int>(std::ceil(window::length * analysisHopSize / static_cast<float>(synthesisHopSize)));
         timeStretchRatio = synthesisHopSize / static_cast<float>(analysisHopSize);
     }
 
@@ -128,13 +130,13 @@ namespace sz
                 const auto spectralBufferData = spectralBuffer.getDataPointer();
 
                 analysisBuffer.setReadHopSize(analysisHopSize);
-                analysisBuffer.read(spectralBuffer, 0, windowSize);
+                analysisBuffer.read(spectralBuffer, 0, window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), windowSize);
+                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), window::length);
 
                 // Rotate signal 180 degrees, move the first half to the back and back to the front
-                std::rotate(spectralBufferData, spectralBufferData + (windowSize / 2), spectralBufferData + windowSize);
+                std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
 
                 // Perform FFT, process and inverse FFT
                 fft->performRealOnlyForwardTransform(spectralBufferData);
@@ -142,13 +144,13 @@ namespace sz
                 fft->performRealOnlyInverseTransform(spectralBufferData);
 
                 // Undo signal back to original rotation
-                std::rotate(spectralBufferData, spectralBufferData + (windowSize / 2), spectralBufferData + windowSize);
+                std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), windowSize);
+                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), window::length);
 
                 // Resample output grain to N * (hop size analysis / hop size synthesis)
-                linearResample(spectralBuffer, windowSize, resampleBuffer, resampleBufferSize);
+                linearResample(spectralBuffer, window::length, resampleBuffer, resampleBufferSize);
 
                 synthesisBuffer.setWriteHopSize(synthesisHopSize);
                 synthesisBuffer.overlapWrite(resampleBuffer, resampleBufferSize);
@@ -180,7 +182,7 @@ namespace sz
             const auto mag = sqrtf(real * real + imag * imag);
             const auto phase = atan2(imag, real);
 
-            const auto omega = juce::MathConstants<float>::twoPi * analysisHopSize * x / (float) windowSize;
+            const auto omega = juce::MathConstants<float>::twoPi * analysisHopSize * x / (float) window::length;
 
             const auto deltaPhase = omega + principalArgument(phase - previousFramePhases[x] - omega);
 
@@ -195,14 +197,14 @@ namespace sz
 
     void PhaseVocoder::setPitchRatio(float newPitchRatio)
     {
-        pitchRatio = std::clamp(newPitchRatio, minPitchRatio, maxPitchRatio);
-        synthesisHopSize = (int)(windowSize / (float) config::window::overlaps);
+        pitchRatio = std::clamp(newPitchRatio, parameters::minPitchRatio, parameters::maxPitchRatio);
+        synthesisHopSize = (int)(window::length / (float) window::overlaps);
         analysisHopSize = (int)round(synthesisHopSize / pitchRatio);
 
         // Rescaling due to OLA processing gain
         double accum = 0.0;
 
-        for (int i = 0; i < windowSize; ++i)
+        for (int i = 0; i < window::length; ++i)
             accum += windowFunction[i] * (double)windowFunction[i];
 
         accum /= synthesisHopSize;
@@ -211,8 +213,8 @@ namespace sz
         synthesisHopSize = analysisHopSize;
 
         // Reset phases
-        memset(previousFramePhases.data(), 0, sizeof(float) * windowSize);
-        memset(synthPhaseIncrements.data(), 0, sizeof(float) * windowSize);
+        memset(previousFramePhases.data(), 0, sizeof(float) * window::length);
+        memset(synthPhaseIncrements.data(), 0, sizeof(float) * window::length);
     }
 
 }

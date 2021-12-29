@@ -22,9 +22,7 @@ namespace sz
 
     private:
         const IFactory& factory_;
-        PhaseVocoder phaseVocoder_{config::fft::size,
-                                   config::fft::size,
-                                   JuceWindowTypes::hann};
+        PhaseVocoder phaseVocoder_;
         std::atomic<float>& pitchRatio_;
     };
 }

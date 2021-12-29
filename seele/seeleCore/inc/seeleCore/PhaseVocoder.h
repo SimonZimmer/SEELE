@@ -13,9 +13,6 @@ namespace
 {
     using JuceWindow = typename juce::dsp::WindowingFunction<float>;
     using JuceWindowTypes = typename juce::dsp::WindowingFunction<float>::WindowingMethod;
-
-    constexpr float maxPitchRatio = 2.f;
-    constexpr float minPitchRatio = 0.5f;
 }
 
 namespace sz
@@ -23,7 +20,7 @@ namespace sz
     class PhaseVocoder
     {
     public:
-        PhaseVocoder(int windowLength, int fftSize, JuceWindowTypes windowType);
+        PhaseVocoder();
         ~PhaseVocoder() = default;
 
         void updateResampleBufferSize();
@@ -53,9 +50,7 @@ namespace sz
         float rescalingFactor = 1.f;
         int analysisHopSize = 0;
         int synthesisHopSize = 0;
-        int windowSize = 0;
         int resampleBufferSize = 0;
-        int windowOverlaps = 0;
 
         float pitchRatio = 0.f;
         float timeStretchRatio = 1.f;

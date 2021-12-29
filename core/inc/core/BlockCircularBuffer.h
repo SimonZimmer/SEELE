@@ -6,14 +6,6 @@
 
 namespace sz
 {
-    namespace
-    {
-        int getDifferenceBetweenIndexes(int index1, int index2, int bufferLength)
-        {
-            return (index1 <= index2) ? index2 - index1 : bufferLength - index1 + index2;
-        }
-    }
-
     class BlockCircularBuffer
     {
     public:
@@ -95,10 +87,7 @@ namespace sz
             // data and when to overwrite out of date samples. This number can change when modulating between
             // the pitch (which alters the size of the overlaps). The calculation below will determine the
             // index we need to "add" to and at which point we need to "set" the samples to overwrite the history
-            const int writeIndexDifference = getDifferenceBetweenIndexes(writeIndex, latestDataIndex, length);
-            const int overlapSampleCount = writeLength - writeHopSize;
-            const auto overlapAmount = std::min(writeIndexDifference, overlapSampleCount);
-
+            const auto overlapAmount = getOverlapAmount(writeLength);
             auto tempWriteIndex = writeIndex;
             auto firstWriteAmount = writeIndex + overlapAmount > length ? length - writeIndex : overlapAmount;
 
@@ -129,6 +118,14 @@ namespace sz
         }
 
     private:
+        size_t getOverlapAmount(size_t writeLength)
+        {
+            const int writeIndexDifference = (writeIndex <= latestDataIndex) ? latestDataIndex - writeIndex : length - writeIndex + latestDataIndex;
+            const int overlapSampleCount = writeLength - writeHopSize;
+
+            return std::min(writeIndexDifference, overlapSampleCount);
+        }
+
         core::AudioBuffer<float> block{1, 0};
         long writeIndex = 0;
         long readIndex = 0;
