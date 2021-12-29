@@ -5,8 +5,9 @@
 
 #include <juce_dsp/juce_dsp.h>
 
-#include "core/BlockCircularBuffer.h"
+#include <core/BlockCircularBuffer.h>
 #include <core/AudioBuffer.h>
+#include "Config.h"
 
 namespace
 {
@@ -39,8 +40,8 @@ namespace sz
         // Buffers
         BlockCircularBuffer<float> analysisBuffer;
         BlockCircularBuffer<float> synthesisBuffer;
-        core::AudioBuffer<float> spectralBuffer{1, 2048};
-        core::AudioBuffer<float> resampleBuffer{1, 2048};
+        core::AudioBuffer<float> spectralBuffer{1, config::fft::size};
+        core::AudioBuffer<float> resampleBuffer{1, config::fft::size};
 
         // Misc state
         long incomingSampleCount = 0;

@@ -6,6 +6,7 @@
 #include "IFactory.h"
 #include "Factory.h"
 #include "PhaseVocoder.h"
+#include "Config.h"
 
 namespace sz
 {
@@ -21,7 +22,9 @@ namespace sz
 
     private:
         const IFactory& factory_;
-        PhaseVocoder phaseVocoder_{2048, 2048, JuceWindowTypes::hann};
+        PhaseVocoder phaseVocoder_{config::fft::size,
+                                   config::fft::size,
+                                   JuceWindowTypes::hann};
         std::atomic<float>& pitchRatio_;
     };
 }

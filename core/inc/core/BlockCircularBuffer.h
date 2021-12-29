@@ -134,9 +134,9 @@ namespace sz
                 memcpy(internalBuffer, sourceBufferData + overlapAmount + firstWriteAmount,
                        sizeof (ElementType) * (remainingElements - static_cast<unsigned long long>(firstWriteAmount)));
 
-            latestDataIndex = (writeIndex + writeLength) % length;
             writeIndex += writeHopSize;
             writeIndex %= length;
+            latestDataIndex = (writeIndex + writeLength) % length;
         }
 
     private:
