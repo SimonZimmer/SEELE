@@ -1,137 +1,127 @@
 #pragma once
 
-#include <memory>
+#include <algorithm>
 
 #include <core/AudioBuffer.h>
 
 namespace sz
 {
+    template <typename T>
     class BlockCircularBuffer
     {
     public:
-        BlockCircularBuffer(long newSize)
+        explicit BlockCircularBuffer(size_t newSize)
         {
-            setSize(newSize, true);
+            setSize(newSize);
+            reset();
         }
 
         void setReadHopSize(int hopSize)
         {
-            readHopSize = hopSize;
+            readHopSize_ = hopSize;
         }
 
         void setWriteHopSize(int hopSize)
         {
-            writeHopSize = hopSize;
+            writeHopSize_ = hopSize;
         }
 
-        void setSize(long newSize, bool shouldClear = false)
+        void setSize(size_t newSize)
         {
-            if (newSize == length)
-            {
-                if (shouldClear)
-                    reset ();
-
+            if (newSize == length_)
                 return;
-            }
 
-            block.setSize(1, newSize);
-            length = newSize;
-            writeIndex = readIndex = 0;
+            block_.setSize(1, newSize);
+            length_ = newSize;
+            writeIndex_ = readIndex_ = 0;
         }
 
         void reset()
         {
-            block.fill(0.f);
-            writeIndex = readIndex = 0;
+            block_.fill(0.f);
+            writeIndex_ = readIndex_ = 0;
         }
 
-        // Read samples from the internal buffer into the 'destBuffer'
-        // perform a wrap of the read if near the internal buffer boundaries
-        void read(core::AudioBuffer<float>& destBuffer, int offset, const long destLength)
+        T* getDataPointer()
         {
-            const auto firstReadAmount = readIndex + destLength >= length ?
-                                         length - readIndex : destLength;
+            return block_.getDataPointer();
+        }
 
-            destBuffer.copy(block, readIndex, offset,firstReadAmount);
+        void read(core::AudioBuffer<T>& destBuffer, int offset, const size_t destLength)
+        {
+            const auto firstReadAmount = readIndex_ + destLength >= length_ ?
+                                         length_ - readIndex_ : destLength;
+
+            destBuffer.copy(block_, readIndex_, offset, firstReadAmount);
 
             if(firstReadAmount < destLength)
-                destBuffer.copy(block, 0, firstReadAmount, destLength - firstReadAmount);
+                destBuffer.copy(block_, 0, firstReadAmount, destLength - firstReadAmount);
 
-            readIndex += readHopSize != 0 ? readHopSize : destLength;
-            readIndex %= length;
+            readIndex_ += readHopSize_ != 0 ? readHopSize_ : destLength;
+            readIndex_ %= length_;
         }
 
-        // Write all samples from the 'sourceBuffer' into the internal buffer
-        // Perform any wrapping required
-        void write(core::AudioBuffer<float>& sourceBuffer, const int offset, const long writeLength)
+        void write(core::AudioBuffer<T>& sourceBuffer, const int offset, const size_t writeLength)
         {
-            const auto firstWriteAmount = writeIndex + writeLength >= length ?
-                                          length - writeIndex : writeLength;
+            const auto firstWriteAmount = writeIndex_ + writeLength >= length_ ?
+                                          length_ - writeIndex_ : writeLength;
 
-            block.copy(sourceBuffer, offset, writeIndex, firstWriteAmount);
+            block_.copy(sourceBuffer, offset, writeIndex_, firstWriteAmount);
 
             if(firstWriteAmount < writeLength)
-                block.copy(sourceBuffer, firstWriteAmount + offset, writeIndex, writeLength - firstWriteAmount);
+                block_.copy(sourceBuffer, firstWriteAmount + offset, writeIndex_, writeLength - firstWriteAmount);
 
-            writeIndex += writeHopSize != 0 ? writeHopSize : writeLength;
-            writeIndex %= length;
-            latestDataIndex = writeIndex + writeLength % length;
+            incrementWriteIndex(writeLength);
         }
 
-        // The first 'overlapAmount' of 'sourceBuffer' samples are added to the existing buffer
-        // The remainder of samples are set in the buffer (overwrite)
-        void overlapWrite(core::AudioBuffer<float>& sourceBuffer, const long writeLength)
+        void overlapWrite(core::AudioBuffer<T>& sourceBuffer, const size_t writeLength)
         {
-            auto&& sourceBufferData = sourceBuffer.getDataPointer();
-            // Since we're using a circular buffer, we have to be careful when to add samples to the existing
-            // data and when to overwrite out of date samples. This number can change when modulating between
-            // the pitch (which alters the size of the overlaps). The calculation below will determine the
-            // index we need to "add" to and at which point we need to "set" the samples to overwrite the history
             const auto overlapAmount = getOverlapAmount(writeLength);
-            auto tempWriteIndex = writeIndex;
-            auto firstWriteAmount = writeIndex + overlapAmount > length ? length - writeIndex : overlapAmount;
+            auto tempWriteIndex = writeIndex_;
+            auto firstWriteAmount = writeIndex_ + overlapAmount > length_ ? length_ - writeIndex_ : overlapAmount;
 
-            auto internalBuffer = block.getDataPointer();
-
-            for(auto i = 0; i < firstWriteAmount; ++i)
-                internalBuffer[i + writeIndex] += sourceBufferData[i];
+            block_.add(sourceBuffer, firstWriteAmount, 0, writeIndex_);
 
             if(firstWriteAmount < overlapAmount)
-                for(auto i = 0; i < (overlapAmount - firstWriteAmount); ++i)
-                    internalBuffer[i] += sourceBufferData[i + firstWriteAmount];
+                block_.add(sourceBuffer, overlapAmount - firstWriteAmount, firstWriteAmount);
 
             tempWriteIndex += overlapAmount;
-            tempWriteIndex %= length;
+            tempWriteIndex %= length_;
 
             const auto remainingElements = writeLength - overlapAmount;
-            firstWriteAmount = tempWriteIndex + remainingElements > length ?
-                               length - tempWriteIndex : remainingElements;
+            firstWriteAmount = tempWriteIndex + remainingElements > length_ ?
+                               length_ - tempWriteIndex : remainingElements;
 
-            block.copy(sourceBuffer, overlapAmount, tempWriteIndex, firstWriteAmount);
+            block_.copy(sourceBuffer, overlapAmount, tempWriteIndex, firstWriteAmount);
 
             if (firstWriteAmount < remainingElements)
-                block.copy(sourceBuffer, overlapAmount + firstWriteAmount, 0, (remainingElements - firstWriteAmount));
+                block_.copy(sourceBuffer, overlapAmount + firstWriteAmount, 0, (remainingElements - firstWriteAmount));
 
-            writeIndex += writeHopSize;
-            writeIndex %= length;
-            latestDataIndex = (writeIndex + writeLength) % length;
+            incrementWriteIndex(writeLength);
         }
 
     private:
-        size_t getOverlapAmount(size_t writeLength)
+        size_t getOverlapAmount(size_t writeLength) const
         {
-            const int writeIndexDifference = (writeIndex <= latestDataIndex) ? latestDataIndex - writeIndex : length - writeIndex + latestDataIndex;
-            const int overlapSampleCount = writeLength - writeHopSize;
+            const int writeIndexDifference = (writeIndex_ <= latestDataIndex_) ? latestDataIndex_ - writeIndex_ : length_ - writeIndex_ + latestDataIndex_;
+            const int overlapSampleCount = writeLength - writeHopSize_;
 
             return std::min(writeIndexDifference, overlapSampleCount);
         }
 
-        core::AudioBuffer<float> block{1, 0};
-        long writeIndex = 0;
-        long readIndex = 0;
-        long length = 0;
-        long latestDataIndex = 0;
-        int writeHopSize = 0;
-        int readHopSize = 0;
+        void incrementWriteIndex(size_t writeLength)
+        {
+            writeIndex_ += writeHopSize_ != 0 ? writeHopSize_ : writeLength;
+            writeIndex_ %= length_;
+            latestDataIndex_ = writeIndex_ + writeLength % length_;
+        }
+
+        core::AudioBuffer<T> block_{1, 0};
+        int writeIndex_ = 0;
+        int readIndex_ = 0;
+        size_t length_ = 0;
+        size_t latestDataIndex_ = 0;
+        size_t writeHopSize_ = 0;
+        size_t readHopSize_ = 0;
     };
 }

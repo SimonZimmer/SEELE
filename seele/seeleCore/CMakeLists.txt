@@ -14,6 +14,7 @@ add_library(seeleCore
         src/Factory.cpp
         src/Engine.cpp
         src/PhaseVocoder.cpp
+        src/PhaseCorrector.cpp
     )
 
 target_include_directories(seeleCore

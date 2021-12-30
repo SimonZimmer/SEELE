@@ -298,35 +298,4 @@ namespace sz
         for(auto i = 0; i < buffer.getNumSamples(); ++i)
             EXPECT_NEAR(buffer[0][i], referenceHalf_[i], 0.001f);
     }
-
-    TEST_F(IntegrationTest_Engine, process_highPitched)
-    {
-        auto&& pitchRatio = std::atomic<float>(2.f);
-        auto&& engine = Engine(pitchRatio);
-        auto&& buffer = core::AudioBuffer<float>(2, config::fft::size);
-        auto&& reference = core::AudioBuffer<float>(2, config::fft::size);
-        auto currentAngle = 0.f;
-
-        auto angleDelta = (1000.f / 44100.f) * 2.f * juce::MathConstants<double>::pi;
-        for(auto c = 0; c < buffer.getNumChannels(); ++c)
-            for(auto i = 0; i < buffer.getNumSamples(); ++i)
-            {
-                buffer.setSample(c, i, std::sin(currentAngle));
-                reference.setSample(c, i, std::sin(currentAngle));
-                currentAngle += angleDelta;
-            }
-
-        std::vector<float> inBufferVector(buffer.getDataPointer(), buffer.getDataPointer() + buffer.getNumSamples() * buffer.getNumChannels());
-        matplotlibcpp::plot(inBufferVector);
-
-        engine.process(buffer);
-
-        std::vector<float> outBufferVector(buffer.getDataPointer(), buffer.getDataPointer() + buffer.getNumSamples() * buffer.getNumChannels());
-        matplotlibcpp::plot(outBufferVector);
-
-        matplotlibcpp::show();
-
-        for(auto i = 0; i < buffer.getNumSamples(); ++i)
-            EXPECT_NEAR(buffer[0][i], referenceOneFive_[i], 0.001f);
-    }
 }

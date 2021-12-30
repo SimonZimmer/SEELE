@@ -68,8 +68,16 @@ namespace sz::core
 
         void copy(const AudioBuffer<T>& from, size_t fromOffset, size_t internalOffset, size_t copyLength)
         {
-            //for (auto ch = 0; ch < numChannels_; ++ch)
             memcpy(getDataPointer() + internalOffset, from.getDataPointer() + fromOffset, copyLength * sizeof(T));
+        }
+
+        void add(const AudioBuffer<T>& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0)
+        {
+            const auto channels = std::min(numChannels_, from.getNumChannels());
+
+            for(size_t c = 0; c < channels; ++c)
+                for (size_t i = 0 ; i < addLength; ++i)
+                    data_[c][i + internalOffset] += from[c][i + fromOffset];
         }
 
         void setSize(size_t channelCount, size_t sampleCountPerChannel)

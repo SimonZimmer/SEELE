@@ -2,15 +2,19 @@
 #include "PluginEditor.h"
 
 #include <seeleCore/Factory.h>
+#include <seeleCore/Config.h>
 
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
                                    .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 , parameters_(*this, nullptr, juce::Identifier ("seele"),
   {
-    std::make_unique<juce::AudioParameterFloat>("pitchRatio", "Pitch Ratio", 0.f, 2.f, 1.f)
+    std::make_unique<juce::AudioParameterFloat>("pitchRatio_", "Pitch Ratio",
+                                                sz::config::parameters::minPitchRatio,
+                                                sz::config::parameters::maxPitchRatio,
+                                                sz::config::parameters::defaultPitchRatio)
   })
-, engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio")))
+, engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio_")))
 {
     setLatencySamples(latency_);
 

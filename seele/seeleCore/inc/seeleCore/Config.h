@@ -11,7 +11,7 @@ namespace sz
 
         namespace window
         {
-            constexpr auto overlaps = 8;
+            constexpr auto overlaps = 4;
             constexpr auto length = fft::size;
         }
 
@@ -19,6 +19,7 @@ namespace sz
         {
             constexpr auto maxPitchRatio = 2.f;
             constexpr auto minPitchRatio = 0.4f;
+            constexpr auto defaultPitchRatio = 1.f;
         }
     }
 }

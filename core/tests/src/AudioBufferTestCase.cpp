@@ -32,9 +32,7 @@ namespace
 namespace sz
 {
 
-    class AudioBufferTest : public TestWithParam<Parameter>
-    {
-    };
+    class AudioBufferTest : public TestWithParam<Parameter> {};
 
     INSTANTIATE_TEST_SUITE_P(UnitTest_AudioBuffer,
                             AudioBufferTest,
@@ -62,6 +60,18 @@ namespace sz
 
         EXPECT_EQ(0, buffer.getNumChannels());
         EXPECT_EQ(0, buffer.getNumSamples());
+    }
+
+    TEST_P(AudioBufferTest, setSize)
+    {
+        const auto noChannels = GetParam().noChannels;
+        const auto noSamples = GetParam().noSamples;
+
+        core::AudioBuffer<float> buffer(noChannels, noSamples);
+        buffer.setSize(3, 77);
+
+        EXPECT_EQ(buffer.getNumChannels(), 3);
+        EXPECT_EQ(buffer.getNumSamples(), 77);
     }
 
     TEST_P(AudioBufferTest, setSample)
@@ -98,7 +108,6 @@ namespace sz
                 EXPECT_EQ(0.33f, buffer[c][i]);
     }
 
-    //TODO write custom AudioBuffer matcher
     TEST_P(AudioBufferTest, copyFrom)
     {
         const auto noChannels = GetParam().noChannels;
@@ -115,15 +124,34 @@ namespace sz
                 EXPECT_EQ(0.44f, otherBuffer[c][i]);
     }
 
-    TEST_P(AudioBufferTest, setSize)
+    TEST_P(AudioBufferTest, copy)
     {
         const auto noChannels = GetParam().noChannels;
         const auto noSamples = GetParam().noSamples;
 
-        core::AudioBuffer<float> buffer(noChannels, noSamples);
-        buffer.setSize(3, 77);
+        core::AudioBuffer<float> bufferA(noChannels, noSamples);
+        core::AudioBuffer<float> bufferB(noChannels, noSamples);
+        bufferA.copy(bufferB, 0, 0, noSamples);
 
-        EXPECT_EQ(buffer.getNumChannels(), 3);
-        EXPECT_EQ(buffer.getNumSamples(), 77);
+        for (size_t c = 0; c < noChannels; c++)
+            for (size_t i = 0; i < noSamples; ++i)
+                EXPECT_EQ(bufferA[c][i], bufferB[c][i]);
+    }
+
+    TEST_P(AudioBufferTest, add)
+    {
+        const auto noChannels = 1;
+        const auto noSamples = GetParam().noSamples;
+
+        core::AudioBuffer<float> bufferA(noChannels, noSamples);
+        bufferA.fill(0.333f);
+        core::AudioBuffer<float> bufferB(noChannels, noSamples);
+        bufferB.fill(0.222f);
+        bufferB[0][0] = 0.111f;
+        bufferA.add(bufferB, noSamples / 2, 1, 1);
+
+        EXPECT_EQ(bufferA[0][0], 0.333f);
+        EXPECT_EQ(bufferA[0][1], 0.555f);
+        EXPECT_EQ(bufferA[0][noSamples / 2 + 1], 0.333f);
     }
 }

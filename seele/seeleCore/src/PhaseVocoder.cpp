@@ -1,27 +1,32 @@
+#include "PhaseVocoder.h"
+
 #include <algorithm>
 #include <functional>
 
 #include <juce_dsp/juce_dsp.h>
 
 #include "core/BlockCircularBuffer.h"
-#include "PhaseVocoder.h"
+#include "PhaseCorrector.h"
 
 namespace sz
 {
     using namespace config;
+    using JuceWindow = typename juce::dsp::WindowingFunction<float>;
+    using JuceWindowTypes = typename juce::dsp::WindowingFunction<float>::WindowingMethod;
 
     namespace
     {
+        float interpolate(float sampleA, float sampleB, float fractionIndex)
+        {
+            return (1.f - fractionIndex) * sampleA + fractionIndex * sampleB;
+        }
+
         // Resample a signal to a new size using linear interpolation
         // The 'originalSize' is the max size of the original signal
         // The 'newSignalSize' is the size to resample to. The 'newSignal' must be at least as big as this size.
         void linearResample(const core::AudioBuffer<float>& originalSignal, int originalSignalSize,
                                    core::AudioBuffer<float>& newSignal, int newSignalSize)
         {
-            const auto lerp = [&](float v0, float v1, float t) {
-                return (1.f - t) * v0 + t * v1;
-            };
-
             // If the original signal is bigger than the new size, condense the signal to fit the new buffer
             // otherwise expand the signal to fit the new buffer
             const auto scale = static_cast<float>(originalSignalSize) / static_cast<float>(newSignalSize);
@@ -33,7 +38,7 @@ namespace sz
                 const auto fractionIndex = index - static_cast<float>(wholeIndex);
                 const auto sampleA = originalSignal[0][wholeIndex];
                 const auto sampleB = originalSignal[0][wholeIndex + 1];
-                newSignal[0][i] = lerp(sampleA, sampleB, fractionIndex);
+                newSignal[0][i] = interpolate(sampleA, sampleB, fractionIndex);
                 index += scale;
             }
         }
@@ -61,6 +66,7 @@ namespace sz
     , fft(std::make_unique<juce::dsp::FFT>(nearestPower2(fft::size)))
     , synthPhaseIncrements(window::length, 0)
     , previousFramePhases(window::length, 0)
+    , phaseCorrector_(std::make_unique<PhaseCorrector>())
     {
         analysisHopSize = window::length / window::overlaps;
         synthesisHopSize = window::length / window::overlaps;
@@ -89,6 +95,7 @@ namespace sz
     {
         resampleBufferSize = static_cast<int>(std::ceil(window::length * analysisHopSize / static_cast<float>(synthesisHopSize)));
         timeStretchRatio = synthesisHopSize / static_cast<float>(analysisHopSize);
+        phaseCorrector_->setTimeStretchRatio(synthesisHopSize / static_cast<float>(analysisHopSize));
     }
 
     // The main process function corresponds to the following high level algorithm
@@ -140,7 +147,7 @@ namespace sz
 
                 // Perform FFT, process and inverse FFT
                 fft->performRealOnlyForwardTransform(spectralBufferData);
-                updatePhaseIncrements(spectralBuffer);
+                phaseCorrector_->process(spectralBuffer);
                 fft->performRealOnlyInverseTransform(spectralBufferData);
 
                 // Undo signal back to original rotation
@@ -171,35 +178,12 @@ namespace sz
         juce::FloatVectorOperations::multiply(audioBuffer.getDataPointer(), 1.f / rescalingFactor, audioBufferSize);
     }
 
-    void PhaseVocoder::updatePhaseIncrements(core::AudioBuffer<float>& buffer)
-    {
-        const auto bufferSize = buffer.getNumSamples();
-        for (int i = 0, x = 0; i < bufferSize - 1; i += 2, ++x)
-        {
-            // Update phase increments for pitch shifting
-            const auto real = buffer.getDataPointer()[i];
-            const auto imag = buffer.getDataPointer()[i + 1];
-            const auto mag = sqrtf(real * real + imag * imag);
-            const auto phase = atan2(imag, real);
-
-            const auto omega = juce::MathConstants<float>::twoPi * analysisHopSize * x / (float) window::length;
-
-            const auto deltaPhase = omega + principalArgument(phase - previousFramePhases[x] - omega);
-
-            previousFramePhases[x] = phase;
-            synthPhaseIncrements[x] = principalArgument(synthPhaseIncrements[x] +
-                                                        (deltaPhase * timeStretchRatio));
-
-            buffer.getDataPointer()[i] = mag * std::cos(synthPhaseIncrements[x]);
-            buffer.getDataPointer()[i + 1] = mag * std::sin(synthPhaseIncrements[x]);
-        }
-    }
-
     void PhaseVocoder::setPitchRatio(float newPitchRatio)
     {
-        pitchRatio = std::clamp(newPitchRatio, parameters::minPitchRatio, parameters::maxPitchRatio);
+        pitchRatio = newPitchRatio;
         synthesisHopSize = (int)(window::length / (float) window::overlaps);
         analysisHopSize = (int)round(synthesisHopSize / pitchRatio);
+        phaseCorrector_->setHopSize(analysisHopSize);
 
         // Rescaling due to OLA processing gain
         double accum = 0.0;
@@ -213,8 +197,7 @@ namespace sz
         synthesisHopSize = analysisHopSize;
 
         // Reset phases
-        memset(previousFramePhases.data(), 0, sizeof(float) * window::length);
-        memset(synthPhaseIncrements.data(), 0, sizeof(float) * window::length);
+        phaseCorrector_->resetPhases();
     }
 
 }
