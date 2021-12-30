@@ -47,55 +47,44 @@ namespace sz
         {
             return static_cast<int>(log2(juce::nextPowerOfTwo(value)));
         }
-
-        // Principal argument - Unwrap a phase argument to between [-PI, PI]
-        float principalArgument(float arg)
-        {
-            return std::fmod(arg + juce::MathConstants<float>::pi,
-                             -juce::MathConstants<float>::twoPi) + juce::MathConstants<float>::pi;
-        }
     }
 
     PhaseVocoder::PhaseVocoder()
-    : samplesTilNextProcess(window::length)
-    , resampleBufferSize(window::length)
-    , spectralBufferSize(window::length * 2)
-    , analysisBuffer(window::length)
-    , synthesisBuffer(window::length * 3)
-    , windowFunction(window::length)
-    , fft(std::make_unique<juce::dsp::FFT>(nearestPower2(fft::size)))
-    , synthPhaseIncrements(window::length, 0)
-    , previousFramePhases(window::length, 0)
+    : samplesTilNextProcess_(window::length)
+    , resampleBufferSize_(window::length)
+    , spectralBufferSize_(window::length * 2)
+    , analysisBuffer_(window::length)
+    , synthesisBuffer_(window::length * 3)
+    , windowFunction_(window::length)
+    , fft_(std::make_unique<juce::dsp::FFT>(nearestPower2(fft::size)))
     , phaseCorrector_(std::make_unique<PhaseCorrector>())
     {
-        analysisHopSize = window::length / window::overlaps;
-        synthesisHopSize = window::length / window::overlaps;
+        analysisHopSize_ = window::length / window::overlaps;
+        synthesisHopSize_ = window::length / window::overlaps;
 
-        JuceWindow::fillWindowingTables(windowFunction.data(), window::length,
+        JuceWindow::fillWindowingTables(windowFunction_.data(), window::length,
                                         JuceWindowTypes::hann, false);
 
         // Processing reuses the spectral buffer to resize the output grain
         // It must be the at least the size of the min pitch ratio
-        // TODO FFT size must be big enough also
-        spectralBufferSize = window::length * (1 / parameters::minPitchRatio) < spectralBufferSize ?
-                             (int) ceil (window::length * (1 / parameters::minPitchRatio)) : spectralBufferSize;
+        spectralBufferSize_ = window::length * (1 / parameters::minPitchRatio) < spectralBufferSize_ ?
+                              (int) ceil (window::length * (1 / parameters::minPitchRatio)) : spectralBufferSize_;
 
-        spectralBuffer.setSize(1, spectralBufferSize);
-        spectralBuffer.fill(0.f);
+        spectralBuffer_.setSize(1, spectralBufferSize_);
+        spectralBuffer_.fill(0.f);
 
         // Calculate maximium size resample signal can be
         const auto maxResampleSize = (int)std::ceil (std::max(window::length * parameters::maxPitchRatio,
                                                                      window::length / parameters::minPitchRatio));
 
-        resampleBuffer.setSize(1, maxResampleSize);
-        resampleBuffer.fill(0.f);
+        resampleBuffer_.setSize(1, maxResampleSize);
+        resampleBuffer_.fill(0.f);
     }
 
     void PhaseVocoder::updateResampleBufferSize()
     {
-        resampleBufferSize = static_cast<int>(std::ceil(window::length * analysisHopSize / static_cast<float>(synthesisHopSize)));
-        timeStretchRatio = synthesisHopSize / static_cast<float>(analysisHopSize);
-        phaseCorrector_->setTimeStretchRatio(synthesisHopSize / static_cast<float>(analysisHopSize));
+        resampleBufferSize_ = static_cast<int>(std::ceil(window::length * analysisHopSize_ / static_cast<float>(synthesisHopSize_)));
+        phaseCorrector_->setTimeStretchRatio(synthesisHopSize_ / static_cast<float>(analysisHopSize_));
     }
 
     // The main process function corresponds to the following high level algorithm
@@ -117,86 +106,83 @@ namespace sz
         for (auto internalOffset = 0, internalBufferSize = 0; internalOffset < audioBufferSize; internalOffset += internalBufferSize)
         {
             const auto remainingIncomingSamples = (audioBufferSize - internalOffset);
-            internalBufferSize = incomingSampleCount + remainingIncomingSamples >= samplesTilNextProcess ?
-                                 samplesTilNextProcess - incomingSampleCount : remainingIncomingSamples;
+            internalBufferSize = incomingSampleCount_ + remainingIncomingSamples >= samplesTilNextProcess_ ?
+                                 samplesTilNextProcess_ - incomingSampleCount_ : remainingIncomingSamples;
 
             // Write the incoming samples into the internal buffer
             // Once there are enough samples, perform spectral processing
-            analysisBuffer.write(audioBuffer, internalOffset, internalBufferSize);
-            incomingSampleCount += internalBufferSize;
+            analysisBuffer_.write(audioBuffer, internalOffset, internalBufferSize);
+            incomingSampleCount_ += internalBufferSize;
 
             // Collected enough samples, do processing
-            if (incomingSampleCount >= samplesTilNextProcess)
+            if (incomingSampleCount_ >= samplesTilNextProcess_)
             {
-                isProcessing = true;
-                incomingSampleCount -= samplesTilNextProcess;
+                isProcessing_ = true;
+                incomingSampleCount_ -= samplesTilNextProcess_;
 
-                // After first processing, do another process every analysisHopSize samples
-                samplesTilNextProcess = analysisHopSize;
+                // After first processing, do another process every analysisHopSize_ samples
+                samplesTilNextProcess_ = analysisHopSize_;
 
-                const auto spectralBufferData = spectralBuffer.getDataPointer();
+                const auto spectralBufferData = spectralBuffer_.getDataPointer();
 
-                analysisBuffer.setReadHopSize(analysisHopSize);
-                analysisBuffer.read(spectralBuffer, 0, window::length);
+                analysisBuffer_.setReadHopSize(analysisHopSize_);
+                analysisBuffer_.read(spectralBuffer_, 0, window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), window::length);
+                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction_.data(), window::length);
 
                 // Rotate signal 180 degrees, move the first half to the back and back to the front
                 std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
 
                 // Perform FFT, process and inverse FFT
-                fft->performRealOnlyForwardTransform(spectralBufferData);
-                phaseCorrector_->process(spectralBuffer);
-                fft->performRealOnlyInverseTransform(spectralBufferData);
+                fft_->performRealOnlyForwardTransform(spectralBufferData);
+                phaseCorrector_->process(spectralBuffer_);
+                fft_->performRealOnlyInverseTransform(spectralBufferData);
 
                 // Undo signal back to original rotation
                 std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction.data(), window::length);
+                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction_.data(), window::length);
 
                 // Resample output grain to N * (hop size analysis / hop size synthesis)
-                linearResample(spectralBuffer, window::length, resampleBuffer, resampleBufferSize);
+                linearResample(spectralBuffer_, window::length, resampleBuffer_, resampleBufferSize_);
 
-                synthesisBuffer.setWriteHopSize(synthesisHopSize);
-                synthesisBuffer.overlapWrite(resampleBuffer, resampleBufferSize);
+                synthesisBuffer_.setWriteHopSize(synthesisHopSize_);
+                synthesisBuffer_.overlapWrite(resampleBuffer_, resampleBufferSize_);
             }
 
-            // Emit silence until we start producing output
-            if (!isProcessing)
+            if (!isProcessing_)
             {
                 std::fill(audioBuffer.getDataPointer() + internalOffset,
                           audioBuffer.getDataPointer() + internalOffset + internalBufferSize, 0.f);
                 continue;
             }
 
-            synthesisBuffer.read(audioBuffer, internalOffset, internalBufferSize);
+            synthesisBuffer_.read(audioBuffer, internalOffset, internalBufferSize);
         }
 
-        // Rescale output
-        juce::FloatVectorOperations::multiply(audioBuffer.getDataPointer(), 1.f / rescalingFactor, audioBufferSize);
+        juce::FloatVectorOperations::multiply(audioBuffer.getDataPointer(), 1.f / rescalingFactor_, audioBufferSize);
     }
 
-    void PhaseVocoder::setPitchRatio(float newPitchRatio)
+    void PhaseVocoder::setPitchRatio(float pitchRatio)
     {
-        pitchRatio = newPitchRatio;
-        synthesisHopSize = (int)(window::length / (float) window::overlaps);
-        analysisHopSize = (int)round(synthesisHopSize / pitchRatio);
-        phaseCorrector_->setHopSize(analysisHopSize);
+        pitchRatio_ = pitchRatio;
+        synthesisHopSize_ = static_cast<int>(window::length / static_cast<float>(window::overlaps));
+        analysisHopSize_ = static_cast<int>(round(synthesisHopSize_ / pitchRatio_));
+        phaseCorrector_->setHopSize(analysisHopSize_);
 
         // Rescaling due to OLA processing gain
         double accum = 0.0;
 
         for (int i = 0; i < window::length; ++i)
-            accum += windowFunction[i] * (double)windowFunction[i];
+            accum += windowFunction_[i] * (double)windowFunction_[i];
 
-        accum /= synthesisHopSize;
-        rescalingFactor = (float)accum;
+        accum /= synthesisHopSize_;
+        rescalingFactor_ = static_cast<float>(accum);
         updateResampleBufferSize();
-        synthesisHopSize = analysisHopSize;
+        synthesisHopSize_ = analysisHopSize_;
 
-        // Reset phases
         phaseCorrector_->resetPhases();
     }
 
