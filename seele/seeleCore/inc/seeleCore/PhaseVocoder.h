@@ -27,13 +27,11 @@ namespace sz
     private:
         std::unique_ptr<juce::dsp::FFT> fft_;
 
-        // Buffers
         BlockCircularBuffer<float> analysisBuffer_;
         BlockCircularBuffer<float> synthesisBuffer_;
         core::AudioBuffer<float> spectralBuffer_{1, config::fft::size};
         core::AudioBuffer<float> resampleBuffer_{1, config::fft::size};
 
-        // Misc state
         long incomingSampleCount_ = 0;
         int spectralBufferSize_ = 0;
         int samplesTilNextProcess_ = 0;

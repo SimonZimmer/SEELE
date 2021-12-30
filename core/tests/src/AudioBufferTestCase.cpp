@@ -154,4 +154,34 @@ namespace sz
         EXPECT_EQ(bufferA[0][1], 0.555f);
         EXPECT_EQ(bufferA[0][noSamples / 2 + 1], 0.333f);
     }
+
+    TEST_P(AudioBufferTest, multiply_value)
+    {
+        const auto noChannels = GetParam().noChannels;
+        const auto noSamples = GetParam().noSamples;
+
+        core::AudioBuffer<float> buffer(noChannels, noSamples);
+        buffer.fill(0.5f);
+        buffer.multiply(0.222f, noSamples);
+
+        for (size_t ch = 0; ch < noChannels; ch++)
+            for (size_t sa = 0; sa < noSamples; ++sa)
+                EXPECT_FLOAT_EQ(buffer[ch][sa], 0.111f);
+    }
+
+    TEST_P(AudioBufferTest, multiply_vector)
+    {
+        const auto noChannels = GetParam().noChannels;
+        const auto noSamples = GetParam().noSamples;
+
+        core::AudioBuffer<float> buffer(noChannels, noSamples);
+        buffer.fill(0.5f);
+        std::vector<float> vector(noSamples);
+        std::fill(vector.begin(), vector.end(), 0.222f);
+        buffer.multiply(vector, noSamples);
+
+        for (size_t ch = 0; ch < noChannels; ch++)
+            for (size_t sa = 0; sa < noSamples; ++sa)
+                EXPECT_FLOAT_EQ(buffer[ch][sa], 0.111f);
+    }
 }

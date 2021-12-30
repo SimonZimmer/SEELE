@@ -59,9 +59,6 @@ namespace sz
     , fft_(std::make_unique<juce::dsp::FFT>(nearestPower2(fft::size)))
     , phaseCorrector_(std::make_unique<PhaseCorrector>())
     {
-        analysisHopSize_ = window::length / window::overlaps;
-        synthesisHopSize_ = window::length / window::overlaps;
-
         JuceWindow::fillWindowingTables(windowFunction_.data(), window::length,
                                         JuceWindowTypes::hann, false);
 
@@ -129,7 +126,7 @@ namespace sz
                 analysisBuffer_.read(spectralBuffer_, 0, window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction_.data(), window::length);
+                spectralBuffer_.multiply(windowFunction_, window::length);
 
                 // Rotate signal 180 degrees, move the first half to the back and back to the front
                 std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
@@ -143,7 +140,7 @@ namespace sz
                 std::rotate(spectralBufferData, spectralBufferData + (window::length / 2), spectralBufferData + window::length);
 
                 // Apply window to signal
-                juce::FloatVectorOperations::multiply(spectralBufferData, windowFunction_.data(), window::length);
+                spectralBuffer_.multiply(windowFunction_, window::length);
 
                 // Resample output grain to N * (hop size analysis / hop size synthesis)
                 linearResample(spectralBuffer_, window::length, resampleBuffer_, resampleBufferSize_);
@@ -162,7 +159,7 @@ namespace sz
             synthesisBuffer_.read(audioBuffer, internalOffset, internalBufferSize);
         }
 
-        juce::FloatVectorOperations::multiply(audioBuffer.getDataPointer(), 1.f / rescalingFactor_, audioBufferSize);
+        audioBuffer.multiply(1.f /  rescalingFactor_, audioBufferSize);
     }
 
     void PhaseVocoder::setPitchRatio(float pitchRatio)
@@ -185,5 +182,4 @@ namespace sz
 
         phaseCorrector_->resetPhases();
     }
-
 }

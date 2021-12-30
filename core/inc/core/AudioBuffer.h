@@ -73,11 +73,27 @@ namespace sz::core
 
         void add(const AudioBuffer<T>& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0)
         {
-            const auto channels = std::min(numChannels_, from.getNumChannels());
+            const auto numChannels = std::min(numChannels_, from.getNumChannels());
 
-            for(size_t c = 0; c < channels; ++c)
+            for(size_t c = 0; c < numChannels; ++c)
                 for (size_t i = 0 ; i < addLength; ++i)
                     data_[c][i + internalOffset] += from[c][i + fromOffset];
+        }
+
+        void multiply(T value, size_t multiplyLength)
+        {
+            for(size_t c = 0; c < getNumChannels(); ++c)
+                for (size_t i = 0 ; i < multiplyLength; ++i)
+                    data_[c][i] *= value;
+        }
+
+        void multiply(const std::vector<T>& from, size_t multiplyLength)
+        {
+            const auto numChannels = std::min(numChannels_, static_cast<int>(from.size()));
+
+            for(size_t c = 0; c < numChannels; ++c)
+                for (size_t i = 0 ; i < multiplyLength; ++i)
+                    data_[c][i] *= from[i];
         }
 
         void setSize(size_t channelCount, size_t sampleCountPerChannel)

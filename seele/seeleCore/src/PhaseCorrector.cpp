@@ -1,8 +1,7 @@
 #include "PhaseCorrector.h"
 
+#include <cmath>
 #include <algorithm>
-
-#include <juce_core/juce_core.h>
 
 namespace sz
 {
@@ -10,11 +9,9 @@ namespace sz
 
     namespace
     {
-        // Principal argument - Unwrap a phase argument to between [-PI, PI]
         float principalArgument(float arg)
         {
-            return std::fmod(arg + juce::MathConstants<float>::pi, -juce::MathConstants<float>::twoPi) +
-                   juce::MathConstants<float>::pi;
+            return static_cast<float>(std::fmod(arg + M_PI, -(2 * M_PI)) + M_PI);
         }
     }
 
@@ -35,8 +32,7 @@ namespace sz
             const auto imag = buffer.getDataPointer()[i + 1];
             const auto mag = sqrtf(real * real + imag * imag);
             const auto phase = atan2(imag, real);
-
-            const auto omega = juce::MathConstants<float>::twoPi * analysisHopSize_ * x / (float) window::length;
+            const auto omega = 2 * M_PI * analysisHopSize_ * x / (float) window::length;
 
             const auto deltaPhase = omega + principalArgument(phase - previousFramePhases_[x] - omega);
 
@@ -64,5 +60,4 @@ namespace sz
         memset(previousFramePhases_.data(), 0, sizeof(float) * window::length);
         memset(synthPhaseIncrements_.data(), 0, sizeof(float) * window::length);
     }
-
 }
