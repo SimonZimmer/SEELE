@@ -29,7 +29,7 @@ namespace
     }
 }
 
-namespace sz
+namespace hidonash
 {
 
     class AudioBufferTest : public TestWithParam<Parameter> {};

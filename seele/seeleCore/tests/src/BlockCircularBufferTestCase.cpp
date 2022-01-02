@@ -4,7 +4,7 @@
 
 #include <core/BlockCircularBuffer.h>
 
-namespace sz
+namespace hidonash
 {
     class BlockCircularBufferTest : public  testing::Test
     {

@@ -3,7 +3,7 @@
 
 #include <FactoryMock.h>
 
-namespace sz
+namespace hidonash
 {
     using namespace testing;
 

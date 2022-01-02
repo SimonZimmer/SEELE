@@ -10,11 +10,11 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 , parameters_(*this, nullptr, juce::Identifier ("seele"),
   {
     std::make_unique<juce::AudioParameterFloat>("pitchRatio_", "Pitch Ratio",
-                                                sz::config::parameters::minPitchRatio,
-                                                sz::config::parameters::maxPitchRatio,
-                                                sz::config::parameters::defaultPitchRatio)
+                                                hidonash::config::parameters::minPitchRatio,
+                                                hidonash::config::parameters::maxPitchRatio,
+                                                hidonash::config::parameters::defaultPitchRatio)
   })
-, engine_(sz::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio_")))
+, engine_(hidonash::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio_")))
 {
     setLatencySamples(latency_);
 
@@ -91,9 +91,9 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    auto&& inputBuffer = sz::core::AudioBuffer<float>(buffer.getArrayOfWritePointers(),
-                                                      buffer.getNumChannels(),
-                                                      buffer.getNumSamples());
+    auto&& inputBuffer = hidonash::core::AudioBuffer<float>(buffer.getArrayOfWritePointers(),
+                                                            buffer.getNumChannels(),
+                                                            buffer.getNumSamples());
 
     engine_->process(inputBuffer);
     buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());

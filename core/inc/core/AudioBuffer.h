@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace sz::core
+namespace hidonash::core
 {
     template <typename T>
     class AudioBuffer

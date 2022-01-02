@@ -1,7 +1,7 @@
 #include "Factory.h"
 #include "Engine.h"
 
-namespace sz
+namespace hidonash
 {
     AudioProcessorPtr Factory::createEngine(std::atomic<float>& pitchRatio) const
     {

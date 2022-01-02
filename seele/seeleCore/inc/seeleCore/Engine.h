@@ -8,7 +8,7 @@
 #include "PhaseVocoder.h"
 #include "Config.h"
 
-namespace sz
+namespace hidonash
 {
     class Engine : public IAudioProcessor
     {

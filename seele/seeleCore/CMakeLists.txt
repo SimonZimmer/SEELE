@@ -10,11 +10,10 @@ set(Python3_EXECUTABLE /usr/local/Cellar/python@3.9/3.9.9/bin/python3.9)
 add_subdirectory(../../ThirdParty/matplotlibcpp matplotlibcpp)
 
 add_library(seeleCore
-        STATIC
+    STATIC
         src/Factory.cpp
         src/Engine.cpp
         src/PhaseVocoder.cpp
-        src/PhaseCorrector.cpp
     )
 
 target_include_directories(seeleCore

@@ -43,5 +43,5 @@ private:
     int currentProgram_{1};
     const int latency_{16};
     juce::AudioBuffer<float> internalBuffer_{};
-    sz::AudioProcessorPtr engine_;
+    hidonash::AudioProcessorPtr engine_;
 };

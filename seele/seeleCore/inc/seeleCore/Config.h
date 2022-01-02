@@ -1,10 +1,10 @@
 #pragma once
 
-namespace sz
+namespace hidonash
 {
     namespace config
     {
-        namespace fft
+        namespace resample
         {
             constexpr auto size = 8192;
         }
@@ -12,7 +12,7 @@ namespace sz
         namespace window
         {
             constexpr auto overlaps = 4;
-            constexpr auto length = fft::size;
+            constexpr auto length = resample::size;
         }
 
         namespace parameters

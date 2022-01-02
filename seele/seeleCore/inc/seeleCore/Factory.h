@@ -2,7 +2,7 @@
 
 #include "IFactory.h"
 
-namespace sz
+namespace hidonash
 {
     class Factory : public IFactory
     {

@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-namespace sz
+namespace hidonash
 {
     Engine::Engine(std::atomic<float>& pitchRatio, const IFactory& factory)
     : factory_(factory)

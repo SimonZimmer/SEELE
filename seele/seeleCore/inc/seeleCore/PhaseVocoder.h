@@ -3,14 +3,11 @@
 #include <algorithm>
 #include <functional>
 
-#include <juce_dsp/juce_dsp.h>
-
 #include <core/BlockCircularBuffer.h>
 #include <core/AudioBuffer.h>
 #include "Config.h"
-#include "IPhaseCorrector.h"
 
-namespace sz
+namespace hidonash
 {
     class PhaseVocoder
     {
@@ -25,12 +22,10 @@ namespace sz
         void setPitchRatio(float pitchRatio);
 
     private:
-        std::unique_ptr<juce::dsp::FFT> fft_;
-
         BlockCircularBuffer<float> analysisBuffer_;
         BlockCircularBuffer<float> synthesisBuffer_;
-        core::AudioBuffer<float> spectralBuffer_{1, config::fft::size};
-        core::AudioBuffer<float> resampleBuffer_{1, config::fft::size};
+        core::AudioBuffer<float> spectralBuffer_{1, config::resample::size};
+        core::AudioBuffer<float> resampleBuffer_{1, config::resample::size};
 
         long incomingSampleCount_ = 0;
         int spectralBufferSize_ = 0;
@@ -44,7 +39,6 @@ namespace sz
         int resampleBufferSize_ = 0;
 
         float pitchRatio_ = 0.f;
-        PhaseCorrectorPtr phaseCorrector_;
     };
 
 }

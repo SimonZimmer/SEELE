@@ -4,7 +4,7 @@
 
 #include <seeleCore/IAudioProcessor.h>
 
-namespace sz
+namespace hidonash
 {
     class AudioProcessorMock : public IAudioProcessor
     {

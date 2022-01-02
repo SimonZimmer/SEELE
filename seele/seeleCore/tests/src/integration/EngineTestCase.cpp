@@ -6,7 +6,7 @@
 #include <seeleCore/Engine.h>
 #include "../matplotlibcpp.h"
 
-namespace sz
+namespace hidonash
 {
     using namespace testing;
 

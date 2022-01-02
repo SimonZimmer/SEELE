@@ -4,7 +4,7 @@
 
 #include <core/AudioBuffer.h>
 
-namespace sz
+namespace hidonash
 {
     template <typename T>
     class BlockCircularBuffer
