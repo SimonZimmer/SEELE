@@ -37,8 +37,6 @@ target_link_libraries(seelePlugin
             juce::juce_core
             juce::juce_audio_utils
             seeleCore
-        INTERFACE
-            matplotlib_cpp
         )
 
 set(common_definitions

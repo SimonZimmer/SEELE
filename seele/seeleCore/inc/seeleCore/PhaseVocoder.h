@@ -6,6 +6,7 @@
 #include <core/BlockCircularBuffer.h>
 #include <core/AudioBuffer.h>
 #include "Config.h"
+#include "IAudioProcessor.h"
 
 namespace hidonash
 {
@@ -22,6 +23,8 @@ namespace hidonash
         void setPitchRatio(float pitchRatio);
 
     private:
+        AudioProcessorPtr rescalingProcessor_;
+
         BlockCircularBuffer<float> analysisBuffer_;
         BlockCircularBuffer<float> synthesisBuffer_;
         core::AudioBuffer<float> spectralBuffer_{1, config::resample::size};
@@ -33,7 +36,6 @@ namespace hidonash
         bool isProcessing_ = false;
 
         std::vector<float> windowFunction_;
-        float rescalingFactor_ = 1.f;
         int analysisHopSize_ = 0;
         int synthesisHopSize_ = 0;
         int resampleBufferSize_ = 0;

@@ -4,7 +4,6 @@
 #include <AudioProcessorMock.h>
 
 #include <seeleCore/Engine.h>
-#include "../matplotlibcpp.h"
 
 namespace hidonash
 {

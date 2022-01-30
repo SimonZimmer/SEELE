@@ -4,7 +4,9 @@
 
 #include <juce_dsp/juce_dsp.h>
 
-#include "core/BlockCircularBuffer.h"
+#include <core/BlockCircularBuffer.h>
+
+#include "RescalingProcessor.h"
 
 namespace hidonash
 {
@@ -50,6 +52,8 @@ namespace hidonash
         JuceWindow::fillWindowingTables(windowFunction_.data(), window::length,
                                         JuceWindowTypes::hann, false);
 
+        rescalingProcessor_ = std::make_unique<RescalingProcessor>(windowFunction_);
+
         // Processing reuses the spectral buffer to resize the output grain
         // It must be the at least the size of the min pitch ratio
         spectralBufferSize_ = window::length * (1 / parameters::minPitchRatio) < spectralBufferSize_ ?
@@ -58,7 +62,7 @@ namespace hidonash
         spectralBuffer_.setSize(1, spectralBufferSize_);
         spectralBuffer_.fill(0.f);
 
-        // Calculate maximium size resample signal can be
+        // Calculate maximum size resample signal can be
         const auto maxResampleSize = (int)std::ceil (std::max(window::length * parameters::maxPitchRatio,
                                                                      window::length / parameters::minPitchRatio));
 
@@ -126,7 +130,7 @@ namespace hidonash
             synthesisBuffer_.read(audioBuffer, internalOffset, internalBufferSize);
         }
 
-        audioBuffer.multiply(1.f /  rescalingFactor_, audioBufferSize);
+        rescalingProcessor_->process(audioBuffer);
     }
 
     void PhaseVocoder::setPitchRatio(float pitchRatio)
@@ -135,14 +139,6 @@ namespace hidonash
         synthesisHopSize_ = static_cast<int>(window::length / static_cast<float>(window::overlaps));
         analysisHopSize_ = static_cast<int>(round(synthesisHopSize_ / pitchRatio_));
 
-        // Rescaling due to OLA processing gain
-        double accum = 0.0;
-
-        for (int i = 0; i < window::length; ++i)
-            accum += windowFunction_[i] * (double)windowFunction_[i];
-
-        accum /= synthesisHopSize_;
-        rescalingFactor_ = static_cast<float>(accum);
         updateResampleBufferSize();
         synthesisHopSize_ = analysisHopSize_;
     }
