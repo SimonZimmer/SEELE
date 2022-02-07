@@ -1,22 +1,19 @@
 include(GoogleTest)
 include(CTest)
 
-if (NOT TARGET gtest)
-    add_subdirectory(../../ThirdParty/googletest googletest EXCLUDE_FROM_ALL)
-endif ()
+include(${CMAKE_BINARY_DIR}/../conanbuildinfo.cmake)
+conan_basic_setup()
 
 add_executable(coreTestHost)
 
 target_sources(coreTestHost PRIVATE
-        src/Main.cpp
         src/AudioBufferTestCase.cpp
         )
 
 target_compile_features(coreTestHost PUBLIC cxx_std_17)
 
 target_link_libraries(coreTestHost PRIVATE
-        gtest
-        gmock
+        ${CONAN_LIBS}
         core
         )
 

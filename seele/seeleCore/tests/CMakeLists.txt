@@ -1,10 +1,12 @@
 include(GoogleTest)
 include(CTest)
 
+include(${CMAKE_BINARY_DIR}/../conanbuildinfo.cmake)
+conan_basic_setup()
+
 add_executable(seeleCoreTestHost)
 
 target_sources(seeleCoreTestHost PRIVATE
-        src/Main.cpp
         src/EngineTestCase.cpp
         src/integration/EngineTestCase.cpp
         )
@@ -12,8 +14,7 @@ target_sources(seeleCoreTestHost PRIVATE
 target_compile_features(seeleCoreTestHost PUBLIC cxx_std_17)
 
 target_link_libraries(seeleCoreTestHost PRIVATE
-        gtest
-        gmock
+        ${CONAN_LIBS}
         seeleCore_mocks
         )
 

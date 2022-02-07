@@ -16,7 +16,9 @@ namespace hidonash
     TEST_F(IntegrationTest_Engine, process_lowPitched)
     {
         auto&& pitchRatio = std::atomic<float>(0.5f);
-        auto&& engine = Engine(pitchRatio);
+        auto&& fftFrameSize = std::atomic<float>(2);
+        auto sampleRate = 44100;
+        auto&& engine = Engine(pitchRatio, fftFrameSize, sampleRate);
         auto&& buffer = core::AudioBuffer<float>(2, 128);
         auto currentAngle = 0.f;
 

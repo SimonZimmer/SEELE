@@ -51,3 +51,12 @@ seele/seelePlugin_artefacts
 .ccls-cache
 .cmake
 
+# conan
+Testing/
+conan.lock
+conanbuildinfo.cmake
+conaninfo.txt
+graph_info.json
+conanbuildinfo.txt
+
+

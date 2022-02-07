@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.13)
 
 project(seeleCore)
 
-if (NOT TARGET juceaide)
-    add_subdirectory(../ThirdParty/JUCE juce)
-endif()
-
 add_library(seeleCore
     STATIC
         src/Factory.cpp

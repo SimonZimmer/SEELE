@@ -9,10 +9,6 @@ namespace hidonash
     class FactoryMock : public IFactory
     {
     public:
-        MOCK_CONST_METHOD1(createEngine, AudioProcessorPtr(std::atomic<float>&))
-
-        AudioProcessorPtr createEngine(std::atomic<float>& gmock_a0, size_t sampleRate)
-
-        ;
+        MOCK_METHOD(AudioProcessorPtr, createEngine, (std::atomic<float>&, std::atomic<float>&, double), (const));
     };
 }

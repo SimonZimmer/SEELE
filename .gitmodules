@@ -2,6 +2,3 @@
 	path = ThirdParty/JUCE
 	url = https://github.com/juce-framework/JUCE.git
 
-[submodule "ThirdParty/googletest"]
-	path = ThirdParty/googletest
-	url = https://github.com/google/googletest.git
