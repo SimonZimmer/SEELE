@@ -18,14 +18,16 @@ namespace hidonash
 
         void setPitchRatio(float pitchRatio);
 
-        void setFftFrameSize(int fftFrameSize);
+        void setFftFrameSize(float fftFrameSize);
+
+        void setOverSamplingFactor(float overSamplingFactor);
 
         void smbFft(float *fftBuffer, long fftFrameSize, long sign);
 
         void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata);
 
     private:
-        float pitchRatio_{ 0.f };
+        float pitchFactor_{0.f };
         int max_frame_length_{ 8192 };
         double sampleRate_;
         size_t fftFrameSize_;

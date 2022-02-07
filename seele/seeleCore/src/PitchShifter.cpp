@@ -5,44 +5,6 @@
 
 namespace hidonash
 {
-    /****************************************************************************
-    *
-    * NAME: smbPitchShift.cpp
-    * VERSION: 1.2
-    * HOME URL: http://blogs.zynaptiq.com/bernsee
-    * KNOWN BUGS: none
-    *
-    * SYNOPSIS: Routine for doing pitch shifting while maintaining
-    * duration using the Short Time Fourier Transform.
-    *
-    * DESCRIPTION: The routine takes a pitchShift factor value which is between 0.5
-    * (one octave down) and 2. (one octave up). A value of exactly 1 does not change
-    * the pitch. numSampsToProcess tells the routine how many samples in indata[0...
-    * numSampsToProcess-1] should be pitch shifted and moved to outdata[0 ...
-    * numSampsToProcess-1]. The two buffers can be identical (ie. it can process the
-    * data in-place). fftFrameSize defines the FFT frame size used for the
-    * processing. Typical values are 1024, 2048 and 4096. It may be any value <=
-    * max_frame_length_ but it MUST be a power of 2. osamp is the STFT
-    * oversampling factor which also determines the overlap between adjacent STFT
-    * frames. It should at least be 4 for moderate scaling ratios. A value of 32 is
-    * recommended for best quality. sampleRate takes the sample rate for the signal
-    * in unit Hz, ie. 44100 for 44.1 kHz audio. The data passed to the routine in
-    * indata[] should be in the range [-1.0, 1.0), which is also the output range
-    * for the data, make sure you scale the data accordingly (for 16bit signed integers
-    * you would have to divide (and multiply) by 32768).
-    *
-    * COPYRIGHT 1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
-    *
-    * 						The Wide Open License (WOL)
-    *
-    * Permission to use, copy, modify, distribute and sell this software and its
-    * documentation for any purpose is hereby granted without fee, provided that
-    * the above copyright notice and this license appear in all source copies.
-    * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
-    * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
-    *
-    *****************************************************************************/
-
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
@@ -50,28 +12,17 @@ namespace hidonash
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
-        smbPitchShift(pitchRatio_, audioBuffer.getNumSamples(), fftFrameSize_, 32, audioBuffer.getDataPointer(), audioBuffer.getDataPointer());
-    }
-
-    void PitchShifter::smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata)
-    /*
-        Routine smbPitchShift(). See top of file for explanation
-        Purpose: doing pitch shifting while maintaining duration using the Short
-        Time Fourier Transform.
-        Author: (c)1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
-    */
-    {
         static long gRover = false, gInit = false;
         double magn, phase, tmp, window, real, imag;
         double freqPerBin, expct;
         long i,k, qpd, index, inFifoLatency, stepSize, fftFrameSize2;
 
         /* set up some handy variables */
-        fftFrameSize2 = fftFrameSize/2;
-        stepSize = fftFrameSize/osamp;
-        freqPerBin = sampleRate_/(double)fftFrameSize;
-        expct = 2.*M_PI*(double)stepSize/(double)fftFrameSize;
-        inFifoLatency = fftFrameSize-stepSize;
+        fftFrameSize2 = fftFrameSize_/2;
+        stepSize = fftFrameSize_/config::constants::oversamplingFactor;
+        freqPerBin = sampleRate_/(double)fftFrameSize_;
+        expct = 2.*M_PI*(double)stepSize/(double)fftFrameSize_;
+        inFifoLatency = fftFrameSize_-stepSize;
         if (gRover == false) gRover = inFifoLatency;
 
         /* initialize our arrays */
@@ -89,32 +40,35 @@ namespace hidonash
         }
 
         /* main processing loop */
-        for (i = 0; i < numSampsToProcess; i++){
-
+        auto indata = audioBuffer.getDataPointer();
+        auto outdata = audioBuffer.getDataPointer();
+        for (i = 0; i < audioBuffer.getNumSamples(); i++)
+        {
             /* As long as we have not yet collected enough data just read in */
             gInFIFO[gRover] = indata[i];
             outdata[i] = gOutFIFO[gRover-inFifoLatency];
             gRover++;
 
             /* now we have enough data for processing */
-            if (gRover >= fftFrameSize) {
+            if (gRover >= fftFrameSize_)
+            {
                 gRover = inFifoLatency;
 
                 /* do windowing and re,im interleave */
-                for (k = 0; k < fftFrameSize;k++) {
-                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize)+.5;
+                for (k = 0; k < fftFrameSize_;k++)
+                {
+                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize_)+.5;
                     gFFTworksp[2*k] = gInFIFO[k] * window;
                     gFFTworksp[2*k+1] = 0.;
                 }
 
-
                 /* ***************** ANALYSIS ******************* */
                 /* do transform */
-                smbFft(gFFTworksp.data(), fftFrameSize, -1);
+                smbFft(gFFTworksp.data(), fftFrameSize_, -1);
 
                 /* this is the analysis step */
-                for (k = 0; k <= fftFrameSize2; k++) {
-
+                for (k = 0; k <= fftFrameSize2; k++)
+                {
                     /* de-interlace FFT buffer */
                     real = gFFTworksp[2*k];
                     imag = gFFTworksp[2*k+1];
@@ -137,7 +91,7 @@ namespace hidonash
                     tmp -= M_PI*(double)qpd;
 
                     /* get deviation from bin frequency from the +/- Pi interval */
-                    tmp = osamp*tmp/(2.*M_PI);
+                    tmp = config::constants::oversamplingFactor*tmp/(2.*M_PI);
 
                     /* compute the k-th partials' true frequency */
                     tmp = (double)k*freqPerBin + tmp*freqPerBin;
@@ -145,25 +99,26 @@ namespace hidonash
                     /* store magnitude and true frequency in analysis arrays */
                     gAnaMagn[k] = magn;
                     gAnaFreq[k] = tmp;
-
                 }
 
                 /* ***************** PROCESSING ******************* */
                 /* this does the actual pitch shifting */
-                memset(gSynMagn.data(), 0, fftFrameSize*sizeof(float));
-                memset(gSynFreq.data(), 0, fftFrameSize*sizeof(float));
-                for (k = 0; k <= fftFrameSize2; k++) {
-                    index = k*pitchShift;
-                    if (index <= fftFrameSize2) {
+                memset(gSynMagn.data(), 0, fftFrameSize_*sizeof(float));
+                memset(gSynFreq.data(), 0, fftFrameSize_*sizeof(float));
+                for (k = 0; k <= fftFrameSize2; k++)
+                {
+                    index = k * pitchFactor_;
+                    if (index <= fftFrameSize2)
+                    {
                         gSynMagn[index] += gAnaMagn[k];
-                        gSynFreq[index] = gAnaFreq[k] * pitchShift;
+                        gSynFreq[index] = gAnaFreq[k] * pitchFactor_;
                     }
                 }
 
                 /* ***************** SYNTHESIS ******************* */
                 /* this is the synthesis step */
-                for (k = 0; k <= fftFrameSize2; k++) {
-
+                for (k = 0; k <= fftFrameSize2; k++)
+                {
                     /* get magnitude and true frequency from synthesis arrays */
                     magn = gSynMagn[k];
                     tmp = gSynFreq[k];
@@ -175,7 +130,7 @@ namespace hidonash
                     tmp /= freqPerBin;
 
                     /* take osamp into account */
-                    tmp = 2.*M_PI*tmp/osamp;
+                    tmp = 2.*M_PI*tmp/config::constants::oversamplingFactor;
 
                     /* add the overlap phase advance back in */
                     tmp += (double)k*expct;
@@ -190,20 +145,21 @@ namespace hidonash
                 }
 
                 /* zero negative frequencies */
-                for (k = fftFrameSize+2; k < 2*fftFrameSize; k++) gFFTworksp[k] = 0.;
+                for (k = fftFrameSize_+2; k < 2*fftFrameSize_; k++) gFFTworksp[k] = 0.;
 
                 /* do inverse transform */
-                smbFft(gFFTworksp.data(), fftFrameSize, 1);
+                smbFft(gFFTworksp.data(), fftFrameSize_, 1);
 
                 /* do windowing and add to output accumulator */
-                for(k=0; k < fftFrameSize; k++) {
-                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize)+.5;
-                    gOutputAccum[k] += 2.*window*gFFTworksp[2*k]/(fftFrameSize2*osamp);
+                for(k=0; k < fftFrameSize_; k++)
+                {
+                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize_)+.5;
+                    gOutputAccum[k] += 2.*window*gFFTworksp[2*k]/(fftFrameSize2*config::constants::oversamplingFactor);
                 }
                 for (k = 0; k < stepSize; k++) gOutFIFO[k] = gOutputAccum[k];
 
                 /* shift accumulator */
-                memmove(gOutputAccum.data(), gOutputAccum.data() + stepSize, fftFrameSize*sizeof(float));
+                memmove(gOutputAccum.data(), gOutputAccum.data() + stepSize, fftFrameSize_*sizeof(float));
 
                 /* move input FIFO */
                 for (k = 0; k < inFifoLatency; k++) gInFIFO[k] = gInFIFO[k+stepSize];
@@ -228,19 +184,23 @@ namespace hidonash
         float tr, ti, ur, ui, *p1r, *p1i, *p2r, *p2i;
         long i, bitm, j, le, le2, k;
 
-        for (i = 2; i < 2*fftFrameSize-2; i += 2) {
-            for (bitm = 2, j = 0; bitm < 2*fftFrameSize; bitm <<= 1) {
+        for (i = 2; i < 2*fftFrameSize-2; i += 2)
+        {
+            for (bitm = 2, j = 0; bitm < 2*fftFrameSize; bitm <<= 1)
+            {
                 if (i & bitm) j++;
                 j <<= 1;
             }
-            if (i < j) {
+            if (i < j)
+            {
                 p1 = fftBuffer+i; p2 = fftBuffer+j;
                 temp = *p1; *(p1++) = *p2;
                 *(p2++) = temp; temp = *p1;
                 *p1 = *p2; *p2 = temp;
             }
         }
-        for (k = 0, le = 2; k < (long)(log(fftFrameSize)/log(2.)+.5); k++) {
+        for (k = 0, le = 2; k < (long)(log(fftFrameSize)/log(2.)+.5); k++)
+        {
             le <<= 1;
             le2 = le>>1;
             ur = 1.0;
@@ -268,12 +228,12 @@ namespace hidonash
 
     void PitchShifter::setPitchRatio(float pitchRatio)
     {
-        pitchRatio_ = pitchRatio;
+        pitchFactor_ = pitchRatio;
     }
 
-    void PitchShifter::setFftFrameSize(int fftFrameSize)
+    void PitchShifter::setFftFrameSize(float fftFrameSize)
     {
-        const auto fftFrameSizeIndex = fftFrameSize % config::parameters::fftFrameSizeChoices.size();
+        const auto fftFrameSizeIndex = static_cast<int>(fftFrameSize) % config::parameters::fftFrameSizeChoices.size();
         fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
     }
 }

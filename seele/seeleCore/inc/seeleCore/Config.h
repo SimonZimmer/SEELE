@@ -6,15 +6,9 @@ namespace hidonash
 {
     namespace config
     {
-        namespace resample
+        namespace constants
         {
-            constexpr auto size = 8192;
-        }
-
-        namespace window
-        {
-            constexpr auto overlaps = 4;
-            constexpr auto length = resample::size;
+            constexpr auto oversamplingFactor = 32;
         }
 
         namespace parameters
