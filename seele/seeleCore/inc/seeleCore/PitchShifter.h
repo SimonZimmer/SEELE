@@ -1,28 +1,34 @@
 #pragma once
 
 #include <array>
+
 #include <core/AudioBuffer.h>
+
 #include "IAudioProcessor.h"
 
 namespace hidonash
 {
-    class PhaseVocoder
+    class PitchShifter
     {
     public:
-        PhaseVocoder();
-        ~PhaseVocoder() = default;
+        PitchShifter(double sampleRate);
+        ~PitchShifter() = default;
 
         void process(core::AudioBuffer<float>& audioBuffer);
 
         void setPitchRatio(float pitchRatio);
 
+        void setFftFrameSize(int fftFrameSize);
+
         void smbFft(float *fftBuffer, long fftFrameSize, long sign);
 
-        void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float sampleRate, float *indata, float *outdata);
+        void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata);
 
     private:
         float pitchRatio_{ 0.f };
         int max_frame_length_{ 8192 };
+        double sampleRate_;
+        size_t fftFrameSize_;
 
         std::array<float, 8192> gInFIFO;
         std::array<float, 8192> gOutFIFO;

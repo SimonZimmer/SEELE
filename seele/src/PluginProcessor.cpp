@@ -6,15 +6,18 @@
 
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
-                                   .withOutput("Output", juce::AudioChannelSet::stereo(), true))
+    .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 , parameters_(*this, nullptr, juce::Identifier ("seele"),
   {
-    std::make_unique<juce::AudioParameterFloat>("pitchRatio_", "Pitch Ratio",
-                                                hidonash::config::parameters::minPitchRatio,
-                                                hidonash::config::parameters::maxPitchRatio,
-                                                hidonash::config::parameters::defaultPitchRatio)
+          std::make_unique<juce::AudioParameterFloat>("pitchRatio", "Pitch Ratio",
+                                                 hidonash::config::parameters::minPitchFactor,
+                                                 hidonash::config::parameters::maxPitchFactor,
+                                                 hidonash::config::parameters::defaultPitchFactor),
+          std::make_unique<juce::AudioParameterChoice>("fftFrameSize", "FFT Frame Size",
+                                                       juce::StringArray("32", "64", "128", "256", "512", "1024", "2048", "4096"),
+                                                       1)
+
   })
-, engine_(hidonash::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio_")))
 {
     setLatencySamples(latency_);
 
@@ -74,6 +77,9 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    engine_ = hidonash::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio"),
+                                               *parameters_.getRawParameterValue("fftFrameSize"),
+                                               sampleRate);
 }
 
 void NewProjectAudioProcessor::releaseResources()

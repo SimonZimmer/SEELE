@@ -5,7 +5,7 @@
 #include "IAudioProcessor.h"
 #include "IFactory.h"
 #include "Factory.h"
-#include "PhaseVocoder.h"
+#include "PitchShifter.h"
 #include "Config.h"
 
 namespace hidonash
@@ -13,7 +13,7 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& pitchRatio,
+        Engine(std::atomic<float>& pitchRatio, std::atomic<float>& fftFrameSize, double sampleRate,
                const IFactory& factory = Factory());
 
         ~Engine() = default;
@@ -22,7 +22,8 @@ namespace hidonash
 
     private:
         const IFactory& factory_;
-        PhaseVocoder phaseVocoder_;
+        PitchShifter pitchShifter;
         std::atomic<float>& pitchRatio_;
+        std::atomic<float>& fftFrameSize_;
     };
 }

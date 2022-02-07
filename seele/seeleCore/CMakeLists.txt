@@ -10,7 +10,7 @@ add_library(seeleCore
     STATIC
         src/Factory.cpp
         src/Engine.cpp
-        src/PhaseVocoder.cpp
+        src/PitchShifter.cpp
         )
 
 target_include_directories(seeleCore

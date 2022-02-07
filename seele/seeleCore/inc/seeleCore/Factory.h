@@ -9,6 +9,7 @@ namespace hidonash
     public:
         ~Factory() = default;
 
-        AudioProcessorPtr createEngine(std::atomic<float>& pitchRatio) const override;
+        AudioProcessorPtr createEngine(std::atomic<float>& pitchRatio, std::atomic<float>& fftFrameSize,
+                                       double sampleRate) const override;
     };
 }

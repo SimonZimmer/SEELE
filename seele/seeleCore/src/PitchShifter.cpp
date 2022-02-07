@@ -1,6 +1,7 @@
 #include <cmath>
 
-#include "PhaseVocoder.h"
+#include "PitchShifter.h"
+#include "Config.h"
 
 namespace hidonash
 {
@@ -42,16 +43,17 @@ namespace hidonash
     *
     *****************************************************************************/
 
-    PhaseVocoder::PhaseVocoder()
+    PitchShifter::PitchShifter(double sampleRate)
+    : sampleRate_(sampleRate)
     {
     }
 
-    void PhaseVocoder::process(core::AudioBuffer<float>& audioBuffer)
+    void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
-        smbPitchShift(pitchRatio_, audioBuffer.getNumSamples(), 4096, 32, 44100, audioBuffer.getDataPointer(), audioBuffer.getDataPointer());
+        smbPitchShift(pitchRatio_, audioBuffer.getNumSamples(), fftFrameSize_, 32, audioBuffer.getDataPointer(), audioBuffer.getDataPointer());
     }
 
-    void PhaseVocoder::smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float sampleRate, float *indata, float *outdata)
+    void PitchShifter::smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata)
     /*
         Routine smbPitchShift(). See top of file for explanation
         Purpose: doing pitch shifting while maintaining duration using the Short
@@ -67,7 +69,7 @@ namespace hidonash
         /* set up some handy variables */
         fftFrameSize2 = fftFrameSize/2;
         stepSize = fftFrameSize/osamp;
-        freqPerBin = sampleRate/(double)fftFrameSize;
+        freqPerBin = sampleRate_/(double)fftFrameSize;
         expct = 2.*M_PI*(double)stepSize/(double)fftFrameSize;
         inFifoLatency = fftFrameSize-stepSize;
         if (gRover == false) gRover = inFifoLatency;
@@ -209,7 +211,7 @@ namespace hidonash
         }
     }
 
-    void PhaseVocoder::smbFft(float* fftBuffer, long fftFrameSize, long sign)
+    void PitchShifter::smbFft(float* fftBuffer, long fftFrameSize, long sign)
     /*
         FFT routine, (C)1996 S.M.Bernsee. Sign = -1 is FFT, 1 is iFFT (inverse)
         Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
@@ -264,8 +266,14 @@ namespace hidonash
         }
     }
 
-    void PhaseVocoder::setPitchRatio(float pitchRatio)
+    void PitchShifter::setPitchRatio(float pitchRatio)
     {
         pitchRatio_ = pitchRatio;
+    }
+
+    void PitchShifter::setFftFrameSize(int fftFrameSize)
+    {
+        const auto fftFrameSizeIndex = fftFrameSize % config::parameters::fftFrameSizeChoices.size();
+        fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
     }
 }
