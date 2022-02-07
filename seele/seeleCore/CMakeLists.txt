@@ -11,7 +11,6 @@ add_library(seeleCore
         src/Factory.cpp
         src/Engine.cpp
         src/PhaseVocoder.cpp
-        src/RescalingProcessor.cpp
         )
 
 target_include_directories(seeleCore

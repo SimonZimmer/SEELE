@@ -1,145 +1,271 @@
+#include <cmath>
+
 #include "PhaseVocoder.h"
-
-#include <algorithm>
-
-#include <juce_dsp/juce_dsp.h>
-
-#include <core/BlockCircularBuffer.h>
-
-#include "RescalingProcessor.h"
 
 namespace hidonash
 {
-    using namespace config;
-    using JuceWindow = typename juce::dsp::WindowingFunction<float>;
-    using JuceWindowTypes = typename juce::dsp::WindowingFunction<float>::WindowingMethod;
-
-    namespace
-    {
-        float interpolate(float sampleA, float sampleB, float fractionIndex)
-        {
-            return (1.f - fractionIndex) * sampleA + fractionIndex * sampleB;
-        }
-
-        void linearResample(const core::AudioBuffer<float>& originalSignal, int originalSignalSize,
-                                   core::AudioBuffer<float>& newSignal, int newSignalSize)
-        {
-            // If the original signal is bigger than the new size, condense the signal to fit the new buffer
-            // otherwise expand the signal to fit the new buffer
-            const auto scale = static_cast<float>(originalSignalSize) / static_cast<float>(newSignalSize);
-            float index = 0.f;
-
-            for (int i = 0; i < newSignalSize; ++i)
-            {
-                const auto wholeIndex = static_cast<int>(floor(index));
-                const auto fractionIndex = index - static_cast<float>(wholeIndex);
-                const auto sampleA = originalSignal[0][wholeIndex];
-                const auto sampleB = originalSignal[0][wholeIndex + 1];
-                newSignal[0][i] = interpolate(sampleA, sampleB, fractionIndex);
-                index += scale;
-            }
-        }
-    }
+    /****************************************************************************
+    *
+    * NAME: smbPitchShift.cpp
+    * VERSION: 1.2
+    * HOME URL: http://blogs.zynaptiq.com/bernsee
+    * KNOWN BUGS: none
+    *
+    * SYNOPSIS: Routine for doing pitch shifting while maintaining
+    * duration using the Short Time Fourier Transform.
+    *
+    * DESCRIPTION: The routine takes a pitchShift factor value which is between 0.5
+    * (one octave down) and 2. (one octave up). A value of exactly 1 does not change
+    * the pitch. numSampsToProcess tells the routine how many samples in indata[0...
+    * numSampsToProcess-1] should be pitch shifted and moved to outdata[0 ...
+    * numSampsToProcess-1]. The two buffers can be identical (ie. it can process the
+    * data in-place). fftFrameSize defines the FFT frame size used for the
+    * processing. Typical values are 1024, 2048 and 4096. It may be any value <=
+    * max_frame_length_ but it MUST be a power of 2. osamp is the STFT
+    * oversampling factor which also determines the overlap between adjacent STFT
+    * frames. It should at least be 4 for moderate scaling ratios. A value of 32 is
+    * recommended for best quality. sampleRate takes the sample rate for the signal
+    * in unit Hz, ie. 44100 for 44.1 kHz audio. The data passed to the routine in
+    * indata[] should be in the range [-1.0, 1.0), which is also the output range
+    * for the data, make sure you scale the data accordingly (for 16bit signed integers
+    * you would have to divide (and multiply) by 32768).
+    *
+    * COPYRIGHT 1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
+    *
+    * 						The Wide Open License (WOL)
+    *
+    * Permission to use, copy, modify, distribute and sell this software and its
+    * documentation for any purpose is hereby granted without fee, provided that
+    * the above copyright notice and this license appear in all source copies.
+    * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
+    * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
+    *
+    *****************************************************************************/
 
     PhaseVocoder::PhaseVocoder()
-    : samplesTilNextProcess_(window::length)
-    , resampleBufferSize_(window::length)
-    , spectralBufferSize_(window::length * 2)
-    , analysisBuffer_(window::length)
-    , synthesisBuffer_(window::length * 3)
-    , windowFunction_(window::length)
     {
-        JuceWindow::fillWindowingTables(windowFunction_.data(), window::length,
-                                        JuceWindowTypes::hann, false);
-
-        rescalingProcessor_ = std::make_unique<RescalingProcessor>(windowFunction_);
-
-        // Processing reuses the spectral buffer to resize the output grain
-        // It must be the at least the size of the min pitch ratio
-        spectralBufferSize_ = window::length * (1 / parameters::minPitchRatio) < spectralBufferSize_ ?
-                              (int) ceil (window::length * (1 / parameters::minPitchRatio)) : spectralBufferSize_;
-
-        spectralBuffer_.setSize(1, spectralBufferSize_);
-        spectralBuffer_.fill(0.f);
-
-        // Calculate maximum size resample signal can be
-        const auto maxResampleSize = (int)std::ceil (std::max(window::length * parameters::maxPitchRatio,
-                                                                     window::length / parameters::minPitchRatio));
-
-        resampleBuffer_.setSize(1, maxResampleSize);
-        resampleBuffer_.fill(0.f);
     }
 
-    void PhaseVocoder::updateResampleBufferSize()
-    {
-        resampleBufferSize_ = static_cast<int>(std::ceil(window::length * analysisHopSize_ / static_cast<float>(synthesisHopSize_)));
-    }
-
-    // The main process function corresponds to the following high level algorithm
-    // Note: The processing is split up internally to avoid extra memory usage
-    // 1. Read incoming samples into the internal analysis buffer
-    // 2. If there are enough samples to begin processing, read a block from the analysis buffer
-    // 5. Resample
-    // 6. Write the block of samples back into the internal synthesis buffer
-    // 7. Read a block of samples from the synthesis buffer
     void PhaseVocoder::process(core::AudioBuffer<float>& audioBuffer)
     {
-        const auto audioBufferSize = audioBuffer.getNumSamples();
+        smbPitchShift(pitchRatio_, audioBuffer.getNumSamples(), 4096, 32, 44100, audioBuffer.getDataPointer(), audioBuffer.getDataPointer());
+    }
 
-        // Only write enough samples into the analysis buffer to complete a processing
-        // frame. Likewise, only write enough into the synthesis buffer to generate the
-        // next output audio frame.
-        for (auto internalOffset = 0, internalBufferSize = 0; internalOffset < audioBufferSize; internalOffset += internalBufferSize)
+    void PhaseVocoder::smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float sampleRate, float *indata, float *outdata)
+    /*
+        Routine smbPitchShift(). See top of file for explanation
+        Purpose: doing pitch shifting while maintaining duration using the Short
+        Time Fourier Transform.
+        Author: (c)1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
+    */
+    {
+        static long gRover = false, gInit = false;
+        double magn, phase, tmp, window, real, imag;
+        double freqPerBin, expct;
+        long i,k, qpd, index, inFifoLatency, stepSize, fftFrameSize2;
+
+        /* set up some handy variables */
+        fftFrameSize2 = fftFrameSize/2;
+        stepSize = fftFrameSize/osamp;
+        freqPerBin = sampleRate/(double)fftFrameSize;
+        expct = 2.*M_PI*(double)stepSize/(double)fftFrameSize;
+        inFifoLatency = fftFrameSize-stepSize;
+        if (gRover == false) gRover = inFifoLatency;
+
+        /* initialize our arrays */
+        if (gInit == false)
         {
-            const auto remainingIncomingSamples = (audioBufferSize - internalOffset);
-            internalBufferSize = incomingSampleCount_ + remainingIncomingSamples >= samplesTilNextProcess_ ?
-                                 samplesTilNextProcess_ - incomingSampleCount_ : remainingIncomingSamples;
-
-            // Write the incoming samples into the internal buffer
-            analysisBuffer_.write(audioBuffer, internalOffset, internalBufferSize);
-            incomingSampleCount_ += internalBufferSize;
-
-            // Collected enough samples, do processing
-            if (incomingSampleCount_ >= samplesTilNextProcess_)
-            {
-                isProcessing_ = true;
-                incomingSampleCount_ -= samplesTilNextProcess_;
-
-                // After first processing, do another process every analysisHopSize_ samples
-                samplesTilNextProcess_ = analysisHopSize_;
-
-                analysisBuffer_.setReadHopSize(analysisHopSize_);
-                analysisBuffer_.read(spectralBuffer_, 0, window::length);
-
-                // Apply window to signal
-                spectralBuffer_.multiply(windowFunction_, window::length);
-
-                // Resample output grain to N * (hop size analysis / hop size synthesis)
-                linearResample(spectralBuffer_, window::length, resampleBuffer_, resampleBufferSize_);
-
-                synthesisBuffer_.setWriteHopSize(synthesisHopSize_);
-                synthesisBuffer_.overlapWrite(resampleBuffer_, resampleBufferSize_);
-            }
-
-            if (!isProcessing_)
-            {
-                audioBuffer.fill(0.f);
-                continue;
-            }
-
-            synthesisBuffer_.read(audioBuffer, internalOffset, internalBufferSize);
+            std::memset(gInFIFO.data(), 0, max_frame_length_*sizeof(float));
+            std::memset(gOutFIFO.data(), 0, max_frame_length_*sizeof(float));
+            std::memset(gFFTworksp.data(), 0, 2*max_frame_length_*sizeof(float));
+            std::memset(gLastPhase.data(), 0, (max_frame_length_/2+1)*sizeof(float));
+            std::memset(gSumPhase.data(), 0, (max_frame_length_/2+1)*sizeof(float));
+            std::memset(gOutputAccum.data(), 0, 2*max_frame_length_*sizeof(float));
+            std::memset(gAnaFreq.data(), 0, max_frame_length_*sizeof(float));
+            std::memset(gAnaMagn.data(), 0, max_frame_length_*sizeof(float));
+            gInit = true;
         }
 
-        rescalingProcessor_->process(audioBuffer);
+        /* main processing loop */
+        for (i = 0; i < numSampsToProcess; i++){
+
+            /* As long as we have not yet collected enough data just read in */
+            gInFIFO[gRover] = indata[i];
+            outdata[i] = gOutFIFO[gRover-inFifoLatency];
+            gRover++;
+
+            /* now we have enough data for processing */
+            if (gRover >= fftFrameSize) {
+                gRover = inFifoLatency;
+
+                /* do windowing and re,im interleave */
+                for (k = 0; k < fftFrameSize;k++) {
+                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize)+.5;
+                    gFFTworksp[2*k] = gInFIFO[k] * window;
+                    gFFTworksp[2*k+1] = 0.;
+                }
+
+
+                /* ***************** ANALYSIS ******************* */
+                /* do transform */
+                smbFft(gFFTworksp.data(), fftFrameSize, -1);
+
+                /* this is the analysis step */
+                for (k = 0; k <= fftFrameSize2; k++) {
+
+                    /* de-interlace FFT buffer */
+                    real = gFFTworksp[2*k];
+                    imag = gFFTworksp[2*k+1];
+
+                    /* compute magnitude and phase */
+                    magn = 2.*sqrt(real*real + imag*imag);
+                    phase = atan2(imag,real);
+
+                    /* compute phase difference */
+                    tmp = phase - gLastPhase[k];
+                    gLastPhase[k] = phase;
+
+                    /* subtract expected phase difference */
+                    tmp -= (double)k*expct;
+
+                    /* map delta phase into +/- Pi interval */
+                    qpd = tmp/M_PI;
+                    if (qpd >= 0) qpd += qpd&1;
+                    else qpd -= qpd&1;
+                    tmp -= M_PI*(double)qpd;
+
+                    /* get deviation from bin frequency from the +/- Pi interval */
+                    tmp = osamp*tmp/(2.*M_PI);
+
+                    /* compute the k-th partials' true frequency */
+                    tmp = (double)k*freqPerBin + tmp*freqPerBin;
+
+                    /* store magnitude and true frequency in analysis arrays */
+                    gAnaMagn[k] = magn;
+                    gAnaFreq[k] = tmp;
+
+                }
+
+                /* ***************** PROCESSING ******************* */
+                /* this does the actual pitch shifting */
+                memset(gSynMagn.data(), 0, fftFrameSize*sizeof(float));
+                memset(gSynFreq.data(), 0, fftFrameSize*sizeof(float));
+                for (k = 0; k <= fftFrameSize2; k++) {
+                    index = k*pitchShift;
+                    if (index <= fftFrameSize2) {
+                        gSynMagn[index] += gAnaMagn[k];
+                        gSynFreq[index] = gAnaFreq[k] * pitchShift;
+                    }
+                }
+
+                /* ***************** SYNTHESIS ******************* */
+                /* this is the synthesis step */
+                for (k = 0; k <= fftFrameSize2; k++) {
+
+                    /* get magnitude and true frequency from synthesis arrays */
+                    magn = gSynMagn[k];
+                    tmp = gSynFreq[k];
+
+                    /* subtract bin mid frequency */
+                    tmp -= (double)k*freqPerBin;
+
+                    /* get bin deviation from freq deviation */
+                    tmp /= freqPerBin;
+
+                    /* take osamp into account */
+                    tmp = 2.*M_PI*tmp/osamp;
+
+                    /* add the overlap phase advance back in */
+                    tmp += (double)k*expct;
+
+                    /* accumulate delta phase to get bin phase */
+                    gSumPhase[k] += tmp;
+                    phase = gSumPhase[k];
+
+                    /* get real and imag part and re-interleave */
+                    gFFTworksp[2*k] = magn*cos(phase);
+                    gFFTworksp[2*k+1] = magn*sin(phase);
+                }
+
+                /* zero negative frequencies */
+                for (k = fftFrameSize+2; k < 2*fftFrameSize; k++) gFFTworksp[k] = 0.;
+
+                /* do inverse transform */
+                smbFft(gFFTworksp.data(), fftFrameSize, 1);
+
+                /* do windowing and add to output accumulator */
+                for(k=0; k < fftFrameSize; k++) {
+                    window = -.5*cos(2.*M_PI*(double)k/(double)fftFrameSize)+.5;
+                    gOutputAccum[k] += 2.*window*gFFTworksp[2*k]/(fftFrameSize2*osamp);
+                }
+                for (k = 0; k < stepSize; k++) gOutFIFO[k] = gOutputAccum[k];
+
+                /* shift accumulator */
+                memmove(gOutputAccum.data(), gOutputAccum.data() + stepSize, fftFrameSize*sizeof(float));
+
+                /* move input FIFO */
+                for (k = 0; k < inFifoLatency; k++) gInFIFO[k] = gInFIFO[k+stepSize];
+            }
+        }
+    }
+
+    void PhaseVocoder::smbFft(float* fftBuffer, long fftFrameSize, long sign)
+    /*
+        FFT routine, (C)1996 S.M.Bernsee. Sign = -1 is FFT, 1 is iFFT (inverse)
+        Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
+        time domain data in fftBuffer[0...2*fftFrameSize-1]. The FFT array takes
+        and returns the cosine and sine parts in an interleaved manner, ie.
+        fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. fftFrameSize
+        must be a power of 2. It expects a complex input signal (see footnote 2),
+        ie. when working with 'common' audio signals our input signal has to be
+        passed as {in[0],0.,in[1],0.,in[2],0.,...} asf. In that case, the transform
+        of the frequencies of interest is in fftBuffer[0...fftFrameSize].
+    */
+    {
+        float wr, wi, arg, *p1, *p2, temp;
+        float tr, ti, ur, ui, *p1r, *p1i, *p2r, *p2i;
+        long i, bitm, j, le, le2, k;
+
+        for (i = 2; i < 2*fftFrameSize-2; i += 2) {
+            for (bitm = 2, j = 0; bitm < 2*fftFrameSize; bitm <<= 1) {
+                if (i & bitm) j++;
+                j <<= 1;
+            }
+            if (i < j) {
+                p1 = fftBuffer+i; p2 = fftBuffer+j;
+                temp = *p1; *(p1++) = *p2;
+                *(p2++) = temp; temp = *p1;
+                *p1 = *p2; *p2 = temp;
+            }
+        }
+        for (k = 0, le = 2; k < (long)(log(fftFrameSize)/log(2.)+.5); k++) {
+            le <<= 1;
+            le2 = le>>1;
+            ur = 1.0;
+            ui = 0.0;
+            arg = M_PI / (le2>>1);
+            wr = cos(arg);
+            wi = sign*sin(arg);
+            for (j = 0; j < le2; j += 2) {
+                p1r = fftBuffer+j; p1i = p1r+1;
+                p2r = p1r+le2; p2i = p2r+1;
+                for (i = j; i < 2*fftFrameSize; i += le) {
+                    tr = *p2r * ur - *p2i * ui;
+                    ti = *p2r * ui + *p2i * ur;
+                    *p2r = *p1r - tr; *p2i = *p1i - ti;
+                    *p1r += tr; *p1i += ti;
+                    p1r += le; p1i += le;
+                    p2r += le; p2i += le;
+                }
+                tr = ur*wr - ui*wi;
+                ui = ur*wi + ui*wr;
+                ur = tr;
+            }
+        }
     }
 
     void PhaseVocoder::setPitchRatio(float pitchRatio)
     {
         pitchRatio_ = pitchRatio;
-        synthesisHopSize_ = static_cast<int>(window::length / static_cast<float>(window::overlaps));
-        analysisHopSize_ = static_cast<int>(round(synthesisHopSize_ / pitchRatio_));
-
-        updateResampleBufferSize();
-        synthesisHopSize_ = analysisHopSize_;
     }
 }

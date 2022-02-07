@@ -1,11 +1,7 @@
 #pragma once
 
-#include <algorithm>
-#include <functional>
-
-#include <core/BlockCircularBuffer.h>
+#include <array>
 #include <core/AudioBuffer.h>
-#include "Config.h"
 #include "IAudioProcessor.h"
 
 namespace hidonash
@@ -16,31 +12,28 @@ namespace hidonash
         PhaseVocoder();
         ~PhaseVocoder() = default;
 
-        void updateResampleBufferSize();
-
         void process(core::AudioBuffer<float>& audioBuffer);
 
         void setPitchRatio(float pitchRatio);
 
+        void smbFft(float *fftBuffer, long fftFrameSize, long sign);
+
+        void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float sampleRate, float *indata, float *outdata);
+
     private:
-        AudioProcessorPtr rescalingProcessor_;
+        float pitchRatio_{ 0.f };
+        int max_frame_length_{ 8192 };
 
-        BlockCircularBuffer<float> analysisBuffer_;
-        BlockCircularBuffer<float> synthesisBuffer_;
-        core::AudioBuffer<float> spectralBuffer_{1, config::resample::size};
-        core::AudioBuffer<float> resampleBuffer_{1, config::resample::size};
-
-        long incomingSampleCount_ = 0;
-        int spectralBufferSize_ = 0;
-        int samplesTilNextProcess_ = 0;
-        bool isProcessing_ = false;
-
-        std::vector<float> windowFunction_;
-        int analysisHopSize_ = 0;
-        int synthesisHopSize_ = 0;
-        int resampleBufferSize_ = 0;
-
-        float pitchRatio_ = 0.f;
+        std::array<float, 8192> gInFIFO;
+        std::array<float, 8192> gOutFIFO;
+        std::array<float, 2*8192> gFFTworksp;
+        std::array<float, 8192/2+1> gLastPhase;
+        std::array<float, 8192/2+1> gSumPhase;
+        std::array<float, 2*8192> gOutputAccum;
+        std::array<float, 8192> gAnaFreq;
+        std::array<float, 8192> gAnaMagn;
+        std::array<float, 8192> gSynFreq;
+        std::array<float, 8192> gSynMagn;
     };
 
 }
