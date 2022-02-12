@@ -191,7 +191,7 @@ namespace hidonash
         else
             fft_->perform(buffer_.data(), buffer_.data(), true);
 
-        for (auto k = 0; k < (2*fftFrameSize-1);k++)
+        for (auto k = 0; k < (2*fftFrameSize);k++)
         {
             fftBuffer[2*k] = buffer_[k].real();
             fftBuffer[2*k+1] = buffer_[k].imag();
@@ -213,4 +213,4 @@ namespace hidonash
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
     }
-}
+}g
