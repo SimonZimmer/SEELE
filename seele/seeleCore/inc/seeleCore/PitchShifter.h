@@ -24,7 +24,7 @@ namespace hidonash
 
         void setOverSamplingFactor(float overSamplingFactor);
 
-        void smbFft(float *fftBuffer, long fftFrameSize, long sign);
+        void fft(float *fftBuffer, long fftFrameSize, bool inverse);
 
         void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata);
 

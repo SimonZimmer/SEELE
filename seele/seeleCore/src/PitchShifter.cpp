@@ -3,6 +3,7 @@
 #include "PitchShifter.h"
 #include "Config.h"
 
+
 namespace hidonash
 {
     PitchShifter::PitchShifter(double sampleRate)
@@ -64,7 +65,7 @@ namespace hidonash
 
                 /* ***************** ANALYSIS ******************* */
                 /* do transform */
-                smbFft(gFFTworksp.data(), fftFrameSize_, -1);
+                fft(gFFTworksp.data(), fftFrameSize_, false);
 
                 /* this is the analysis step */
                 for (k = 0; k <= fftFrameSize2; k++)
@@ -148,7 +149,7 @@ namespace hidonash
                 for (k = fftFrameSize_+2; k < 2*fftFrameSize_; k++) gFFTworksp[k] = 0.;
 
                 /* do inverse transform */
-                smbFft(gFFTworksp.data(), fftFrameSize_, 1);
+                fft(gFFTworksp.data(), fftFrameSize_, true);
 
                 /* do windowing and add to output accumulator */
                 for(k=0; k < fftFrameSize_; k++)
@@ -167,18 +168,7 @@ namespace hidonash
         }
     }
 
-    void PitchShifter::smbFft(float* fftBuffer, long fftFrameSize, long sign)
-    /*
-        FFT routine, (C)1996 S.M.Bernsee. Sign = -1 is FFT, 1 is iFFT (inverse)
-        Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
-        time domain data in fftBuffer[0...2*fftFrameSize-1]. The FFT array takes
-        and returns the cosine and sine parts in an interleaved manner, ie.
-        fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. fftFrameSize
-        must be a power of 2. It expects a complex input signal (see footnote 2),
-        ie. when working with 'common' audio signals our input signal has to be
-        passed as {in[0],0.,in[1],0.,in[2],0.,...} asf. In that case, the transform
-        of the frequencies of interest is in fftBuffer[0...fftFrameSize].
-    */
+    void PitchShifter::fft(float* fftBuffer, long fftFrameSize, bool inverse)
     {
         for (auto k = 0; k < 2*fftFrameSize;k++)
         {
@@ -186,10 +176,7 @@ namespace hidonash
             buffer_[k].imag(fftBuffer[2*k+1]);
         }
 
-        if(sign == -1)
-            fft_->perform(buffer_.data(), buffer_.data(), false);
-        else
-            fft_->perform(buffer_.data(), buffer_.data(), true);
+        fft_->perform(buffer_.data(), buffer_.data(), inverse);
 
         for (auto k = 0; k < (2*fftFrameSize);k++)
         {
@@ -213,4 +200,4 @@ namespace hidonash
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
     }
-}g
+}
