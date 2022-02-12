@@ -13,7 +13,7 @@ namespace hidonash
     class PitchShifter
     {
     public:
-        PitchShifter(double sampleRate);
+        explicit PitchShifter(double sampleRate);
         ~PitchShifter() = default;
 
         void process(core::AudioBuffer<float>& audioBuffer);
@@ -22,11 +22,7 @@ namespace hidonash
 
         void setFftFrameSize(float fftFrameSize);
 
-        void setOverSamplingFactor(float overSamplingFactor);
-
         void fft(float *fftBuffer, long fftFrameSize, bool inverse);
-
-        void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata);
 
     private:
         float pitchFactor_{ 0.f };

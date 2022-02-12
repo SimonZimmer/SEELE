@@ -23,7 +23,7 @@ namespace hidonash
     TEST_F(UnitTest_PitchShifter, fft)
     {
         auto&& pitchShifter = PitchShifter(44100);
-        pitchShifter.setFftFrameSize(4048);
+        pitchShifter.setFftFrameSize(64);
 
         auto&& buffer = core::AudioBuffer<float>(1, 4048);
         auto currentAngle = 0.f;
@@ -42,14 +42,6 @@ namespace hidonash
             interleavedBuffer[0][2 * sa + 1] = 0.f;
         }
 
-        pitchShifter.smbFft(interleavedBuffer.getDataPointer(), 4048, -1);
-
-        std::cout << interleavedBuffer.getNumSamples() << std::endl;
-
-        /*for(auto sa = 0; sa < (buffer.getNumSamples() - 1); ++sa)
-        {
-            buffer[0][2 * sa] = interleavedBuffer[0][sa];
-            buffer[0][2 * sa + 1] = interleavedBuffer[0][sa + 1];
-        }*/
+        pitchShifter.fft(interleavedBuffer.getDataPointer(), 64, false);
     }
 }
