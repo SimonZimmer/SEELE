@@ -21,7 +21,6 @@ namespace hidonash
         void process(core::AudioBuffer<float>& inputBuffer) override;
 
     private:
-        const IFactory& factory_;
         PitchShifter pitchShifter;
         std::atomic<float>& pitchRatio_;
         std::atomic<float>& fftFrameSize_;

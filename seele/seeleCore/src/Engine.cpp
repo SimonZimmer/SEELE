@@ -3,9 +3,8 @@
 namespace hidonash
 {
     Engine::Engine(std::atomic<float>& pitchRatio, std::atomic<float>& fftFrameSize, double sampleRate,
-                   const IFactory& factory)
-    : factory_(factory)
-    , pitchShifter(sampleRate)
+                   const IFactory& /*factory*/)
+    : pitchShifter(sampleRate)
     , pitchRatio_(pitchRatio)
     , fftFrameSize_(fftFrameSize)
     {

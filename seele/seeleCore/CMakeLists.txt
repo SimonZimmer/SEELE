@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(seeleCore)
 
+find_package(fft REQUIRED)
+
 add_library(seeleCore
     STATIC
         src/Factory.cpp
@@ -19,8 +21,6 @@ target_include_directories(seeleCore
 target_link_libraries(seeleCore
    PUBLIC
         core
-        juce::juce_core
-        juce::juce_audio_basics
         juce::juce_dsp
         )
 

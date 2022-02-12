@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include <juce_dsp/juce_dsp.h>
+
 #include <core/AudioBuffer.h>
 
 #include "IAudioProcessor.h"
@@ -27,7 +29,7 @@ namespace hidonash
         void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, long osamp, float *indata, float *outdata);
 
     private:
-        float pitchFactor_{0.f };
+        float pitchFactor_{ 0.f };
         int max_frame_length_{ 8192 };
         double sampleRate_;
         size_t fftFrameSize_;
@@ -42,6 +44,9 @@ namespace hidonash
         std::array<float, 8192> gAnaMagn;
         std::array<float, 8192> gSynFreq;
         std::array<float, 8192> gSynMagn;
+
+        std::vector<juce::dsp::Complex<float>> buffer_;
+        std::unique_ptr<juce::dsp::FFT> fft_;
     };
 
 }

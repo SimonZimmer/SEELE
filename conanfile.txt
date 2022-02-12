@@ -1,6 +1,7 @@
 [requires]
-gtest/1.10.0
+gtest/1.11.0
+fft/cci.20061228
 
 [generators]
-cmake
-
+cmake_find_package
+cmake_paths
