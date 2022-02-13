@@ -22,7 +22,7 @@ namespace hidonash
 
         void setFftFrameSize(float fftFrameSize);
 
-        void fft(float *fftBuffer, long fftFrameSize, bool inverse);
+        void fft(juce::dsp::Complex<float>* fftBuffer, long fftFrameSize, bool inverse);
 
     private:
         float pitchFactor_{ 0.f };
@@ -32,7 +32,6 @@ namespace hidonash
 
         std::array<float, 8192> inFifo_;
         std::array<float, 8192> outFifo_;
-        std::array<float, 2*8192> fftWorkspace_;
         std::array<float, 8192/2+1> lastPhase_;
         std::array<float, 8192/2+1> sumPhase_;
         std::array<float, 2*8192> outputAccumulator_;
@@ -42,6 +41,7 @@ namespace hidonash
         std::array<float, 8192> synthesisMagnitude_;
 
         std::vector<juce::dsp::Complex<float>> buffer_;
+        std::vector<juce::dsp::Complex<float>> fftWorkspace_;
         std::unique_ptr<juce::dsp::FFT> fft_;
         std::vector<double> window_;
     };

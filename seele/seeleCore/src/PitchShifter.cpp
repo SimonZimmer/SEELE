@@ -9,6 +9,7 @@ namespace hidonash
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
+        fftWorkspace_.resize(2 * max_frame_length_);
         std::memset(inFifo_.data(), 0, max_frame_length_ * sizeof(float));
         std::memset(outFifo_.data(), 0, max_frame_length_ * sizeof(float));
         std::memset(fftWorkspace_.data(), 0, 2 * max_frame_length_ * sizeof(float));
@@ -51,8 +52,8 @@ namespace hidonash
                 /* do windowing and re,im interleave */
                 for (k = 0; k < fftFrameSize_; k++)
                 {
-                    fftWorkspace_[2 * k] = inFifo_[k] * window_[k];
-                    fftWorkspace_[2 * k + 1] = 0.;
+                    fftWorkspace_[k].real(inFifo_[k] * window_[k]);
+                    fftWorkspace_[k].imag(0.);
                 }
 
                 /* ***************** ANALYSIS ******************* */
@@ -62,8 +63,8 @@ namespace hidonash
                 for (k = 0; k <= fftFrameSize_ / 2; k++)
                 {
                     /* de-interlace FFT buffer */
-                    real = fftWorkspace_[2 * k];
-                    imag = fftWorkspace_[2 * k + 1];
+                    real = fftWorkspace_[k].real();
+                    imag = fftWorkspace_[k].imag();
 
                     /* compute magnitude and phase */
                     magnitude = 2. * sqrt(real * real + imag * imag);
@@ -124,9 +125,9 @@ namespace hidonash
                     sumPhase_[k] += phase_difference;
                     phase = sumPhase_[k];
 
-                    /* get real and imag part and re-interleave */
-                    fftWorkspace_[2 * k] = magnitude * cos(phase);
-                    fftWorkspace_[2 * k + 1] = magnitude * sin(phase);
+                    /* get real and imag part */
+                    fftWorkspace_[k].real(magnitude * cos(phase));
+                    fftWorkspace_[k].imag(magnitude * sin(phase));
                 }
 
                 /* zero negative frequencies */
@@ -137,7 +138,7 @@ namespace hidonash
 
                 /* do windowing and add to output accumulator */
                 for(k = 0; k < fftFrameSize_; k++)
-                    outputAccumulator_[k] += 2. * window_[k] * fftWorkspace_[2 * k] / ((fftFrameSize_ / 2) * config::constants::oversamplingFactor);
+                    outputAccumulator_[k] += 2. * window_[k] * fftWorkspace_[k].real() / ((fftFrameSize_ / 2) * config::constants::oversamplingFactor);
 
                 for (k = 0; k < stepSize; k++) outFifo_[k] = outputAccumulator_[k];
 
@@ -150,21 +151,9 @@ namespace hidonash
         }
     }
 
-    void PitchShifter::fft(float* fftBuffer, long fftFrameSize, bool inverse)
+    void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, long fftFrameSize, bool inverse)
     {
-        for (auto k = 0; k < 2*fftFrameSize;k++)
-        {
-            buffer_[k].real(fftBuffer[2*k]);
-            buffer_[k].imag(fftBuffer[2*k+1]);
-        }
-
-        fft_->perform(buffer_.data(), buffer_.data(), inverse);
-
-        for (auto k = 0; k < (2 * fftFrameSize); k++)
-        {
-            fftBuffer[2 * k] = buffer_[k].real();
-            fftBuffer[2 * k + 1] = buffer_[k].imag();
-        }
+        fft_->perform(fftBuffer, fftBuffer, inverse);
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)
