@@ -32,6 +32,7 @@ namespace hidonash
 
         std::array<float, 8192> fifoIn_;
         std::array<float, 8192> fifoOut_;
+        std::array<float, 2*8192> fftWorkspace_;
         std::array<float, 8192/2+1> gLastPhase;
         std::array<float, 8192/2+1> sumPhase_;
         std::array<float, 2*8192> outputAccumulationBuffer_;
@@ -39,8 +40,6 @@ namespace hidonash
         std::array<float, 8192> analysisMagnitudeBuffer_;
         std::array<float, 8192> synthesisFrequencyBuffer_;
         std::array<float, 8192> synthesisMagnitudeBuffer_;
-
-        std::vector<float> fftWorkspace_;
 
         std::vector<juce::dsp::Complex<float>> buffer_;
         std::unique_ptr<juce::dsp::FFT> fft_;
