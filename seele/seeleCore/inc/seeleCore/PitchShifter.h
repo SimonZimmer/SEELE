@@ -34,16 +34,16 @@ namespace hidonash
         double sampleRate_;
         size_t fftFrameSize_;
 
-        std::array<float, 8192> gInFIFO;
-        std::array<float, 8192> gOutFIFO;
-        std::array<float, 2*8192> gFFTworksp;
+        std::array<float, 8192> fifoIn_;
+        std::array<float, 8192> fifoOut_;
+        std::array<float, 2*8192> fftWorkspace_;
         std::array<float, 8192/2+1> gLastPhase;
-        std::array<float, 8192/2+1> gSumPhase;
-        std::array<float, 2*8192> gOutputAccum;
-        std::array<float, 8192> gAnaFreq;
-        std::array<float, 8192> gAnaMagn;
-        std::array<float, 8192> gSynFreq;
-        std::array<float, 8192> gSynMagn;
+        std::array<float, 8192/2+1> sumPhase_;
+        std::array<float, 2*8192> outputAccumulationBuffer_;
+        std::array<float, 8192> analysisFrequencyBuffer_;
+        std::array<float, 8192> analysisMagnitudeBuffer_;
+        std::array<float, 8192> synthesisFrequencyBuffer_;
+        std::array<float, 8192> synthesisMagnitudeBuffer_;
 
         std::vector<juce::dsp::Complex<float>> buffer_;
         std::unique_ptr<juce::dsp::FFT> fft_;
