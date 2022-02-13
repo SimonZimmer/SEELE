@@ -14,7 +14,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                                                  hidonash::config::parameters::maxPitchFactor,
                                                  hidonash::config::parameters::defaultPitchFactor),
           std::make_unique<juce::AudioParameterChoice>("fftFrameSize", "FFT Frame Size",
-                                                       juce::StringArray("32", "64", "128"),
+                                                       juce::StringArray("32", "64", "128", "256", "512", "1024", "2048"),
                                                        1)
 
   })

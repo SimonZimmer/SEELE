@@ -21,8 +21,9 @@ namespace hidonash
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
+
         static long sampleCounter = false;
-        double magnitude, phase, phaseDifference, windowFactor, real, imag;
+        double windowFactor, real, imag;
         double freqPerBin, expectedPhaseDifference;
         long qpd, index, inFifoLatency, stepSize;
 
@@ -34,6 +35,7 @@ namespace hidonash
         if (sampleCounter == false) sampleCounter = inFifoLatency;
 
         /* main processing loop */
+        //TODO sum stereo to mono instead of processing left channel only
         auto indata = audioBuffer.getDataPointer();
         auto outdata = audioBuffer.getDataPointer();
         for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
@@ -68,11 +70,11 @@ namespace hidonash
                     imag = fftWorkspace_[k].imag();
 
                     /* compute magnitude and phase */
-                    magnitude = 2. * sqrt(real * real + imag * imag);
-                    phase = atan2(imag,real);
+                    auto magnitude = 2. * sqrt(real * real + imag * imag);
+                    auto phase = atan2(imag,real);
 
                     /* compute phase difference */
-                    phaseDifference = phase - lastPhase_[k];
+                    auto phaseDifference = phase - lastPhase_[k];
                     lastPhase_[k] = phase;
 
                     /* subtract expected phase difference */
@@ -114,11 +116,11 @@ namespace hidonash
                 for (auto k = 0; k <= fftFrameSize_; k++)
                 {
                     /* get magnitude and true frequency from synthesis arrays */
-                    magnitude = synthesisMagnitudeBuffer_[k];
-                    phaseDifference = synthesisFrequencyBuffer_[k];
+                    auto  magnitude = synthesisMagnitudeBuffer_[k];
+                    auto phase = synthesisFrequencyBuffer_[k];
 
                     /* subtract bin mid frequency */
-                    phaseDifference -= (double)k * freqPerBin;
+                    auto phaseDifference = phase - (double)k * freqPerBin;
 
                     /* get bin deviation from freq deviation */
                     phaseDifference /= freqPerBin;
@@ -136,13 +138,6 @@ namespace hidonash
                     /* get real and imag part and re-interleave */
                     fftWorkspace_[k].real(magnitude * cos(phase));
                     fftWorkspace_[k].imag(magnitude * sin(phase));
-                }
-
-                /* zero negative frequencies */
-                for (auto k = fftFrameSize_+2; k < 2*fftFrameSize_; k++)
-                {
-                    fftWorkspace_[k].real(0.);
-                    fftWorkspace_[k].imag(0.);
                 }
 
                 /* do inverse transform */
@@ -179,7 +174,6 @@ namespace hidonash
     {
         const auto fftFrameSizeIndex = static_cast<int>(fftFrameSize) % config::parameters::fftFrameSizeChoices.size();
         fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
-        fftFrameSize_ = 1024;
 
         buffer_.resize(2 * fftFrameSize_);
 
