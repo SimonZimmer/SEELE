@@ -9,9 +9,10 @@ namespace hidonash
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
+        fftWorkspace_.resize(2*fftFrameSize_);
         std::memset(fifoIn_.data(), 0, max_frame_length_ * sizeof(float));
         std::memset(fifoOut_.data(), 0, max_frame_length_ * sizeof(float));
-        std::memset(fftWorkspace_.data(), 0, 2 * max_frame_length_ * sizeof(float));
+        std::memset(fftWorkspace_.data(), 0, 2*fftFrameSize_ * sizeof(float));
         std::memset(gLastPhase.data(), 0, (max_frame_length_/2+1)*sizeof(float));
         std::memset(sumPhase_.data(), 0, (max_frame_length_ / 2 + 1) * sizeof(float));
         std::memset(outputAccumulationBuffer_.data(), 0, 2 * max_frame_length_ * sizeof(float));
@@ -190,6 +191,7 @@ namespace hidonash
         fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
 
         buffer_.resize(2 * fftFrameSize_);
+        fftWorkspace_.resize(2 * fftFrameSize_);
 
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
