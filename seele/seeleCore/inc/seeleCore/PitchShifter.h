@@ -25,6 +25,9 @@ namespace hidonash
         void fft(juce::dsp::Complex<float>* fftBuffer, bool inverse);
 
     private:
+        void analysis(int freqPerBin, double expectedPhaseDifference);
+        void synthesis(int freqPerBin, double expectedPhaseDifference);
+
         float pitchFactor_{ 0.f };
         int max_frame_length_{ 8192 };
         double sampleRate_;
