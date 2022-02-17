@@ -29,7 +29,6 @@ namespace hidonash
         void synthesis(int freqPerBin, double expectedPhaseDifference);
 
         float pitchFactor_{ 0.f };
-        int max_frame_length_{ 8192 };
         double sampleRate_;
         size_t fftFrameSize_;
 

@@ -21,18 +21,13 @@ namespace hidonash
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
+        auto stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
+        auto freqPerBin = sampleRate_ / (double)fftFrameSize_;
+        auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize_;
+        auto inFifoLatency = fftFrameSize_ - stepSize;
         static long sampleCounter = false;
-        double freqPerBin, expectedPhaseDifference;
-        long index, inFifoLatency, stepSize;
-
-        /* set up some handy variables */
-        stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
-        freqPerBin = sampleRate_ / (double)fftFrameSize_;
-        expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize_;
-        inFifoLatency = fftFrameSize_ - stepSize;
         if (sampleCounter == false) sampleCounter = inFifoLatency;
 
-        /* main processing loop */
         //TODO sum stereo to mono instead of processing left channel only
         auto indata = audioBuffer.getDataPointer();
         auto outdata = audioBuffer.getDataPointer();
@@ -64,7 +59,7 @@ namespace hidonash
                 memset(synthesisFrequencyBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
                 for (auto k = 0; k <= fftFrameSize_ / 2; k++)
                 {
-                    index = k * pitchFactor_;
+                    auto index = k * pitchFactor_;
                     if (index <= (fftFrameSize_ / 2))
                     {
                         synthesisMagnitudeBuffer_[index] += analysisMagnitudeBuffer_[k];
