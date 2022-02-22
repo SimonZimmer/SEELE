@@ -43,7 +43,6 @@ namespace hidonash
         std::array<float, 8192> synthesisMagnitudeBuffer_;
 
         std::array<juce::dsp::Complex<float>, 2*8192> fftWorkspace_;
-        std::vector<juce::dsp::Complex<float>> buffer_;
         std::unique_ptr<juce::dsp::FFT> fft_;
     };
 

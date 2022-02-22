@@ -42,7 +42,7 @@ namespace hidonash
             interleavedBuffer[0][2 * sa + 1] = 0.f;
         }
 
-        pitchShifter.smbFft(interleavedBuffer.getDataPointer(), 4048, -1);
+        //pitchShifter.fft(interleavedBuffer.getDataPointer(), 4048, );
 
         std::cout << interleavedBuffer.getNumSamples() << std::endl;
 

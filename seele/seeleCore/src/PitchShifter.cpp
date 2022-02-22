@@ -43,7 +43,7 @@ namespace hidonash
             {
                 sampleCounter = inFifoLatency;
 
-                /* do windowing and re,im interleave */
+                /* do windowing */
                 for (auto k = 0; k < fftFrameSize_;k++)
                 {
                     fftWorkspace_[k].real(fifoIn_[k] * getWindowFactor(k, fftFrameSize_));
@@ -53,7 +53,6 @@ namespace hidonash
                 fft(fftWorkspace_.data(), false);
                 analysis(freqPerBin, expectedPhaseDifference);
 
-                /* ***************** PROCESSING ******************* */
                 /* this does the actual pitch shifting */
                 memset(synthesisMagnitudeBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
                 memset(synthesisFrequencyBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
@@ -150,8 +149,6 @@ namespace hidonash
     {
         const auto fftFrameSizeIndex = static_cast<int>(fftFrameSize) % config::parameters::fftFrameSizeChoices.size();
         fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
-
-        buffer_.resize(2 * fftFrameSize_);
 
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
