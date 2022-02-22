@@ -20,7 +20,7 @@ namespace hidonash
         fftFrameSize_ = config::parameters::fftFrameSize;
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-        gainCompensation_ = std::pow(10, (67. / 20.));
+        gainCompensation_ = std::pow(10, (60. / 20.));
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
@@ -33,6 +33,9 @@ namespace hidonash
         if (sampleCounter == false) sampleCounter = inFifoLatency;
 
         //TODO sum stereo to mono instead of processing left channel only
+        for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+            audioBuffer[0][sa] = audioBuffer[0][sa] + audioBuffer[1][sa] * 0.5f;
+
         auto indata = audioBuffer.getDataPointer();
         auto outdata = audioBuffer.getDataPointer();
         for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)

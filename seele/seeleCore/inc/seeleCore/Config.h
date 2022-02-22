@@ -8,7 +8,7 @@ namespace hidonash
     {
         namespace constants
         {
-            constexpr auto oversamplingFactor = 32;
+            constexpr auto oversamplingFactor = 64;
         }
 
         namespace parameters
