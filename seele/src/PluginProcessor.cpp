@@ -12,11 +12,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
           std::make_unique<juce::AudioParameterFloat>("pitchRatio", "Pitch Ratio",
                                                  hidonash::config::parameters::minPitchFactor,
                                                  hidonash::config::parameters::maxPitchFactor,
-                                                 hidonash::config::parameters::defaultPitchFactor),
-          std::make_unique<juce::AudioParameterChoice>("fftFrameSize", "FFT Frame Size",
-                                                       juce::StringArray("32", "64", "128", "256", "512", "1024", "2048"),
-                                                       1)
-
+                                                 hidonash::config::parameters::defaultPitchFactor)
   })
 {
     setLatencySamples(latency_);
@@ -77,9 +73,7 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    engine_ = hidonash::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio"),
-                                               *parameters_.getRawParameterValue("fftFrameSize"),
-                                               sampleRate);
+    engine_ = hidonash::Factory().createEngine(*parameters_.getRawParameterValue("pitchRatio"), sampleRate);
 }
 
 void NewProjectAudioProcessor::releaseResources()

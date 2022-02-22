@@ -13,8 +13,7 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& pitchRatio, std::atomic<float>& fftFrameSize, double sampleRate,
-               const IFactory& factory = Factory());
+        Engine(std::atomic<float>& pitchRatio, double sampleRate, const IFactory& factory = Factory());
 
         ~Engine() = default;
 
@@ -23,6 +22,5 @@ namespace hidonash
     private:
         PitchShifter pitchShifter;
         std::atomic<float>& pitchRatio_;
-        std::atomic<float>& fftFrameSize_;
     };
 }

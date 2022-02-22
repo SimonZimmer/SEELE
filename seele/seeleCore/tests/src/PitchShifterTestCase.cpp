@@ -23,7 +23,6 @@ namespace hidonash
     TEST_F(UnitTest_PitchShifter, fft)
     {
         auto&& pitchShifter = PitchShifter(44100);
-        pitchShifter.setFftFrameSize(4048);
 
         auto&& buffer = core::AudioBuffer<float>(1, 4048);
         auto currentAngle = 0.f;

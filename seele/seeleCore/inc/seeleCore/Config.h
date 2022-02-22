@@ -17,7 +17,7 @@ namespace hidonash
             constexpr auto minPitchFactor = 0.4f;
             constexpr auto defaultPitchFactor = 1.f;
 
-            constexpr auto fftFrameSizeChoices = std::array<size_t, 7>{ 32, 64, 128, 256, 512, 1024, 2048 };
+            constexpr auto fftFrameSize = 4096;
         }
     }
 }

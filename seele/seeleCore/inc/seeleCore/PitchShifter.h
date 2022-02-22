@@ -20,8 +20,6 @@ namespace hidonash
 
         void setPitchRatio(float pitchRatio);
 
-        void setFftFrameSize(float fftFrameSize);
-
         void fft(juce::dsp::Complex<float>* fftBuffer, bool inverse);
 
     private:
@@ -31,6 +29,7 @@ namespace hidonash
         float pitchFactor_{ 0.f };
         double sampleRate_;
         size_t fftFrameSize_;
+        double gainCompensation_;
 
         std::array<float, 8192> fifoIn_;
         std::array<float, 8192> fifoOut_;

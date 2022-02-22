@@ -17,6 +17,10 @@ namespace hidonash
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
+        fftFrameSize_ = config::parameters::fftFrameSize;
+        const auto fftOrder = std::log2(fftFrameSize_);
+        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
+        gainCompensation_ = std::pow(10, (67. / 20.));
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
@@ -81,6 +85,10 @@ namespace hidonash
                 for (auto k = 0; k < inFifoLatency; k++) fifoIn_[k] = fifoIn_[k + stepSize];
             }
         }
+
+        for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
+            for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+                audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
     }
 
     void PitchShifter::synthesis(int freqPerBin, double expectedPhaseDifference)
@@ -143,14 +151,5 @@ namespace hidonash
     void PitchShifter::setPitchRatio(float pitchRatio)
     {
         pitchFactor_ = pitchRatio;
-    }
-
-    void PitchShifter::setFftFrameSize(float fftFrameSize)
-    {
-        const auto fftFrameSizeIndex = static_cast<int>(fftFrameSize) % config::parameters::fftFrameSizeChoices.size();
-        fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
-
-        const auto fftOrder = std::log2(fftFrameSize_);
-        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
     }
 }
