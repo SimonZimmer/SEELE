@@ -7,6 +7,8 @@
 #include <core/AudioBuffer.h>
 
 #include "IAudioProcessor.h"
+#include "IAnalysis.h"
+
 
 namespace hidonash
 {
@@ -23,13 +25,15 @@ namespace hidonash
         void fft(juce::dsp::Complex<float>* fftBuffer, bool inverse);
 
     private:
-        void analysis(int freqPerBin, double expectedPhaseDifference);
         void synthesis(int freqPerBin, double expectedPhaseDifference);
+
+        AnalysisPtr analysis_;
 
         float pitchFactor_{ 0.f };
         double sampleRate_;
         size_t fftFrameSize_;
         double gainCompensation_;
+        int freqPerBin_;
 
         std::array<float, 8192> fifoIn_;
         std::array<float, 8192> fifoOut_;

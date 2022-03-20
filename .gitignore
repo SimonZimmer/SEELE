@@ -58,5 +58,6 @@ conanbuildinfo.cmake
 conaninfo.txt
 graph_info.json
 conanbuildinfo.txt
-
+Find*
+conan_paths.cmake
 

@@ -7,6 +7,7 @@ add_library(seeleCore
         src/Factory.cpp
         src/Engine.cpp
         src/PitchShifter.cpp
+        src/Analysis.cpp
         )
 
 target_include_directories(seeleCore
