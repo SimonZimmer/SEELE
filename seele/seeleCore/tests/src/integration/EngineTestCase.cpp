@@ -18,7 +18,7 @@ namespace hidonash
         auto&& pitchRatio = std::atomic<float>(0.5f);
         auto&& fftFrameSize = std::atomic<float>(2);
         auto sampleRate = 44100;
-        auto&& engine = Engine(pitchRatio, fftFrameSize, sampleRate);
+        auto&& engine = Engine(pitchRatio, sampleRate);
         auto&& buffer = core::AudioBuffer<float>(2, 128);
         auto currentAngle = 0.f;
 

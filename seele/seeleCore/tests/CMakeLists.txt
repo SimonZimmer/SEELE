@@ -4,6 +4,7 @@ include(CTest)
 add_executable(seeleCoreTestHost)
 
 add_dependencies(seeleCoreTestHost GTest::gtest)
+find_package(GTest)
 
 target_sources(seeleCoreTestHost PRIVATE
         src/EngineTestCase.cpp

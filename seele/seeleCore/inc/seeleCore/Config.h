@@ -8,7 +8,7 @@ namespace hidonash
     {
         namespace constants
         {
-            constexpr auto oversamplingFactor = 32;
+            constexpr auto oversamplingFactor = 64;
         }
 
         namespace parameters
@@ -17,7 +17,7 @@ namespace hidonash
             constexpr auto minPitchFactor = 0.4f;
             constexpr auto defaultPitchFactor = 1.f;
 
-            constexpr auto fftFrameSizeChoices = std::array<size_t, 3>{ 32, 64, 128 };
+            constexpr auto fftFrameSize = 4096;
         }
     }
 }

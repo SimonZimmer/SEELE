@@ -4,8 +4,8 @@
 namespace hidonash
 {
     AudioProcessorPtr
-    Factory::createEngine(std::atomic<float>& pitchRatio, std::atomic<float>& fftFrameSize, double sampleRate) const
+    Factory::createEngine(std::atomic<float>& pitchRatio, double sampleRate) const
     {
-        return std::make_unique<Engine>(pitchRatio, fftFrameSize, sampleRate);
+        return std::make_unique<Engine>(pitchRatio, sampleRate);
     }
 }

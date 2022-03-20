@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.13)
 
 project(seeleCore)
 
-find_package(fft REQUIRED)
-
 add_library(seeleCore
     STATIC
         src/Factory.cpp

@@ -6,152 +6,147 @@
 
 namespace hidonash
 {
+    namespace
+    {
+        double getWindowFactor(size_t k, size_t windowSize)
+        {
+            return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
+        }
+    }
+
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
-        fftWorkspace_.resize(2 * max_frame_length_);
-        std::memset(inFifo_.data(), 0, max_frame_length_ * sizeof(float));
-        std::memset(outFifo_.data(), 0, max_frame_length_ * sizeof(float));
-        std::memset(fftWorkspace_.data(), 0, 2 * max_frame_length_ * sizeof(float));
-        std::memset(lastPhase_.data(), 0, (max_frame_length_ / 2 + 1) * sizeof(float));
-        std::memset(sumPhase_.data(), 0, (max_frame_length_ / 2 + 1) * sizeof(float));
-        std::memset(outputAccumulator_.data(), 0, 2 * max_frame_length_ * sizeof(float));
-        std::memset(gAnaFreq.data(), 0, max_frame_length_*sizeof(float));
-        std::memset(gAnaMagn.data(), 0, max_frame_length_*sizeof(float));
+        fftFrameSize_ = config::parameters::fftFrameSize;
+        const auto fftOrder = std::log2(fftFrameSize_);
+        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
+        gainCompensation_ = std::pow(10, (65. / 20.));
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
-        static long numAccumulatedSamples = false;
-        double magnitude, phase, phase_difference, real, imag;
-        double frequencyResolution, expectedPhaseDifference;
-        long i, k, qpd, index, inFifoLatency, stepSize;
+        auto stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
+        auto freqPerBin = sampleRate_ / (double)fftFrameSize_;
+        auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize_;
+        auto inFifoLatency = fftFrameSize_ - stepSize;
+        static long sampleCounter = false;
+        if (sampleCounter == false) sampleCounter = inFifoLatency;
 
-        /* set up some handy variables */
-        stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
-        frequencyResolution = sampleRate_ / (double)fftFrameSize_;
-        expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize_;
-        inFifoLatency = fftFrameSize_ - stepSize;
-        if (numAccumulatedSamples == false) numAccumulatedSamples = inFifoLatency;
+        //TODO sum stereo to mono instead of processing left channel only
+        for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+            audioBuffer[0][sa] = audioBuffer[0][sa] + audioBuffer[1][sa] * 0.5f;
 
-        /* main processing loop */
         auto indata = audioBuffer.getDataPointer();
         auto outdata = audioBuffer.getDataPointer();
-        for (i = 0; i < audioBuffer.getNumSamples(); i++)
+        for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
         {
             /* As long as we have not yet collected enough data just read in */
-            inFifo_[numAccumulatedSamples] = indata[i];
-            outdata[i] = outFifo_[numAccumulatedSamples - inFifoLatency];
-            numAccumulatedSamples++;
+            fifoIn_[sampleCounter] = indata[sa];
+            outdata[sa] = fifoOut_[sampleCounter - inFifoLatency];
+            sampleCounter++;
 
             /* now we have enough data for processing */
-            if (numAccumulatedSamples >= fftFrameSize_)
+            if (sampleCounter >= fftFrameSize_)
             {
-                numAccumulatedSamples = inFifoLatency;
+                sampleCounter = inFifoLatency;
 
-                /* do windowing and re,im interleave */
-                for (k = 0; k < fftFrameSize_; k++)
+                /* do windowing */
+                for (auto k = 0; k < fftFrameSize_;k++)
                 {
-                    fftWorkspace_[k].real(inFifo_[k] * window_[k]);
+                    fftWorkspace_[k].real(fifoIn_[k] * getWindowFactor(k, fftFrameSize_));
                     fftWorkspace_[k].imag(0.);
                 }
 
-                /* ***************** ANALYSIS ******************* */
-                fft(fftWorkspace_.data(), fftFrameSize_, false);
+                fft(fftWorkspace_.data(), false);
+                analysis(freqPerBin, expectedPhaseDifference);
 
-                /* this is the analysis step */
-                for (k = 0; k <= fftFrameSize_ / 2; k++)
-                {
-                    /* de-interlace FFT buffer */
-                    real = fftWorkspace_[k].real();
-                    imag = fftWorkspace_[k].imag();
-
-                    /* compute magnitude and phase */
-                    magnitude = 2. * sqrt(real * real + imag * imag);
-                    phase = atan2(imag, real);
-
-                    /* compute phase difference */
-                    phase_difference = phase - lastPhase_[k];
-                    lastPhase_[k] = phase;
-                    /* subtract expected phase difference */
-                    phase_difference -= (double)k * expectedPhaseDifference;
-                    /* map delta phase into +/- Pi interval */
-                    qpd = phase_difference / M_PI;
-                    if (qpd >= 0) qpd += qpd&1;
-                    else qpd -= qpd&1;
-                    phase_difference -= M_PI * (double)qpd;
-                    /* get deviation from bin frequency from the +/- Pi interval */
-                    phase_difference = config::constants::oversamplingFactor * phase_difference / (2. * M_PI);
-                    /* compute the k-th partials' true frequency */
-                    phase_difference = (double)k * frequencyResolution + phase_difference * frequencyResolution;
-
-                    /* store magnitude and true frequency in analysis arrays */
-                    gAnaMagn[k] = magnitude;
-                    gAnaFreq[k] = phase_difference;
-                }
-
-                /* ***************** PROCESSING ******************* */
                 /* this does the actual pitch shifting */
-                memset(synthesisMagnitude_.data(), 0, fftFrameSize_ * sizeof(float));
+                memset(synthesisMagnitudeBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
                 memset(synthesisFrequencyBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
-                for (k = 0; k <= (fftFrameSize_ / 2); k++)
+                for (auto k = 0; k <= fftFrameSize_ / 2; k++)
                 {
-                    index = k * pitchFactor_;
+                    auto index = k * pitchFactor_;
                     if (index <= (fftFrameSize_ / 2))
                     {
-                        synthesisMagnitude_[index] += gAnaMagn[k];
-                        synthesisFrequencyBuffer_[index] = gAnaFreq[k] * pitchFactor_;
+                        synthesisMagnitudeBuffer_[index] += analysisMagnitudeBuffer_[k];
+                        synthesisFrequencyBuffer_[index] = analysisFrequencyBuffer_[k] * pitchFactor_;
                     }
                 }
 
-                /* ***************** SYNTHESIS ******************* */
-                /* this is the synthesis step */
-                for (k = 0; k <= (fftFrameSize_ / 2); k++)
-                {
-                    /* get magnitude and true frequency from synthesis arrays */
-                    magnitude = synthesisMagnitude_[k];
-
-                    phase_difference = synthesisFrequencyBuffer_[k];
-                    /* subtract bin mid frequency */
-                    phase_difference -= static_cast<double>(k) * frequencyResolution;
-                    /* get bin deviation from freq deviation */
-                    phase_difference /= frequencyResolution;
-                    /* take osamp into account */
-                    phase_difference = 2. * M_PI * phase_difference / config::constants::oversamplingFactor;
-                    /* add the overlap phase advance back in */
-                    phase_difference += static_cast<double>(k) * expectedPhaseDifference;
-
-                    /* accumulate delta phase to get bin phase */
-                    sumPhase_[k] += phase_difference;
-                    phase = sumPhase_[k];
-
-                    /* get real and imag part */
-                    fftWorkspace_[k].real(magnitude * cos(phase));
-                    fftWorkspace_[k].imag(magnitude * sin(phase));
-                }
-
-                /* zero negative frequencies */
-                for (k = fftFrameSize_ + 2; k < 2* fftFrameSize_; k++) fftWorkspace_[k] = 0.;
-
-                /* do inverse transform */
-                fft(fftWorkspace_.data(), fftFrameSize_, true);
+                synthesis(freqPerBin, expectedPhaseDifference);
+                fft(fftWorkspace_.data(), true);
 
                 /* do windowing and add to output accumulator */
-                for(k = 0; k < fftFrameSize_; k++)
-                    outputAccumulator_[k] += 2. * window_[k] * fftWorkspace_[k].real() / ((fftFrameSize_ / 2) * config::constants::oversamplingFactor);
+                for(auto k = 0; k < fftFrameSize_; k++)
+                    outputAccumulationBuffer_[k] += 2. * getWindowFactor(k, fftFrameSize_) * fftWorkspace_[k].real() / ((fftFrameSize_ / 2) * config::constants::oversamplingFactor);
 
-                for (k = 0; k < stepSize; k++) outFifo_[k] = outputAccumulator_[k];
+                for (auto k = 0; k < stepSize; k++) fifoOut_[k] = outputAccumulationBuffer_[k];
 
                 /* shift accumulator */
-                memmove(outputAccumulator_.data(), outputAccumulator_.data() + stepSize, fftFrameSize_ * sizeof(float));
-
+                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, fftFrameSize_ * sizeof(float));
                 /* move input FIFO */
-                for (k = 0; k < inFifoLatency; k++) inFifo_[k] = inFifo_[k + stepSize];
+                for (auto k = 0; k < inFifoLatency; k++) fifoIn_[k] = fifoIn_[k + stepSize];
             }
+        }
+
+        for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
+            for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+                audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
+    }
+
+    void PitchShifter::synthesis(int freqPerBin, double expectedPhaseDifference)
+    {
+        for (auto k = 0; k <= fftFrameSize_; k++)
+        {
+            const auto magnitude = synthesisMagnitudeBuffer_[k];
+            auto phase = synthesisFrequencyBuffer_[k];
+            /* subtract bin mid frequency */
+            auto phaseDifference = phase - (double)k * freqPerBin;
+            /* get bin deviation from freq deviation */
+            phaseDifference /= freqPerBin;
+            /* take osamp into account */
+            phaseDifference = 2. * M_PI * phaseDifference / config::constants::oversamplingFactor;
+            /* add the overlap phase advance back in */
+            phaseDifference += (double)k * expectedPhaseDifference;
+            /* accumulate delta phase to get bin phase */
+            sumPhase_[k] += phaseDifference;
+            phase = sumPhase_[k];
+            /* get real and imag part and re-interleave */
+            fftWorkspace_[k].real(magnitude * cos(phase));
+            fftWorkspace_[k].imag(magnitude * sin(phase));
         }
     }
 
-    void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, long fftFrameSize, bool inverse)
+    void PitchShifter::analysis(int freqPerBin, double expectedPhaseDifference)
+    {
+        for (auto k = 0; k <= fftFrameSize_ / 2; k++)
+        {
+            const auto real = fftWorkspace_[k].real();
+            const auto imag = fftWorkspace_[k].imag();
+            /* compute magnitude and phase */
+            const auto magnitude = 2. * sqrt(real * real + imag * imag);
+            const auto phase = atan2(imag,real);
+            /* compute phase difference */
+            auto phaseDifference = phase - lastPhase_[k];
+            lastPhase_[k] = phase;
+            /* subtract expected phase difference */
+            phaseDifference -= (double)k * expectedPhaseDifference;
+            /* map delta phase into +/- Pi interval */
+            long qpd = phaseDifference / M_PI;
+            if (qpd >= 0) qpd += qpd&1;
+            else qpd -= qpd&1;
+            phaseDifference -= M_PI * (double)qpd;
+            /* get deviation from bin frequency from the +/- Pi interval */
+            phaseDifference = config::constants::oversamplingFactor * phaseDifference / (2. * M_PI);
+            /* compute the k-th partials' true frequency */
+            phaseDifference = (double)k * freqPerBin + phaseDifference * freqPerBin;
+
+            analysisMagnitudeBuffer_[k] = magnitude;
+            analysisFrequencyBuffer_[k] = phaseDifference;
+        }
+    }
+
+    void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, bool inverse)
     {
         fft_->perform(fftBuffer, fftBuffer, inverse);
     }
@@ -159,19 +154,5 @@ namespace hidonash
     void PitchShifter::setPitchRatio(float pitchRatio)
     {
         pitchFactor_ = pitchRatio;
-    }
-
-    void PitchShifter::setFftFrameSize(float fftFrameSize)
-    {
-        const auto fftFrameSizeIndex = static_cast<int>(fftFrameSize) % config::parameters::fftFrameSizeChoices.size();
-        fftFrameSize_ = config::parameters::fftFrameSizeChoices[fftFrameSizeIndex];
-
-        buffer_.resize(2 * fftFrameSize_);
-
-        const auto fftOrder = std::log2(fftFrameSize_);
-        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-
-        for (auto sa = 0; sa < fftFrameSize_; ++sa)
-            window_.push_back(-.5 * cos(2. * M_PI * static_cast<double>(sa) / static_cast<double>(fftFrameSize_)) + .5);
     }
 }
