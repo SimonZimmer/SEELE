@@ -7,8 +7,12 @@ namespace hidonash
     class Factory : public IFactory
     {
     public:
-        ~Factory() = default;
+        ~Factory() override = default;
 
         AudioProcessorPtr createEngine(std::atomic<float>& pitchRatio, double sampleRate) const override;
+
+        [[nodiscard]] AnalysisPtr createAnalysis(int freqPerBin) const override;
+
+        [[nodiscard]] SynthesisPtr createSynthesis(int freqPerBin) const override;
     };
 }

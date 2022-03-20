@@ -17,17 +17,18 @@ namespace hidonash
 
     using namespace config;
 
-    PitchShifter::PitchShifter(double sampleRate)
+    PitchShifter::PitchShifter(double sampleRate, FactoryPtr factory)
     : sampleRate_(sampleRate)
+    , freqPerBin_(static_cast<int>(static_cast<float>(sampleRate_) / static_cast<float>(constants::fftFrameSize)))
+    , factory_(std::move(factory))
+    , analysis_(factory_->createAnalysis(freqPerBin_))
+    , synthesis_(factory_->createSynthesis(freqPerBin_))
     {
         const auto fftOrder = std::log2(constants::fftFrameSize);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
         //TODO: wrap in volume function
         gainCompensation_ = std::pow(10, (65. / 20.));
-        freqPerBin_ = static_cast<int>(static_cast<float>(sampleRate_) / static_cast<float>(constants::fftFrameSize));
         fftWorkspace_.resize(constants::analysisSize * 2);
-        analysis_ = std::make_unique<Analysis>(freqPerBin_);
-        synthesis_ = std::make_unique<Synthesis>(freqPerBin_);
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
@@ -44,12 +45,10 @@ namespace hidonash
         auto outdata = audioBuffer.getDataPointer();
         for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
         {
-            /* As long as we have not yet collected enough data just read in */
             fifoIn_[sampleCounter] = indata[sa];
             outdata[sa] = fifoOut_[sampleCounter - inFifoLatency];
             sampleCounter++;
 
-            /* now we have enough data for processing */
             if (sampleCounter >= constants::fftFrameSize)
             {
                 sampleCounter = inFifoLatency;
@@ -88,9 +87,7 @@ namespace hidonash
                 for (auto k = 0; k < stepSize; ++k)
                     fifoOut_[k] = outputAccumulationBuffer_[k];
 
-                /* shift accumulator */
                 memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, constants::fftFrameSize * sizeof(float));
-                /* move input FIFO */
                 for (auto k = 0; k < inFifoLatency; k++)
                     fifoIn_[k] = fifoIn_[k + stepSize];
             }

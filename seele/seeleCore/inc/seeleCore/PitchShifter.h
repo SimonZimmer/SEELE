@@ -10,6 +10,7 @@
 #include "IAnalysis.h"
 #include "ISynthesis.h"
 #include "Config.h"
+#include "Factory.h"
 
 
 namespace hidonash
@@ -17,7 +18,7 @@ namespace hidonash
     class PitchShifter
     {
     public:
-        explicit PitchShifter(double sampleRate);
+        explicit PitchShifter(double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
         ~PitchShifter() = default;
 
         void process(core::AudioBuffer<float>& audioBuffer);
@@ -25,6 +26,7 @@ namespace hidonash
         void setPitchRatio(float pitchRatio);
 
     private:
+        FactoryPtr factory_;
         AnalysisPtr analysis_;
         SynthesisPtr synthesis_;
 
