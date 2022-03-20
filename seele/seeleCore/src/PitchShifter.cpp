@@ -23,7 +23,7 @@ namespace hidonash
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
         gainCompensation_ = std::pow(10, (65. / 20.));
         freqPerBin_ = sampleRate_ / (double)fftFrameSize_;
-
+        fftWorkspace_.resize(config::constants::analysisSize * 2);
         analysis_ = std::make_unique<Analysis>(freqPerBin_);
     }
 
@@ -61,11 +61,9 @@ namespace hidonash
                 }
 
                 fft(fftWorkspace_.data(), false);
-
                 analysis_->perform(fftWorkspace_.data());
-                analysisMagnitudeBuffer_ = analysis_->getMagnitudeBuffer();
-                analysisFrequencyBuffer_ = analysis_->getFrequencyBuffer();
-
+                const auto analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
+                const auto analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
 
                 /* this does the actual pitch shifting */
                 memset(synthesisMagnitudeBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
@@ -75,8 +73,8 @@ namespace hidonash
                     auto index = k * pitchFactor_;
                     if (index <= (fftFrameSize_ / 2))
                     {
-                        synthesisMagnitudeBuffer_[index] += analysisMagnitudeBuffer_[k];
-                        synthesisFrequencyBuffer_[index] = analysisFrequencyBuffer_[k] * pitchFactor_;
+                        synthesisMagnitudeBuffer_[index] += analysisMagnitudeBuffer[k];
+                        synthesisFrequencyBuffer_[index] = analysisFrequencyBuffer[k] * pitchFactor_;
                     }
                 }
 

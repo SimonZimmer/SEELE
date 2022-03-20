@@ -1,12 +1,7 @@
 #pragma once
 
-#include <array>
-
-#include <juce_dsp/juce_dsp.h>
-
-#include <core/AudioBuffer.h>
-
 #include "IAnalysis.h"
+
 
 namespace hidonash
 {
@@ -16,18 +11,18 @@ namespace hidonash
         explicit Analysis(int freqPerBin);
         ~Analysis() override = default;
 
-        std::array<float, 8192> getMagnitudeBuffer() override;
+        const std::vector<float>& getMagnitudeBuffer() override;
 
-        std::array<float, 8192> getFrequencyBuffer() override;
+        const std::vector<float>& getFrequencyBuffer() override;
 
         void perform(juce::dsp::Complex<float>* fftWorkspace) override;
 
     private:
         int freqPerBin_;
 
-        std::array<float, 8192/2+1> lastPhase_;
-        std::array<float, 8192> analysisFrequencyBuffer_;
-        std::array<float, 8192> analysisMagnitudeBuffer_;
+        std::vector<float> lastPhase_;
+        std::vector<float> analysisFrequencyBuffer_;
+        std::vector<float> analysisMagnitudeBuffer_;
     };
 
 }
