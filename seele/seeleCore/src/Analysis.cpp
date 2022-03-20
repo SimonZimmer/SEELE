@@ -33,7 +33,6 @@ namespace hidonash
         {
             const auto real = fftWorkspace[sa].real();
             const auto imag = fftWorkspace[sa].imag();
-            /* compute magnitude and phase */
             const auto magnitude = 2. * sqrt(real * real + imag * imag);
             const auto phase = atan2(imag,real);
             /* compute phase difference */

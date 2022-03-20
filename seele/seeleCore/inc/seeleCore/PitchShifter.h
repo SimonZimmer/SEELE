@@ -26,6 +26,8 @@ namespace hidonash
         void setPitchRatio(float pitchRatio);
 
     private:
+        void pitchShift();
+
         FactoryPtr factory_;
         AnalysisPtr analysis_;
         SynthesisPtr synthesis_;
