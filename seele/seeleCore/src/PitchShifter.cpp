@@ -20,7 +20,7 @@ namespace hidonash
         fftFrameSize_ = config::parameters::fftFrameSize;
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-        gainCompensation_ = std::pow(10, (60. / 20.));
+        gainCompensation_ = std::pow(10, (65. / 20.));
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
