@@ -24,6 +24,12 @@ namespace hidonash
         return frequencyBuffer_;
     }
 
+    void Synthesis::reset()
+    {
+        std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.f);
+        std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.f);
+    }
+
     void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace)
     {
         for (auto k = 0; k <= config::constants::fftFrameSize; k++)

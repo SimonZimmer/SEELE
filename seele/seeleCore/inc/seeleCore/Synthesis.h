@@ -16,6 +16,8 @@ namespace hidonash
 
         std::array<float, config::constants::analysisSize>& getFrequencyBuffer() override;
 
+        void reset() override;
+
         void perform(juce::dsp::Complex<float>* fftWorkspace) override;
 
     private:

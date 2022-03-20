@@ -1,7 +1,6 @@
 #include <cmath>
 
 #include "PitchShifter.h"
-#include "Config.h"
 #include "Analysis.h"
 #include "Synthesis.h"
 
@@ -16,27 +15,28 @@ namespace hidonash
         }
     }
 
+    using namespace config;
+
     PitchShifter::PitchShifter(double sampleRate)
     : sampleRate_(sampleRate)
     {
-        fftFrameSize_ = config::constants::fftFrameSize;
-        const auto fftOrder = std::log2(fftFrameSize_);
+        const auto fftOrder = std::log2(constants::fftFrameSize);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
+        //TODO: wrap in volume function
         gainCompensation_ = std::pow(10, (65. / 20.));
-        freqPerBin_ = sampleRate_ / (double)fftFrameSize_;
-        fftWorkspace_.resize(config::constants::analysisSize * 2);
+        freqPerBin_ = static_cast<int>(static_cast<float>(sampleRate_) / static_cast<float>(constants::fftFrameSize));
+        fftWorkspace_.resize(constants::analysisSize * 2);
         analysis_ = std::make_unique<Analysis>(freqPerBin_);
         synthesis_ = std::make_unique<Synthesis>(freqPerBin_);
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
-        auto stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
-        auto inFifoLatency = fftFrameSize_ - stepSize;
+        auto stepSize = constants::fftFrameSize / constants::oversamplingFactor;
+        auto inFifoLatency = constants::fftFrameSize - stepSize;
         static long sampleCounter = false;
         if (sampleCounter == false) sampleCounter = inFifoLatency;
 
-        //TODO sum stereo to mono instead of processing left channel only
         for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
             audioBuffer[0][sa] = audioBuffer[0][sa] + audioBuffer[1][sa] * 0.5f;
 
@@ -50,61 +50,53 @@ namespace hidonash
             sampleCounter++;
 
             /* now we have enough data for processing */
-            if (sampleCounter >= fftFrameSize_)
+            if (sampleCounter >= constants::fftFrameSize)
             {
                 sampleCounter = inFifoLatency;
 
-                /* do windowing */
-                for (auto k = 0; k < fftFrameSize_;k++)
+                for (auto k = 0; k < constants::fftFrameSize;k++)
                 {
-                    fftWorkspace_[k].real(fifoIn_[k] * getWindowFactor(k, fftFrameSize_));
-                    fftWorkspace_[k].imag(0.);
+                    fftWorkspace_[k].real(fifoIn_[k] * getWindowFactor(k, constants::fftFrameSize));
+                    fftWorkspace_[k].imag(0.f);
                 }
 
-                fft(fftWorkspace_.data(), false);
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
                 analysis_->perform(fftWorkspace_.data());
                 const auto analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
                 const auto analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
 
+                synthesis_->reset();
                 auto&& synthesisMagnitudeBuffer = synthesis_->getMagnitudeBuffer();
                 auto&& synthesisFrequencyBuffer = synthesis_->getFrequencyBuffer();
-                std::fill(synthesisMagnitudeBuffer.begin(), synthesisMagnitudeBuffer.end(), 0.f);
-                std::fill(synthesisFrequencyBuffer.begin(), synthesisFrequencyBuffer.end(), 0.f);
-                for (auto k = 0; k <= fftFrameSize_ / 2; k++)
+
+                for (auto sa = 0; sa <= constants::fftFrameSize / 2; ++sa)
                 {
-                    auto index = k * pitchFactor_;
-                    if (index <= (fftFrameSize_ / 2))
+                    auto index = static_cast<size_t>(sa * pitchFactor_);
+                    if (index <= static_cast<size_t>(constants::fftFrameSize / 2))
                     {
-                        synthesisMagnitudeBuffer[index] += analysisMagnitudeBuffer[k];
-                        synthesisFrequencyBuffer[index] = analysisFrequencyBuffer[k] * pitchFactor_;
+                        synthesisMagnitudeBuffer[index] += analysisMagnitudeBuffer[sa];
+                        synthesisFrequencyBuffer[index] = analysisFrequencyBuffer[sa] * pitchFactor_;
                     }
                 }
 
                 synthesis_->perform(fftWorkspace_.data());
-                fft(fftWorkspace_.data(), true);
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
 
-                /* do windowing and add to output accumulator */
-                for(auto k = 0; k < fftFrameSize_; k++)
-                    outputAccumulationBuffer_[k] += 2. * getWindowFactor(k, fftFrameSize_) * fftWorkspace_[k].real() / ((fftFrameSize_ / 2) * config::constants::oversamplingFactor);
+                for(auto k = 0; k < constants::fftFrameSize; ++k)
+                    outputAccumulationBuffer_[k] += 2.f * getWindowFactor(k, constants::fftFrameSize) * fftWorkspace_[k].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
 
-                for (auto k = 0; k < stepSize; k++)
+                for (auto k = 0; k < stepSize; ++k)
                     fifoOut_[k] = outputAccumulationBuffer_[k];
 
                 /* shift accumulator */
-                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, fftFrameSize_ * sizeof(float));
+                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, constants::fftFrameSize * sizeof(float));
                 /* move input FIFO */
-                for (auto k = 0; k < inFifoLatency; k++) fifoIn_[k] = fifoIn_[k + stepSize];
+                for (auto k = 0; k < inFifoLatency; k++)
+                    fifoIn_[k] = fifoIn_[k + stepSize];
             }
         }
 
-        for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
-            for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
-                audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
-    }
-
-    void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, bool inverse)
-    {
-        fft_->perform(fftBuffer, fftBuffer, inverse);
+        audioBuffer.multiply(gainCompensation_, audioBuffer.getNumSamples());
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

@@ -18,6 +18,8 @@ namespace hidonash
 
         virtual std::array<float, config::constants::analysisSize>& getFrequencyBuffer() = 0;
 
+        virtual void reset() = 0;
+
         virtual void perform(juce::dsp::Complex<float>* fftWorkspace) = 0;
     };
 
