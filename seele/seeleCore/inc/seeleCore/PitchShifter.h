@@ -8,6 +8,7 @@
 
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
+#include "ISynthesis.h"
 
 
 namespace hidonash
@@ -25,9 +26,8 @@ namespace hidonash
         void fft(juce::dsp::Complex<float>* fftBuffer, bool inverse);
 
     private:
-        void synthesis(int freqPerBin, double expectedPhaseDifference);
-
         AnalysisPtr analysis_;
+        SynthesisPtr synthesis_;
 
         float pitchFactor_{ 0.f };
         double sampleRate_;
