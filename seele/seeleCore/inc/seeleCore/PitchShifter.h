@@ -23,8 +23,6 @@ namespace hidonash
 
         void setPitchRatio(float pitchRatio);
 
-        void fft(juce::dsp::Complex<float>* fftBuffer, bool inverse);
-
     private:
         FactoryPtr factory_;
 

@@ -59,11 +59,10 @@ namespace hidonash
                     fftWorkspace_[k].imag(0.);
                 }
 
-                fft(fftWorkspace_.data(), false);
-
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
                 analysis_->perform(fftWorkspace_.data());
                 synthesis_->perform(fftWorkspace_.data(), *analysis_, pitchFactor_);
-                fft(fftWorkspace_.data(), true);
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
 
                 /* do windowing and add to output accumulator */
                 for(auto k = 0; k < fftFrameSize_; k++)
@@ -81,11 +80,6 @@ namespace hidonash
         for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
             for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
                 audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
-    }
-
-    void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, bool inverse)
-    {
-        fft_->perform(fftBuffer, fftBuffer, inverse);
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)
