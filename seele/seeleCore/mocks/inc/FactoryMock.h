@@ -4,7 +4,6 @@
 
 #include <seeleCore/IFactory.h>
 
-
 namespace hidonash
 {
     class FactoryMock : public IFactory

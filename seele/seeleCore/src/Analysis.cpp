@@ -8,12 +8,6 @@ namespace hidonash
     Analysis::Analysis(int freqPerBin)
     : freqPerBin_(freqPerBin)
     {
-        lastPhase_.resize(config::constants::analysisSize / 2 + 1);
-        analysisMagnitudeBuffer_.resize(config::constants::analysisSize);
-        analysisFrequencyBuffer_.resize(config::constants::analysisSize);
-
-        std::fill(analysisMagnitudeBuffer_.begin(), analysisMagnitudeBuffer_.end(), 0.f);
-        std::fill(analysisFrequencyBuffer_.begin(), analysisMagnitudeBuffer_.end(), 0.f);
     }
 
     std::array<float, config::constants::analysisSize> Analysis::getMagnitudeBuffer() const
@@ -28,29 +22,30 @@ namespace hidonash
 
     void Analysis::perform(juce::dsp::Complex<float>* fftWorkspace)
     {
-        for (auto sa = 0; sa <= config::constants::fftFrameSize / 2; sa++)
+        for (auto k = 0; k <= config::constants::fftFrameSize/ 2; k++)
         {
-            const auto real = fftWorkspace[sa].real();
-            const auto imag = fftWorkspace[sa].imag();
+            const auto real = fftWorkspace[k].real();
+            const auto imag = fftWorkspace[k].imag();
+            /* compute magnitude and phase */
             const auto magnitude = 2. * sqrt(real * real + imag * imag);
             const auto phase = atan2(imag,real);
             /* compute phase difference */
-            auto phaseDifference = phase - lastPhase_[sa];
-            lastPhase_[sa] = phase;
+            auto phaseDifference = phase - lastPhase_[k];
+            lastPhase_[k] = phase;
             /* subtract expected phase difference */
-            phaseDifference -= sa * config::constants::expectedPhaseDifference;
+            phaseDifference -= (double)k * config::constants::expectedPhaseDifference;
             /* map delta phase into +/- Pi interval */
             long qpd = phaseDifference / M_PI;
             if (qpd >= 0) qpd += qpd&1;
             else qpd -= qpd&1;
             phaseDifference -= M_PI * (double)qpd;
             /* get deviation from bin frequency from the +/- Pi interval */
-            phaseDifference = static_cast<float>(config::constants::oversamplingFactor) * phaseDifference / (2. * M_PI);
-            /* compute the sa-th partials' true frequency */
-            phaseDifference = static_cast<float>(sa) * freqPerBin_ + phaseDifference * static_cast<float>(freqPerBin_);
+            phaseDifference = config::constants::oversamplingFactor * phaseDifference / (2. * M_PI);
+            /* compute the k-th partials' true frequency */
+            phaseDifference = (double)k * freqPerBin_ + phaseDifference * freqPerBin_;
 
-            analysisMagnitudeBuffer_[sa] = static_cast<float>(magnitude);
-            analysisFrequencyBuffer_[sa] = phaseDifference;
+            analysisMagnitudeBuffer_[k] = magnitude;
+            analysisFrequencyBuffer_[k] = phaseDifference;
         }
     }
 }

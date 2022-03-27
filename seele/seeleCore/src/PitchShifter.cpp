@@ -1,17 +1,17 @@
 #include <cmath>
 
 #include "PitchShifter.h"
+#include "Config.h"
 #include "Analysis.h"
-#include "Synthesis.h"
 
 
 namespace hidonash
 {
     namespace
     {
-        double getWindowFactor(size_t sample, size_t windowSize)
+        double getWindowFactor(size_t k, size_t windowSize)
         {
-            return (-.5 * cos(2. * M_PI * (double)sample / (double)windowSize) + .5);
+            return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
         }
     }
 
@@ -20,13 +20,12 @@ namespace hidonash
     , freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(config::constants::fftFrameSize)))
     , synthesis_(factory_->createSynthesis(freqPerBin_, factory_->createAnalysis(freqPerBin_)))
     {
-        const auto fftOrder = std::log2(constants::fftFrameSize);
+        fftFrameSize_ = config::constants::fftFrameSize;
+        const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-        //TODO: wrap in volume function
         gainCompensation_ = std::pow(10, (65. / 20.));
     }
 
-    //TODO put this in its own class
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
         auto stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
@@ -34,21 +33,23 @@ namespace hidonash
         static long sampleCounter = false;
         if (sampleCounter == false) sampleCounter = inFifoLatency;
 
+        //TODO sum stereo to mono instead of processing left channel only
         for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
             audioBuffer[0][sa] = audioBuffer[0][sa] + audioBuffer[1][sa] * 0.5f;
 
-        auto inputData = audioBuffer.getDataPointer();
-        auto outputData = audioBuffer.getDataPointer();
+        auto indata = audioBuffer.getDataPointer();
+        auto outdata = audioBuffer.getDataPointer();
         for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
         {
-            fifoIn_[sampleCounter] = inputData[sa];
-            outputData[sa] = fifoOut_[sampleCounter - inFifoLatency];
+            /* As long as we have not yet collected enough data just read in */
+            fifoIn_[sampleCounter] = indata[sa];
+            outdata[sa] = fifoOut_[sampleCounter - inFifoLatency];
             sampleCounter++;
 
-            if (sampleCounter >= constants::fftFrameSize)
+            /* now we have enough data for processing */
+            if (sampleCounter >= fftFrameSize_)
             {
                 sampleCounter = inFifoLatency;
-                pitchShift();
 
                 /* do windowing */
                 for (auto k = 0; k < fftFrameSize_;k++)
@@ -74,7 +75,9 @@ namespace hidonash
             }
         }
 
-        audioBuffer.multiply(gainCompensation_, audioBuffer.getNumSamples());
+        for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
+            for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+                audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

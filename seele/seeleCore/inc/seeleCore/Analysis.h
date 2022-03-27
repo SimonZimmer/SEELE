@@ -1,8 +1,13 @@
 #pragma once
 
+#include <array>
+
+#include <juce_dsp/juce_dsp.h>
+
+#include <core/AudioBuffer.h>
+
 #include "IAnalysis.h"
 #include "Config.h"
-
 
 
 namespace hidonash
