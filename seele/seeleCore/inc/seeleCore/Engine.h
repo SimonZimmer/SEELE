@@ -24,3 +24,4 @@ namespace hidonash
         std::atomic<float>& pitchRatio_;
     };
 }
+

@@ -13,7 +13,7 @@
 
 namespace hidonash
 {
-    class PitchShifter
+    class PitchShifter : public IAudioProcessor
     {
     public:
         explicit PitchShifter(double sampleRate, FactoryPtr factory);

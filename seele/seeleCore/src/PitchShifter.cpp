@@ -18,8 +18,8 @@ namespace hidonash
     }
 
     PitchShifter::PitchShifter(double sampleRate, FactoryPtr factory)
-    : factory_(std::move(factory))
-    , freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(constants::fftFrameSize)))
+    : freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(constants::fftFrameSize)))
+    , factory_(std::move(factory))
     , synthesis_(factory_->createSynthesis(freqPerBin_, factory_->createAnalysis(freqPerBin_)))
     {
         const auto fftOrder = std::log2(constants::fftFrameSize);
@@ -39,19 +39,17 @@ namespace hidonash
 
         for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
         {
-            /* As long as we have not yet collected enough data just read in */
             fifoIn_[sampleCounter] = audioBuffer.getDataPointer()[sa];
             audioBuffer.getDataPointer()[sa] = fifoOut_[sampleCounter - inFifoLatency];
             sampleCounter++;
 
-            /* now we have enough data for processing */
             if (sampleCounter >= constants::fftFrameSize)
             {
                 sampleCounter = inFifoLatency;
-                for (auto k = 0; k < constants::fftFrameSize;k++)
+                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
                 {
-                    fftWorkspace_[k].real(fifoIn_[k] * getWindowFactor(k, constants::fftFrameSize));
-                    fftWorkspace_[k].imag(0.);
+                    fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
+                    fftWorkspace_[sa].imag(0.);
                 }
 
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
@@ -59,16 +57,17 @@ namespace hidonash
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
 
                 /* do windowing and add to output accumulator */
-                for(auto k = 0; k < constants::fftFrameSize; k++)
-                    outputAccumulationBuffer_[k] += 2. * getWindowFactor(k, constants::fftFrameSize) * fftWorkspace_[k].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
+                for(auto sa = 0; sa < constants::fftFrameSize; sa++)
+                    outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
 
-                for (auto k = 0; k < stepSize; k++)
-                    fifoOut_[k] = outputAccumulationBuffer_[k];
+                for (auto sa = 0; sa < stepSize; sa++)
+                    fifoOut_[sa] = outputAccumulationBuffer_[sa];
 
                 /* shift accumulator */
                 memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, constants::fftFrameSize * sizeof(float));
                 /* move input FIFO */
-                for (auto k = 0; k < inFifoLatency; k++) fifoIn_[k] = fifoIn_[k + stepSize];
+                for (auto sa = 0; sa < inFifoLatency; sa++)
+                    fifoIn_[sa] = fifoIn_[sa + stepSize];
             }
         }
 
@@ -80,3 +79,4 @@ namespace hidonash
         pitchFactor_ = pitchRatio;
     }
 }
+
