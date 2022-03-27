@@ -24,15 +24,13 @@ namespace hidonash
         void setPitchRatio(float pitchRatio);
 
     private:
+        int freqPerBin_;
         FactoryPtr factory_;
-
-        AnalysisPtr analysis_;
         SynthesisPtr synthesis_;
 
         float pitchFactor_{ 0.f };
         size_t fftFrameSize_;
         double gainCompensation_;
-        int freqPerBin_;
 
         std::array<float, 8192> fifoIn_;
         std::array<float, 8192> fifoOut_;

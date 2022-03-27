@@ -17,9 +17,8 @@ namespace hidonash
 
     PitchShifter::PitchShifter(double sampleRate, FactoryPtr factory)
     : factory_(std::move(factory))
-    , freqPerBin_(sampleRate / (double)fftFrameSize_)
-    , analysis_(factory_->createAnalysis(freqPerBin_))
-    , synthesis_(factory_->createSynthesis(freqPerBin_))
+    , freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(config::constants::fftFrameSize)))
+    , synthesis_(factory_->createSynthesis(freqPerBin_, factory_->createAnalysis(freqPerBin_)))
     {
         fftFrameSize_ = config::constants::fftFrameSize;
         const auto fftOrder = std::log2(fftFrameSize_);
@@ -60,8 +59,7 @@ namespace hidonash
                 }
 
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
-                analysis_->perform(fftWorkspace_.data());
-                synthesis_->perform(fftWorkspace_.data(), *analysis_, pitchFactor_);
+                synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
 
                 /* do windowing and add to output accumulator */

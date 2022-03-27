@@ -17,7 +17,7 @@ namespace hidonash
 
         virtual AnalysisPtr createAnalysis(int freqPerBin) const = 0;
 
-        virtual SynthesisPtr createSynthesis(int freqPerBin) const = 0;
+        virtual SynthesisPtr createSynthesis(int freqPerBin, AnalysisPtr analysis) const = 0;
     };
 
     using FactoryPtr = std::unique_ptr<IFactory>;

@@ -16,8 +16,8 @@ namespace hidonash
         return std::make_unique<Analysis>(freqPerBin);
     }
 
-    SynthesisPtr Factory::createSynthesis(int freqPerBin) const
+    SynthesisPtr Factory::createSynthesis(int freqPerBin, AnalysisPtr analysis) const
     {
-        return std::make_unique<Synthesis>(freqPerBin);
+        return std::make_unique<Synthesis>(freqPerBin, std::move(analysis));
     }
 }

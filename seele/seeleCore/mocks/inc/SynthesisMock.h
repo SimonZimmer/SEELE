@@ -15,6 +15,6 @@ namespace hidonash
 
         MOCK_METHOD(void, reset, ());
 
-        MOCK_METHOD(void, perform, (juce::dsp::Complex<float>*, const IAnalysis&, float));
+        MOCK_METHOD(void, perform, (juce::dsp::Complex<float>*, float));
     };
 }

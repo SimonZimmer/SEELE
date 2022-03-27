@@ -14,7 +14,7 @@ namespace hidonash
     public:
         virtual ~ISynthesis() = default;
 
-        virtual void perform(juce::dsp::Complex<float>* fftWorkspace, const IAnalysis& analysis, float pitchFactor) = 0;
+        virtual void perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor) = 0;
     };
 
     using SynthesisPtr = std::unique_ptr<ISynthesis>;

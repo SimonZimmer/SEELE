@@ -13,6 +13,6 @@ namespace hidonash
 
         [[nodiscard]] AnalysisPtr createAnalysis(int freqPerBin) const override;
 
-        [[nodiscard]] SynthesisPtr createSynthesis(int freqPerBin) const override;
+        [[nodiscard]] SynthesisPtr createSynthesis(int freqPerBin, AnalysisPtr analysis) const override;
     };
 }

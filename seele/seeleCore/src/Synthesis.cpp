@@ -6,18 +6,20 @@
 
 namespace hidonash
 {
-    Synthesis::Synthesis(int freqPerBin)
+    Synthesis::Synthesis(int freqPerBin, AnalysisPtr analysis)
     : freqPerBin_(freqPerBin)
+    , analysis_(std::move(analysis))
     {
     }
 
-    void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, const IAnalysis& analysis, float pitchFactor)
+    void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor)
     {
+        analysis_->perform(fftWorkspace);
         memset(magnitudeBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
         memset(frequencyBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
 
-        auto&& analysisMagnitudeBuffer = analysis.getMagnitudeBuffer();
-        auto&& analysisFrequencyBuffer = analysis.getFrequencyBuffer();
+        auto&& analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
+        auto&& analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
         for (auto k = 0; k <= config::constants::fftFrameSize / 2; k++)
         {
             auto index = k * pitchFactor;
