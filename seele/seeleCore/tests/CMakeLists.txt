@@ -21,6 +21,7 @@ target_link_libraries(seeleCoreTestHost PRIVATE
         seeleCore
         core
         GTest::gtest
+        GTest::gmock
         GTest::gtest_main
         )
 
