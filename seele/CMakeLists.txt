@@ -15,7 +15,8 @@ juce_add_plugin(seelePlugin
         FORMATS ${FORMATS}
         PRODUCT_NAME ${PLUGIN_NAME}
         COMPANY_NAME "Hidonash (Simon Zimmermann)"
-        VERSION 1.0)
+        VERSION 1.0
+        )
 
 target_compile_features(seelePlugin PUBLIC cxx_std_17)
 
@@ -30,7 +31,8 @@ target_compile_definitions(seelePlugin PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
-        JUCE_DISPLAY_SPLASH_SCREEN=0)
+        JUCE_DISPLAY_SPLASH_SCREEN=0
+        )
 
 target_link_libraries(seelePlugin
         PRIVATE
