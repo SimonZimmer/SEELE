@@ -17,8 +17,8 @@ namespace hidonash
 
         MOCK_METHOD(void, perform, (juce::dsp::Complex<float>* fftWorkspace));
 
-        MOCK_METHOD0(getMagnitudeBuffer, std::array<float, 8192>());
+        MOCK_METHOD0(getMagnitudeBuffer, std::array<float, 8192>&());
 
-        MOCK_METHOD0(getFrequencyBuffer, std::array<float, 8192>());
+        MOCK_METHOD0(getFrequencyBuffer, std::array<float, 8192>&());
     };
 }

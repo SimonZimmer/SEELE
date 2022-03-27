@@ -12,13 +12,7 @@ namespace hidonash
         explicit Synthesis(int freqPerBin);
         ~Synthesis() override = default;
 
-        std::array<float, 8192> getMagnitudeBuffer() override;
-
-        std::array<float, 8192> getFrequencyBuffer() override;
-
-        void reset() override;
-
-        void perform(juce::dsp::Complex<float>* fftWorkspace) override;
+        void perform(juce::dsp::Complex<float>* fftWorkspace, const IAnalysis& analysis, float pitchFactor) override;
 
     private:
         int freqPerBin_;

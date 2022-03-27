@@ -63,9 +63,9 @@ namespace hidonash
         ON_CALL(*analysisMockPtr_, getFrequencyBuffer)
                 .WillByDefault(Return(fakeAnalysisBuffer_));
         ON_CALL(*synthesisMockPtr_, getMagnitudeBuffer)
-                .WillByDefault(Return(fakeSynthesisBuffer));
+                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
         ON_CALL(*synthesisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(Return(fakeSynthesisBuffer));
+                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
 
         auto&& pitchShifter = PitchShifter(44100, std::move(factoryMock_));
         auto&& buffer = core::AudioBuffer<float>(2, 128);

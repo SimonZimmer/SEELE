@@ -16,22 +16,20 @@ namespace hidonash
     }
 
     PitchShifter::PitchShifter(double sampleRate, FactoryPtr factory)
-    : sampleRate_(sampleRate)
-    , factory_(std::move(factory))
+    : factory_(std::move(factory))
+    , freqPerBin_(sampleRate / (double)fftFrameSize_)
+    , analysis_(factory_->createAnalysis(freqPerBin_))
+    , synthesis_(factory_->createSynthesis(freqPerBin_))
     {
         fftFrameSize_ = config::constants::fftFrameSize;
         const auto fftOrder = std::log2(fftFrameSize_);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
         gainCompensation_ = std::pow(10, (65. / 20.));
-        freqPerBin_ = sampleRate_ / (double)fftFrameSize_;
-
-        analysis_ = std::make_unique<Analysis>(freqPerBin_);
     }
 
     void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
     {
         auto stepSize = fftFrameSize_ / config::constants::oversamplingFactor;
-        auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize_;
         auto inFifoLatency = fftFrameSize_ - stepSize;
         static long sampleCounter = false;
         if (sampleCounter == false) sampleCounter = inFifoLatency;
@@ -64,24 +62,7 @@ namespace hidonash
                 fft(fftWorkspace_.data(), false);
 
                 analysis_->perform(fftWorkspace_.data());
-                analysisMagnitudeBuffer_ = analysis_->getMagnitudeBuffer();
-                analysisFrequencyBuffer_ = analysis_->getFrequencyBuffer();
-
-
-                /* this does the actual pitch shifting */
-                memset(synthesisMagnitudeBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
-                memset(synthesisFrequencyBuffer_.data(), 0, fftFrameSize_ * sizeof(float));
-                for (auto k = 0; k <= fftFrameSize_ / 2; k++)
-                {
-                    auto index = k * pitchFactor_;
-                    if (index <= (fftFrameSize_ / 2))
-                    {
-                        synthesisMagnitudeBuffer_[index] += analysisMagnitudeBuffer_[k];
-                        synthesisFrequencyBuffer_[index] = analysisFrequencyBuffer_[k] * pitchFactor_;
-                    }
-                }
-
-                synthesis(freqPerBin_, expectedPhaseDifference);
+                synthesis_->perform(fftWorkspace_.data(), *analysis_, pitchFactor_);
                 fft(fftWorkspace_.data(), true);
 
                 /* do windowing and add to output accumulator */
@@ -100,29 +81,6 @@ namespace hidonash
         for(auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
             for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
                 audioBuffer[ch][sa] = audioBuffer[ch][sa] * gainCompensation_;
-    }
-
-    void PitchShifter::synthesis(int freqPerBin, double expectedPhaseDifference)
-    {
-        for (auto k = 0; k <= fftFrameSize_; k++)
-        {
-            const auto magnitude = synthesisMagnitudeBuffer_[k];
-            auto phase = synthesisFrequencyBuffer_[k];
-            /* subtract bin mid frequency */
-            auto phaseDifference = phase - (double)k * freqPerBin;
-            /* get bin deviation from freq deviation */
-            phaseDifference /= freqPerBin;
-            /* take osamp into account */
-            phaseDifference = 2. * M_PI * phaseDifference / config::constants::oversamplingFactor;
-            /* add the overlap phase advance back in */
-            phaseDifference += (double)k * expectedPhaseDifference;
-            /* accumulate delta phase to get bin phase */
-            sumPhase_[k] += phaseDifference;
-            phase = sumPhase_[k];
-            /* get real and imag part and re-interleave */
-            fftWorkspace_[k].real(magnitude * cos(phase));
-            fftWorkspace_[k].imag(magnitude * sin(phase));
-        }
     }
 
     void PitchShifter::fft(juce::dsp::Complex<float>* fftBuffer, bool inverse)

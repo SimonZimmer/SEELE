@@ -11,12 +11,12 @@ namespace hidonash
     {
     }
 
-    std::array<float, 8192> Analysis::getMagnitudeBuffer()
+    std::array<float, 8192> Analysis::getMagnitudeBuffer() const
     {
         return analysisMagnitudeBuffer_;
     }
 
-    std::array<float, 8192> Analysis::getFrequencyBuffer()
+    std::array<float, 8192> Analysis::getFrequencyBuffer() const
     {
         return analysisFrequencyBuffer_;
     }

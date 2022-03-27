@@ -9,29 +9,25 @@ namespace hidonash
     Synthesis::Synthesis(int freqPerBin)
     : freqPerBin_(freqPerBin)
     {
-        std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.f);
-        std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.f);
     }
 
-    //TODO feature envy?
-    std::array<float, 8192> Synthesis::getMagnitudeBuffer()
+    void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, const IAnalysis& analysis, float pitchFactor)
     {
-        return magnitudeBuffer_;
-    }
+        memset(magnitudeBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
+        memset(frequencyBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
 
-    std::array<float, 8192> Synthesis::getFrequencyBuffer()
-    {
-        return frequencyBuffer_;
-    }
+        auto&& analysisMagnitudeBuffer = analysis.getMagnitudeBuffer();
+        auto&& analysisFrequencyBuffer = analysis.getFrequencyBuffer();
+        for (auto k = 0; k <= config::constants::fftFrameSize / 2; k++)
+        {
+            auto index = k * pitchFactor;
+            if (index <= (config::constants::fftFrameSize / 2))
+            {
+                magnitudeBuffer_[index] += analysisMagnitudeBuffer[k];
+                frequencyBuffer_[index] = analysisFrequencyBuffer[k] * pitchFactor;
+            }
+        }
 
-    void Synthesis::reset()
-    {
-        std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.f);
-        std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.f);
-    }
-
-    void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace)
-    {
         for (auto k = 0; k <= config::constants::fftFrameSize; k++)
         {
             const auto magnitude = magnitudeBuffer_[k];
@@ -47,6 +43,7 @@ namespace hidonash
             /* accumulate delta phase to get bin phase */
             sumPhase_[k] += phaseDifference;
             phase = sumPhase_[k];
+            /* get real and imag part and re-interleave */
             fftWorkspace[k].real(magnitude * cos(phase));
             fftWorkspace[k].imag(magnitude * sin(phase));
         }

@@ -12,9 +12,9 @@ namespace hidonash
     public:
         virtual ~IAnalysis() = default;
 
-        virtual std::array<float, 8192> getMagnitudeBuffer() = 0;
+        virtual std::array<float, 8192> getMagnitudeBuffer() const = 0;
 
-        virtual std::array<float, 8192> getFrequencyBuffer() = 0;
+        virtual std::array<float, 8192> getFrequencyBuffer() const = 0;
 
         virtual void perform(juce::dsp::Complex<float>* fftWorkspace) = 0;
     };

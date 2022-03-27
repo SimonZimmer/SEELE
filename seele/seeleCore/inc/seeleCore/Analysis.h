@@ -17,9 +17,9 @@ namespace hidonash
         explicit Analysis(int freqPerBin);
         ~Analysis() override = default;
 
-        std::array<float, 8192> getMagnitudeBuffer() override;
+        std::array<float, 8192> getMagnitudeBuffer() const override;
 
-        std::array<float, 8192> getFrequencyBuffer() override;
+        std::array<float, 8192> getFrequencyBuffer() const override;
 
         void perform(juce::dsp::Complex<float>* fftWorkspace) override;
 
