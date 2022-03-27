@@ -10,6 +10,7 @@ target_sources(seeleCoreTestHost PRIVATE
         src/EngineTestCase.cpp
         src/PitchShifterTestCase.cpp
         src/FactoryTestCase.cpp
+        src/SynthesisTestCase.cpp
         src/integration/EngineTestCase.cpp
         )
 

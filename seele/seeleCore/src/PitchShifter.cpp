@@ -62,7 +62,8 @@ namespace hidonash
                 for(auto k = 0; k < constants::fftFrameSize; k++)
                     outputAccumulationBuffer_[k] += 2. * getWindowFactor(k, constants::fftFrameSize) * fftWorkspace_[k].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
 
-                for (auto k = 0; k < stepSize; k++) fifoOut_[k] = outputAccumulationBuffer_[k];
+                for (auto k = 0; k < stepSize; k++)
+                    fifoOut_[k] = outputAccumulationBuffer_[k];
 
                 /* shift accumulator */
                 memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, constants::fftFrameSize * sizeof(float));
