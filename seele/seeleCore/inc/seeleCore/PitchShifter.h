@@ -29,7 +29,6 @@ namespace hidonash
         SynthesisPtr synthesis_;
 
         float pitchFactor_{ 0.f };
-        size_t fftFrameSize_;
         double gainCompensation_;
 
         std::array<float, config::constants::analysisSize> fifoIn_;
