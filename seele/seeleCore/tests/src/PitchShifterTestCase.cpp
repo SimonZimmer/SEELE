@@ -45,7 +45,6 @@ namespace hidonash
         SynthesisMock* synthesisMockPtr_;
 
         std::array<float, 8192> fakeAnalysisBuffer_{ 8192 };
-        std::array<float, 8192> fakeSynthesisBuffer;
     };
 
     TEST_F(UnitTest_PitchShifter, construction)
@@ -62,22 +61,13 @@ namespace hidonash
             .WillByDefault(Return(fakeAnalysisBuffer_));
         ON_CALL(*analysisMockPtr_, getFrequencyBuffer)
                 .WillByDefault(Return(fakeAnalysisBuffer_));
-        ON_CALL(*synthesisMockPtr_, getMagnitudeBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
-        ON_CALL(*synthesisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
 
         auto&& pitchShifter = PitchShifter(44100, std::move(factoryMock_));
         auto&& buffer = core::AudioBuffer<float>(2, 128);
 
         //TODO find out why its called 2 times
         EXPECT_CALL(*analysisMockPtr_, perform(_)).Times(2);
-        EXPECT_CALL(*analysisMockPtr_, getMagnitudeBuffer()).Times(2);
-        EXPECT_CALL(*analysisMockPtr_, getFrequencyBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, reset()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, getMagnitudeBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, getFrequencyBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, perform(_)).Times(2);
+        EXPECT_CALL(*synthesisMockPtr_, perform(_, _, _)).Times(2);
 
         pitchShifter.process(buffer);
     }
