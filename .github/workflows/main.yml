@@ -4,7 +4,7 @@ on:
     branches: [ main ]
   
 env:
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Release
 jobs:
   build:
     runs-on: macos-10.15
@@ -29,7 +29,7 @@ jobs:
       run: cmake . -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       
     - name: Build
-      run: cmake --build . --config ${{env.BUILD_TYPE}}
+      run: cmake --build .
       
     - name: Test
       working-directory: ${{github.workspace}}/build
