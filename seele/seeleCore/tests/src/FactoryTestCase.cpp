@@ -5,6 +5,8 @@
 #include <seeleCore/IAudioProcessor.h>
 #include <seeleCore/IAnalysis.h>
 
+#include <AnalysisMock.h>
+
 namespace hidonash
 {
     using namespace testing;
@@ -24,7 +26,7 @@ namespace hidonash
 
     TEST(UnitTest_Factory, createSynthesis)
     {
-        auto&& synthesis = Factory().createSynthesis(2);
+        auto&& synthesis = Factory().createSynthesis(2, std::make_unique<AnalysisMock>());
         EXPECT_THAT(synthesis.get(), WhenDynamicCastTo<ISynthesis*>(NotNull()));
     }
 }

@@ -1,7 +1,6 @@
 #include <cmath>
 
 #include "Analysis.h"
-#include "Config.h"
 
 
 namespace hidonash
@@ -17,12 +16,12 @@ namespace hidonash
         std::fill(analysisFrequencyBuffer_.begin(), analysisMagnitudeBuffer_.end(), 0.f);
     }
 
-    const std::vector<float>& Analysis::getMagnitudeBuffer()
+    std::array<float, config::constants::analysisSize> Analysis::getMagnitudeBuffer() const
     {
         return analysisMagnitudeBuffer_;
     }
 
-    const std::vector<float>& Analysis::getFrequencyBuffer()
+    std::array<float, config::constants::analysisSize> Analysis::getFrequencyBuffer() const
     {
         return analysisFrequencyBuffer_;
     }

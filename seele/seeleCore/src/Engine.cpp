@@ -2,8 +2,8 @@
 
 namespace hidonash
 {
-    Engine::Engine(std::atomic<float>& pitchRatio, double sampleRate, const IFactory& /*factory*/)
-    : pitchShifter(sampleRate)
+    Engine::Engine(std::atomic<float>& pitchRatio, double sampleRate, FactoryPtr factory)
+    : pitchShifter(sampleRate, std::move(factory))
     , pitchRatio_(pitchRatio)
     {
         pitchShifter.setPitchRatio(pitchRatio);

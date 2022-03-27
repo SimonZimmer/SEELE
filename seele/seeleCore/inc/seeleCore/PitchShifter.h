@@ -8,9 +8,7 @@
 
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
-#include "ISynthesis.h"
-#include "Config.h"
-#include "Factory.h"
+#include "IFactory.h"
 
 
 namespace hidonash
@@ -18,7 +16,7 @@ namespace hidonash
     class PitchShifter
     {
     public:
-        explicit PitchShifter(double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
+        explicit PitchShifter(double sampleRate, FactoryPtr factory);
         ~PitchShifter() = default;
 
         void process(core::AudioBuffer<float>& audioBuffer);
@@ -26,22 +24,19 @@ namespace hidonash
         void setPitchRatio(float pitchRatio);
 
     private:
-        void pitchShift();
-
+        int freqPerBin_;
         FactoryPtr factory_;
-        AnalysisPtr analysis_;
         SynthesisPtr synthesis_;
 
         float pitchFactor_{ 0.f };
-        double sampleRate_;
-        float gainCompensation_;
-        int freqPerBin_;
+        size_t fftFrameSize_;
+        double gainCompensation_;
 
         std::array<float, config::constants::analysisSize> fifoIn_;
         std::array<float, config::constants::analysisSize> fifoOut_;
         std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
 
-        std::vector<juce::dsp::Complex<float>> fftWorkspace_;
+        std::array<juce::dsp::Complex<float>, 2 * config::constants::analysisSize> fftWorkspace_;
         std::unique_ptr<juce::dsp::FFT> fft_;
     };
 

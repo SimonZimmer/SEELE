@@ -20,13 +20,9 @@ namespace hidonash
         void SetUp() override
         {
             factoryMock_ = std::make_unique<NiceMock<FactoryMock>>();
-            analysisMock_ = std::make_unique<NiceMock<AnalysisMock>>();
-            analysisMockPtr_ = analysisMock_.get();
             synthesisMock_ = std::make_unique<NiceMock<SynthesisMock>>();
             synthesisMockPtr_ = synthesisMock_.get();
 
-            ON_CALL(*factoryMock_, createAnalysis)
-                .WillByDefault(Return(ByMove(std::move(analysisMock_))));
             ON_CALL(*factoryMock_, createSynthesis)
                 .WillByDefault(Return(ByMove(std::move(synthesisMock_))));
         }
@@ -34,50 +30,32 @@ namespace hidonash
         void TearDown() override
         {
             factoryMock_ = nullptr;
-            analysisMock_ = nullptr;
             synthesisMock_ = nullptr;
         }
 
         std::unique_ptr<FactoryMock> factoryMock_;
-        std::unique_ptr<AnalysisMock> analysisMock_;
-        AnalysisMock* analysisMockPtr_;
         std::unique_ptr<SynthesisMock> synthesisMock_;
         SynthesisMock* synthesisMockPtr_;
-
-        std::vector<float> fakeAnalysisBuffer_{ config::constants::analysisSize };
-        std::array<float, config::constants::analysisSize> fakeSynthesisBuffer;
     };
 
     TEST_F(UnitTest_PitchShifter, construction)
     {
-        EXPECT_CALL(*factoryMock_, createAnalysis(_)).Times(1);
-        EXPECT_CALL(*factoryMock_, createSynthesis(_)).Times(1);
+        {
+            InSequence sequence;
+            EXPECT_CALL(*factoryMock_, createAnalysis(_)).Times(1);
+            EXPECT_CALL(*factoryMock_, createSynthesis(_, _)).Times(1);
+        }
 
         PitchShifter(44100, std::move(factoryMock_));
     }
 
     TEST_F(UnitTest_PitchShifter, process)
     {
-        ON_CALL(*analysisMockPtr_, getMagnitudeBuffer)
-            .WillByDefault(ReturnRef(fakeAnalysisBuffer_));
-        ON_CALL(*analysisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(ReturnRef(fakeAnalysisBuffer_));
-        ON_CALL(*synthesisMockPtr_, getMagnitudeBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
-        ON_CALL(*synthesisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
-
         auto&& pitchShifter = PitchShifter(44100, std::move(factoryMock_));
         auto&& buffer = core::AudioBuffer<float>(2, 128);
 
         //TODO find out why its called 2 times
-        EXPECT_CALL(*analysisMockPtr_, perform(_)).Times(2);
-        EXPECT_CALL(*analysisMockPtr_, getMagnitudeBuffer()).Times(2);
-        EXPECT_CALL(*analysisMockPtr_, getFrequencyBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, reset()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, getMagnitudeBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, getFrequencyBuffer()).Times(2);
-        EXPECT_CALL(*synthesisMockPtr_, perform(_)).Times(2);
+        EXPECT_CALL(*synthesisMockPtr_, perform(_, _)).Times(2);
 
         pitchShifter.process(buffer);
     }
