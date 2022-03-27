@@ -32,11 +32,11 @@ namespace hidonash
         size_t fftFrameSize_;
         double gainCompensation_;
 
-        std::array<float, 8192> fifoIn_;
-        std::array<float, 8192> fifoOut_;
-        std::array<float, 2*8192> outputAccumulationBuffer_;
+        std::array<float, config::constants::analysisSize> fifoIn_;
+        std::array<float, config::constants::analysisSize> fifoOut_;
+        std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
 
-        std::array<juce::dsp::Complex<float>, 2*8192> fftWorkspace_;
+        std::array<juce::dsp::Complex<float>, 2 * config::constants::analysisSize> fftWorkspace_;
         std::unique_ptr<juce::dsp::FFT> fft_;
     };
 

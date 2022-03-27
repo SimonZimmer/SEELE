@@ -13,6 +13,6 @@ namespace hidonash
 
         MOCK_METHOD(AnalysisPtr, createAnalysis, (int), (const));
 
-        MOCK_METHOD(SynthesisPtr, createSynthesis, (int, const IFactory&), (const));
+        MOCK_METHOD(SynthesisPtr, createSynthesis, (int, AnalysisPtr), (const));
     };
 }
