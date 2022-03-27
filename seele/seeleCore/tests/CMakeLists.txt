@@ -9,6 +9,7 @@ find_package(GTest)
 target_sources(seeleCoreTestHost PRIVATE
         src/EngineTestCase.cpp
         src/PitchShifterTestCase.cpp
+        src/FactoryTestCase.cpp
         src/integration/EngineTestCase.cpp
         )
 
@@ -17,6 +18,7 @@ target_compile_features(seeleCoreTestHost PUBLIC cxx_std_17)
 target_link_libraries(seeleCoreTestHost PRIVATE
         seeleCore_mocks
         seeleCore
+        core
         GTest::gtest
         GTest::gtest_main
         )

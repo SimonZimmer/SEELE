@@ -8,6 +8,7 @@
 
 #include "IAnalysis.h"
 
+
 namespace hidonash
 {
     class Analysis : public IAnalysis

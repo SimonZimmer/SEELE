@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+//TODO get rid of juce
+#include <juce_dsp/juce_dsp.h>
 
 namespace hidonash
 {
