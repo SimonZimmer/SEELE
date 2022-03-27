@@ -13,7 +13,7 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& pitchRatio, double sampleRate, const IFactory& factory = Factory());
+        Engine(std::atomic<float>& pitchRatio, double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
 
         ~Engine() = default;
 

@@ -12,9 +12,9 @@ namespace hidonash
         explicit Synthesis(int freqPerBin);
         ~Synthesis() override = default;
 
-        std::array<float, 8192>& getMagnitudeBuffer() override;
+        std::array<float, 8192> getMagnitudeBuffer() override;
 
-        std::array<float, 8192>& getFrequencyBuffer() override;
+        std::array<float, 8192> getFrequencyBuffer() override;
 
         void reset() override;
 

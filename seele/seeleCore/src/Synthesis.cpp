@@ -14,12 +14,12 @@ namespace hidonash
     }
 
     //TODO feature envy?
-    std::array<float, 8192>& Synthesis::getMagnitudeBuffer()
+    std::array<float, 8192> Synthesis::getMagnitudeBuffer()
     {
         return magnitudeBuffer_;
     }
 
-    std::array<float, 8192>& Synthesis::getFrequencyBuffer()
+    std::array<float, 8192> Synthesis::getFrequencyBuffer()
     {
         return frequencyBuffer_;
     }

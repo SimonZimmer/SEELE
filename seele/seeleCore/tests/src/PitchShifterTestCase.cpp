@@ -44,8 +44,8 @@ namespace hidonash
         std::unique_ptr<SynthesisMock> synthesisMock_;
         SynthesisMock* synthesisMockPtr_;
 
-        std::vector<float> fakeAnalysisBuffer_{ config::constants::analysisSize };
-        std::array<float, config::constants::analysisSize> fakeSynthesisBuffer;
+        std::array<float, 8192> fakeAnalysisBuffer_{ 8192 };
+        std::array<float, 8192> fakeSynthesisBuffer;
     };
 
     TEST_F(UnitTest_PitchShifter, construction)
@@ -59,13 +59,13 @@ namespace hidonash
     TEST_F(UnitTest_PitchShifter, process)
     {
         ON_CALL(*analysisMockPtr_, getMagnitudeBuffer)
-            .WillByDefault(ReturnRef(fakeAnalysisBuffer_));
+            .WillByDefault(Return(fakeAnalysisBuffer_));
         ON_CALL(*analysisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(ReturnRef(fakeAnalysisBuffer_));
+                .WillByDefault(Return(fakeAnalysisBuffer_));
         ON_CALL(*synthesisMockPtr_, getMagnitudeBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
+                .WillByDefault(Return(fakeSynthesisBuffer));
         ON_CALL(*synthesisMockPtr_, getFrequencyBuffer)
-                .WillByDefault(ReturnRef(fakeSynthesisBuffer));
+                .WillByDefault(Return(fakeSynthesisBuffer));
 
         auto&& pitchShifter = PitchShifter(44100, std::move(factoryMock_));
         auto&& buffer = core::AudioBuffer<float>(2, 128);

@@ -8,6 +8,7 @@
 
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
+#include "IFactory.h"
 
 
 namespace hidonash
@@ -15,7 +16,7 @@ namespace hidonash
     class PitchShifter
     {
     public:
-        explicit PitchShifter(double sampleRate);
+        explicit PitchShifter(double sampleRate, FactoryPtr factory);
         ~PitchShifter() = default;
 
         void process(core::AudioBuffer<float>& audioBuffer);
@@ -26,6 +27,7 @@ namespace hidonash
 
     private:
         void synthesis(int freqPerBin, double expectedPhaseDifference);
+        FactoryPtr factory_;
 
         AnalysisPtr analysis_;
 

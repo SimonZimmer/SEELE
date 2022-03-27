@@ -13,9 +13,9 @@ namespace hidonash
     public:
         virtual ~ISynthesis() = default;
 
-        virtual std::array<float, 8192>& getMagnitudeBuffer() = 0;
+        virtual std::array<float, 8192> getMagnitudeBuffer() = 0;
 
-        virtual std::array<float, 8192>& getFrequencyBuffer() = 0;
+        virtual std::array<float, 8192> getFrequencyBuffer() = 0;
 
         virtual void reset() = 0;
 

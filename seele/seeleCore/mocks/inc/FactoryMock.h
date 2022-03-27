@@ -10,5 +10,9 @@ namespace hidonash
     {
     public:
         MOCK_METHOD(AudioProcessorPtr, createEngine, (std::atomic<float>&, double), (const));
+
+        MOCK_METHOD(AnalysisPtr, createAnalysis, (int), (const));
+
+        MOCK_METHOD(SynthesisPtr, createSynthesis, (int), (const));
     };
 }
