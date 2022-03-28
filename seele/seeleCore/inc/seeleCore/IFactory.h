@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include "IAudioProcessor.h"
@@ -13,7 +14,7 @@ namespace hidonash
     public:
         virtual ~IFactory() = default;
 
-        virtual AudioProcessorPtr createEngine(std::atomic<float>& pitchRatio, double sampleRate) const = 0;
+        virtual AudioProcessorPtr createEngine(std::atomic<float>& seele1Pitch, std::atomic<float>& seele2Pitch, double sampleRate) const = 0;
 
         virtual AnalysisPtr createAnalysis(int freqPerBin) const = 0;
 

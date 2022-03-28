@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include <vector>
 
 #include <core/AudioBuffer.h>
@@ -16,7 +17,7 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& pitchRatio, double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
+        Engine(std::atomic<float>& seele1Pitch_, std::atomic<float>& seele2Pitch_, double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
 
         ~Engine() = default;
 
@@ -25,7 +26,8 @@ namespace hidonash
     private:
         std::vector<std::unique_ptr<PitchShifter>> pitchShifters_;
         std::vector<std::unique_ptr<core::AudioBuffer>> audioBuffers_;
-        std::atomic<float>& pitchRatio_;
+        std::atomic<float>& seele1Pitch_;
+        std::atomic<float>& seele2Pitch_;
     };
 }
 

@@ -5,8 +5,9 @@
 
 namespace hidonash
 {
-    Engine::Engine(std::atomic<float>& pitchRatio, double sampleRate, FactoryPtr factory)
-    : pitchRatio_(pitchRatio)
+    Engine::Engine(std::atomic<float>& seele1Pitch, std::atomic<float>& seele2Pitch, double sampleRate, FactoryPtr factory)
+    : seele1Pitch_(seele1Pitch)
+    , seele2Pitch_(seele2Pitch)
     {
         for(auto n = size_t{ 0 }; n < 2; ++n)
         {
@@ -17,17 +18,20 @@ namespace hidonash
 
     void Engine::process(core::IAudioBuffer& inputBuffer)
     {
-        audioBuffers_[0]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
-        audioBuffers_[1]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
-        pitchShifters_[0]->setPitchRatio(0.5f);
-        pitchShifters_[1]->setPitchRatio(pitchRatio_);
-        audioBuffers_[0]->copyFrom(inputBuffer);
-        audioBuffers_[1]->copyFrom(inputBuffer);
-        pitchShifters_[0]->process(*audioBuffers_[0]);
-        pitchShifters_[1]->process(*audioBuffers_[1]);
+        pitchShifters_[0]->setPitchRatio(seele1Pitch_);
+        pitchShifters_[1]->setPitchRatio(seele2Pitch_);
+        for(auto n = size_t{ 0 }; n < 2; ++n)
+        {
+            audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
+            audioBuffers_[n]->copyFrom(inputBuffer);
+            pitchShifters_[n]->process(*audioBuffers_[n]);
+        }
+
         inputBuffer.fill(0.f);
-        inputBuffer.add(*audioBuffers_[0], inputBuffer.getNumSamples());
-        inputBuffer.add(*audioBuffers_[1], inputBuffer.getNumSamples());
+
+        for(auto n = size_t{ 0 }; n < 2; ++n)
+            inputBuffer.add(*audioBuffers_[n], inputBuffer.getNumSamples());
+
         inputBuffer.multiply(0.5f, inputBuffer.getNumSamples());
     }
 }
