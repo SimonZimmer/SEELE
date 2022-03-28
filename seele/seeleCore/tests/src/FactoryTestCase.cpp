@@ -6,6 +6,8 @@
 #include <seeleCore/IAnalysis.h>
 
 #include <AnalysisMock.h>
+#include <MemberParameterSetMock.h>
+
 
 namespace hidonash
 {
@@ -14,7 +16,8 @@ namespace hidonash
     TEST(UnitTest_Factory, createEngine)
     {
         auto pitchRatio = std::atomic<float>(1.f);
-        auto&& engine = Factory().createEngine(pitchRatio, 44100.);
+        auto memberParameterSetMock = MemberParameterSetMock();
+        auto&& engine = Factory().createEngine(memberParameterSetMock, 44100.);
         EXPECT_THAT(engine.get(), WhenDynamicCastTo<IAudioProcessor*>(NotNull()));
     }
 

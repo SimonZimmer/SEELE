@@ -68,7 +68,6 @@ namespace hidonash
         auto pitchShifter = PitchShifter(44100, *factoryMock_);
 
         EXPECT_CALL(bufferMock, getNumSamples()).Times(1);
-        EXPECT_CALL(bufferMock, getNumChannels()).Times(1);
         EXPECT_CALL(bufferMock, getDataPointer()).Times(2 * bufferSize);
         EXPECT_CALL(bufferMock, getSample(_, _)).Times(2 * bufferSize);
         EXPECT_CALL(bufferMock, setSample(_, _, _)).Times(bufferSize);

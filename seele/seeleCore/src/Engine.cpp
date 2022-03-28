@@ -1,6 +1,5 @@
 #include "Engine.h"
 #include "IMemberParameterSet.h"
-#include "MemberParameterSet.h"
 #include "PitchShifter.h"
 #include "core/AudioBuffer.h"
 

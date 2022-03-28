@@ -1,7 +1,6 @@
 #include "Factory.h"
 #include "Engine.h"
 #include "Analysis.h"
-#include "IMemberParameterSet.h"
 #include "Synthesis.h"
 
 

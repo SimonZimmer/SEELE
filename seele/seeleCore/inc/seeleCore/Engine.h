@@ -12,7 +12,7 @@
 #include "Factory.h"
 #include "PitchShifter.h"
 #include "Config.h"
-#include "seeleCore/IMemberParameterSet.h"
+
 
 namespace hidonash
 {
