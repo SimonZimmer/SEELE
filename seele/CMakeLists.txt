@@ -39,6 +39,7 @@ target_link_libraries(seelePlugin
             juce::juce_core
             juce::juce_audio_utils
             seeleCore
+            core
         )
 
 set(common_definitions

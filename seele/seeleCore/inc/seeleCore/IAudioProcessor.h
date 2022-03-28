@@ -4,6 +4,7 @@
 
 #include <core/AudioBuffer.h>
 
+
 namespace hidonash
 {
     class IAudioProcessor
@@ -11,8 +12,9 @@ namespace hidonash
     public:
         virtual ~IAudioProcessor() = default;
 
-        virtual void process(core::AudioBuffer<float>& inputBuffer) = 0;
+        virtual void process(core::IAudioBuffer& inputBuffer) = 0;
     };
 
     using AudioProcessorPtr = std::unique_ptr<IAudioProcessor>;
 }
+

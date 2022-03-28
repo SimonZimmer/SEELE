@@ -17,7 +17,7 @@ namespace hidonash
 
         ~Engine() = default;
 
-        void process(core::AudioBuffer<float>& inputBuffer) override;
+        void process(core::IAudioBuffer& inputBuffer) override;
 
     private:
         PitchShifter pitchShifter;

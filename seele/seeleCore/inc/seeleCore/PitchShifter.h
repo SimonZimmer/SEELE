@@ -4,7 +4,7 @@
 
 #include <juce_dsp/juce_dsp.h>
 
-#include <core/AudioBuffer.h>
+#include <core/IAudioBuffer.h>
 
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
@@ -19,7 +19,7 @@ namespace hidonash
         explicit PitchShifter(double sampleRate, FactoryPtr factory);
         ~PitchShifter() = default;
 
-        void process(core::AudioBuffer<float>& audioBuffer);
+        void process(core::IAudioBuffer& audioBuffer);
 
         void setPitchRatio(float pitchRatio);
 

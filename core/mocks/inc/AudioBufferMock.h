@@ -1,0 +1,41 @@
+#pragma once
+
+#include <gmock/gmock.h>
+
+
+#include <core/IAudioBuffer.h>
+
+
+namespace hidonash::core
+{
+    class AudioBufferMock : public IAudioBuffer
+    {
+    public:
+        ~AudioBufferMock() = default;
+
+        MOCK_METHOD(float, getSample, (int, int), (const));
+
+        MOCK_METHOD(void, setSample, (int, int, float));
+
+        MOCK_METHOD(int, getNumChannels, (), (const));
+
+        MOCK_METHOD(int, getNumSamples, (), (const));
+
+        MOCK_METHOD(float*, getDataPointer, (), (const));
+
+        MOCK_METHOD(void, fill, (float));
+
+        MOCK_METHOD(void, copyFrom, (const IAudioBuffer&));
+
+        MOCK_METHOD(void, copy, (const IAudioBuffer&, size_t, size_t, size_t));
+
+        MOCK_METHOD(void, add, (const IAudioBuffer&, const size_t, const size_t, const size_t));
+
+        MOCK_METHOD(void, multiply, (float, size_t));
+
+        MOCK_METHOD(void, multiply, (const std::vector<float>&, size_t));
+
+        MOCK_METHOD(void, setSize, (size_t, size_t));
+    };
+}
+

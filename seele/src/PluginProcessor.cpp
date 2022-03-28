@@ -4,6 +4,8 @@
 #include <seeleCore/Factory.h>
 #include <seeleCore/Config.h>
 
+#include <core/AudioBuffer.h>
+
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
     .withOutput("Output", juce::AudioChannelSet::stereo(), true))
@@ -91,7 +93,7 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    auto&& inputBuffer = hidonash::core::AudioBuffer<float>(buffer.getArrayOfWritePointers(),
+    auto&& inputBuffer = hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(),
                                                             buffer.getNumChannels(),
                                                             buffer.getNumSamples());
 

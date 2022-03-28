@@ -27,17 +27,19 @@ namespace hidonash
         gainCompensation_ = std::pow(10, (65. / 20.));
     }
 
-    void PitchShifter::process(core::AudioBuffer<float>& audioBuffer)
+    void PitchShifter::process(core::IAudioBuffer& audioBuffer)
     {
         auto stepSize = constants::fftFrameSize / constants::oversamplingFactor;
-        auto inFifoLatency = constants::fftFrameSize - stepSize;
+        const auto inFifoLatency = constants::fftFrameSize - stepSize;
         static long sampleCounter = false;
-        if (sampleCounter == false) sampleCounter = inFifoLatency;
+        if (sampleCounter == false)
+            sampleCounter = inFifoLatency;
 
-        for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
-            audioBuffer[0][sa] = audioBuffer[0][sa] + audioBuffer[1][sa] * 0.5f;
+        const auto numSamples = audioBuffer.getNumSamples();
+        for(auto sa = 0; sa < numSamples; ++sa)
+            audioBuffer.setSample(0, sa, audioBuffer.getSample(0, sa) + audioBuffer.getSample(1, sa) * 0.5f);
 
-        for (auto sa = 0; sa < audioBuffer.getNumSamples(); sa++)
+        for (auto sa = 0; sa < numSamples; sa++)
         {
             fifoIn_[sampleCounter] = audioBuffer.getDataPointer()[sa];
             audioBuffer.getDataPointer()[sa] = fifoOut_[sampleCounter - inFifoLatency];
@@ -71,7 +73,7 @@ namespace hidonash
             }
         }
 
-        audioBuffer.multiply(gainCompensation_, audioBuffer.getNumSamples() * audioBuffer.getNumChannels());
+        audioBuffer.multiply(gainCompensation_, numSamples * audioBuffer.getNumChannels());
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

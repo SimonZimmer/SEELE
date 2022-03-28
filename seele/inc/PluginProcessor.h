@@ -42,6 +42,5 @@ private:
     std::vector<std::string> programs_;
     int currentProgram_{1};
     const int latency_{16};
-    juce::AudioBuffer<float> internalBuffer_{};
     hidonash::AudioProcessorPtr engine_;
 };

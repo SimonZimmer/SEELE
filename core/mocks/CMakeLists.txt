@@ -4,5 +4,7 @@ target_include_directories(core_mocks INTERFACE inc)
 
 target_link_libraries(core_mocks
     INTERFACE
-        gmock)
+        core
+        gmock
+    )
 

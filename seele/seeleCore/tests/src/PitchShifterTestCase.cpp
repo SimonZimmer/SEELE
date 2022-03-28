@@ -8,6 +8,7 @@
 #include <FactoryMock.h>
 #include <AnalysisMock.h>
 #include <SynthesisMock.h>
+#include <AudioBufferMock.h>
 
 
 namespace hidonash
@@ -51,12 +52,30 @@ namespace hidonash
 
     TEST_F(UnitTest_PitchShifter, process)
     {
-        auto&& pitchShifter = PitchShifter(44100, std::move(factoryMock_));
-        auto&& buffer = core::AudioBuffer<float>(2, 128);
+        const auto bufferSize = 64;
+        auto fakeBuffer = std::array<float, bufferSize>();
+        auto bufferMock = NiceMock<core::AudioBufferMock>();
 
-        //TODO find out why its called 2 times
-        EXPECT_CALL(*synthesisMockPtr_, perform(_, _)).Times(2);
+        ON_CALL(bufferMock, getNumSamples())
+            .WillByDefault(Return(bufferSize));
+        ON_CALL(bufferMock, getDataPointer())
+            .WillByDefault(Return(fakeBuffer.data()));
+        ON_CALL(bufferMock, getSample(_, _))
+            .WillByDefault(Return(0.33f));
+        ON_CALL(bufferMock, setSample(_, _, _))
+            .WillByDefault(Return());
 
-        pitchShifter.process(buffer);
+        auto pitchShifter = PitchShifter(44100, std::move(factoryMock_));
+
+        EXPECT_CALL(bufferMock, getNumSamples()).Times(1);
+        EXPECT_CALL(bufferMock, getNumChannels()).Times(1);
+        EXPECT_CALL(bufferMock, getDataPointer()).Times(2 * bufferSize);
+        EXPECT_CALL(bufferMock, getSample(_, _)).Times(2 * bufferSize);
+        EXPECT_CALL(bufferMock, setSample(_, _, _)).Times(bufferSize);
+        EXPECT_CALL(bufferMock, multiply(Matcher<float>(_), Matcher<size_t>(_))).Times(1);
+        EXPECT_CALL(*synthesisMockPtr_, perform(_, _)).Times(1);
+
+        pitchShifter.process(bufferMock);
     }
 }
+

@@ -1,108 +1,42 @@
 #pragma once
 
-#include <vector>
+#include "core/IAudioBuffer.h"
+
 
 namespace hidonash::core
 {
-    template <typename T>
-    class AudioBuffer
+    class AudioBuffer : public IAudioBuffer
     {
     public:
-        AudioBuffer(int numChannels, int numSamples)
-        : numChannels_(numChannels)
-        , numSamples_(numSamples)
-        , memoryBlock_(numChannels, numSamples)
-        , data_(memoryBlock_.getData())
-        {
-        }
+        AudioBuffer(int numChannels, int numSamples);
 
-        AudioBuffer(T** dataToReferTo, int numChannels, int numSamples)
-        : numChannels_(numChannels)
-        , numSamples_(numSamples)
-        , data_(dataToReferTo)
-        {
-        }
+        AudioBuffer(float** dataToReferTo, int numChannels, int numSamples);
 
-        T*& operator[](size_t sample) const { return data_[sample]; };
+        ~AudioBuffer() override;
 
-        void setSample(int destChannel, int destSample, T newValue)
-        {
-            *(data_[destChannel] + destSample) = newValue;
-        }
+        float getSample(int channel, int sample) const override;
 
-        int getNumChannels() const
-        {
-            return numChannels_;
-        }
+        void setSample(int destChannel, int destSample, float newValue) override;
 
-        int getNumSamples() const
-        {
-            return numSamples_;
-        }
+        int getNumChannels() const override;
 
-        float* getDataPointer() const
-        {
-            return *data_;
-        }
+        int getNumSamples() const override;
 
-        void fill(float value)
-        {
-            for(auto ch = 0; ch < numChannels_; ++ch)
-                for(auto sa = 0; sa < numSamples_; ++sa)
-                    setSample(ch, sa, value);
-        }
+        float* getDataPointer() const override;
 
-        void copyFrom(const AudioBuffer<T>& other)
-        {
-            if (other.getNumChannels() == numChannels_ && other.getNumSamples() == numSamples_)
-                memcpy(data_[0], other.data_[0], numChannels_ * numSamples_ * sizeof(T));
-            else
-            {
-                const auto channelsToCopy = std::min(other.getNumChannels(), numChannels_);
-                const auto samplesToCopy = std::min(numSamples_, other.getNumSamples());
+        void fill(float value) override;
 
-                for (auto c = size_t{ 0 }; c < channelsToCopy; ++c)
-                    memcpy(data_[c], other.data_[c], samplesToCopy * sizeof(T));
-            }
-        }
+        void copyFrom(const IAudioBuffer& other) override;
 
-        void copy(const AudioBuffer<T>& from, size_t fromOffset, size_t internalOffset, size_t copyLength)
-        {
-            memcpy(getDataPointer() + internalOffset, from.getDataPointer() + fromOffset, copyLength * sizeof(T));
-        }
+        void copy(const IAudioBuffer& from, size_t fromOffset, size_t internalOffset, size_t copyLength) override;
 
-        void add(const AudioBuffer<T>& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0)
-        {
-            const auto numChannels = std::min(numChannels_, from.getNumChannels());
+        void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0) override;
 
-            for(size_t c = 0; c < numChannels; ++c)
-                for (size_t i = 0 ; i < addLength; ++i)
-                    data_[c][i + internalOffset] += from[c][i + fromOffset];
-        }
+        void multiply(float value, size_t multiplyLength) override;
 
-        void multiply(T value, size_t multiplyLength)
-        {
-            for(size_t c = 0; c < getNumChannels(); ++c)
-                for (size_t i = 0 ; i < multiplyLength; ++i)
-                    data_[c][i] *= value;
-        }
+        void multiply(const std::vector<float>& from, size_t multiplyLength) override;
 
-        void multiply(const std::vector<T>& from, size_t multiplyLength)
-        {
-            const auto numChannels = std::min(numChannels_, static_cast<int>(from.size()));
-
-            for(size_t c = 0; c < numChannels; ++c)
-                for (size_t i = 0 ; i < multiplyLength; ++i)
-                    data_[c][i] *= from[i];
-        }
-
-        void setSize(size_t channelCount, size_t sampleCountPerChannel)
-        {
-            memoryBlock_ = MemoryBlock(channelCount, sampleCountPerChannel);
-            data_ = memoryBlock_.getData();
-            numChannels_ = channelCount;
-            numSamples_ = sampleCountPerChannel;
-        }
+        void setSize(size_t channelCount, size_t sampleCountPerChannel) override;
 
     private:
         class MemoryBlock
@@ -111,7 +45,7 @@ namespace hidonash::core
             MemoryBlock() = default;
 
             MemoryBlock(int numChannels, int numSamples)
-            : data_(numChannels * numSamples, T(0))
+            : data_(numChannels * numSamples, float(0))
             , channels_(numChannels, nullptr)
             {
                 if (numSamples == 0 && numChannels > 0)
@@ -121,7 +55,7 @@ namespace hidonash::core
                     channels_[c] = &data_[c * numSamples];
             }
 
-            T** getData()
+            float** getData()
             {
                 if (channels_.empty())
                     return nullptr;
@@ -130,8 +64,8 @@ namespace hidonash::core
             }
 
         private:
-            std::vector<T> data_;
-            std::vector<T*> channels_;
+            std::vector<float> data_;
+            std::vector<float*> channels_;
         };
 
         private:
@@ -139,6 +73,6 @@ namespace hidonash::core
             int numSamples_ = 0;
 
             MemoryBlock memoryBlock_;
-            T** data_;
+            float** data_;
         };
 }

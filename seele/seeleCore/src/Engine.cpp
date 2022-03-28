@@ -9,9 +9,7 @@ namespace hidonash
         pitchShifter.setPitchRatio(pitchRatio);
     }
 
-    // TODO introduce prepareToPlay
-
-    void Engine::process(core::AudioBuffer<float>& inputBuffer)
+    void Engine::process(core::IAudioBuffer& inputBuffer)
     {
         pitchShifter.setPitchRatio(pitchRatio_);
         pitchShifter.process(inputBuffer);
