@@ -47,7 +47,7 @@ namespace hidonash
             EXPECT_CALL(*factoryMock_, createSynthesis(_, _)).Times(1);
         }
 
-        PitchShifter(44100, std::move(factoryMock_));
+        PitchShifter(44100, *factoryMock_);
     }
 
     TEST_F(UnitTest_PitchShifter, process)
@@ -65,7 +65,7 @@ namespace hidonash
         ON_CALL(bufferMock, setSample(_, _, _))
             .WillByDefault(Return());
 
-        auto pitchShifter = PitchShifter(44100, std::move(factoryMock_));
+        auto pitchShifter = PitchShifter(44100, *factoryMock_);
 
         EXPECT_CALL(bufferMock, getNumSamples()).Times(1);
         EXPECT_CALL(bufferMock, getNumChannels()).Times(1);

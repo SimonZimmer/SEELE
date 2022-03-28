@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <vector>
+
 #include <core/AudioBuffer.h>
 
 #include "IAudioProcessor.h"
@@ -20,7 +23,8 @@ namespace hidonash
         void process(core::IAudioBuffer& inputBuffer) override;
 
     private:
-        PitchShifter pitchShifter;
+        std::vector<std::unique_ptr<PitchShifter>> pitchShifters_;
+        std::vector<std::unique_ptr<core::AudioBuffer>> audioBuffers_;
         std::atomic<float>& pitchRatio_;
     };
 }

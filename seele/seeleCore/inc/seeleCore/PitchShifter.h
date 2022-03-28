@@ -16,7 +16,8 @@ namespace hidonash
     class PitchShifter : public IAudioProcessor
     {
     public:
-        explicit PitchShifter(double sampleRate, FactoryPtr factory);
+        explicit PitchShifter(double sampleRate, IFactory& factory);
+        PitchShifter& operator=(PitchShifter&& other);
         ~PitchShifter() = default;
 
         void process(core::IAudioBuffer& audioBuffer);
@@ -25,7 +26,7 @@ namespace hidonash
 
     private:
         int freqPerBin_;
-        FactoryPtr factory_;
+        IFactory& factory_;
         SynthesisPtr synthesis_;
 
         float pitchFactor_{ 0.f };

@@ -16,11 +16,11 @@ namespace hidonash
             return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
         }
     }
-
-    PitchShifter::PitchShifter(double sampleRate, FactoryPtr factory)
+    
+    PitchShifter::PitchShifter(double sampleRate, IFactory& factory)
     : freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(constants::fftFrameSize)))
-    , factory_(std::move(factory))
-    , synthesis_(factory_->createSynthesis(freqPerBin_, factory_->createAnalysis(freqPerBin_)))
+    , factory_(factory)
+    , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
     {
         const auto fftOrder = std::log2(constants::fftFrameSize);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
@@ -73,7 +73,7 @@ namespace hidonash
             }
         }
 
-        audioBuffer.multiply(gainCompensation_, numSamples * audioBuffer.getNumChannels());
+        audioBuffer.multiply(gainCompensation_, numSamples);
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

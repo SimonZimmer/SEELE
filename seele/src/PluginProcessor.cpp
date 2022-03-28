@@ -98,6 +98,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                                                             buffer.getNumSamples());
 
     engine_->process(inputBuffer);
+    buffer.copyFrom (0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
 }
 
