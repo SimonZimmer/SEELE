@@ -1,15 +1,16 @@
 #include "Factory.h"
 #include "Engine.h"
 #include "Analysis.h"
+#include "IMemberParameterSet.h"
 #include "Synthesis.h"
-#include <functional>
+
 
 namespace hidonash
 {
     AudioProcessorPtr
-    Factory::createEngine(std::atomic<float>& seele1Pitch, std::atomic<float>& seele2Pitch, double sampleRate) const
+    Factory::createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate) const
     {
-        return std::make_unique<Engine>(seele1Pitch, seele2Pitch, sampleRate);
+        return std::make_unique<Engine>(memberParameterSet, sampleRate);
     }
 
     AnalysisPtr Factory::createAnalysis(int freqPerBin) const

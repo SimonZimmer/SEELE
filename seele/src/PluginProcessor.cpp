@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "seeleCore/MemberParameterSet.h"
 
 #include <functional>
 #include <seeleCore/Factory.h>
@@ -12,15 +13,16 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
     .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 , parameters_(*this, nullptr, juce::Identifier ("seele"),
   {
-          std::make_unique<juce::AudioParameterFloat>("seele1", "Seele 1",
+          std::make_unique<juce::AudioParameterFloat>("seele0", "Seele 0",
                                                  hidonash::config::parameters::minPitchFactor,
                                                  hidonash::config::parameters::maxPitchFactor,
                                                  hidonash::config::parameters::defaultPitchFactor),
-          std::make_unique<juce::AudioParameterFloat>("seele2", "Seele 2",
+          std::make_unique<juce::AudioParameterFloat>("seele1", "Seele 1",
                                                  hidonash::config::parameters::minPitchFactor,
                                                  hidonash::config::parameters::maxPitchFactor,
                                                  hidonash::config::parameters::defaultPitchFactor)
   })
+, memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 {
     setLatencySamples(latency_);
 
@@ -80,8 +82,7 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    engine_ = hidonash::Factory().createEngine(*parameters_.getRawParameterValue("seele1"),
-                                               *parameters_.getRawParameterValue("seele2"), sampleRate);
+    engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate);
 }
 
 void NewProjectAudioProcessor::releaseResources()

@@ -3,6 +3,8 @@
 #include <juce_audio_utils/juce_audio_utils.h>
 
 #include <seeleCore/Engine.h>
+#include <seeleCore/IMemberParameterSet.h>
+
 
 class NewProjectAudioProcessor  : public juce::AudioProcessor
 {
@@ -38,6 +40,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessor)
 
     juce::AudioProcessorValueTreeState parameters_;
+    hidonash::MemberParameterSetPtr memberParameterSet_;
 
     std::vector<std::string> programs_;
     int currentProgram_{1};

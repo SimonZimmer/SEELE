@@ -1,13 +1,14 @@
 #include "Engine.h"
+#include "IMemberParameterSet.h"
+#include "MemberParameterSet.h"
 #include "PitchShifter.h"
 #include "core/AudioBuffer.h"
 
 
 namespace hidonash
 {
-    Engine::Engine(std::atomic<float>& seele1Pitch, std::atomic<float>& seele2Pitch, double sampleRate, FactoryPtr factory)
-    : seele1Pitch_(seele1Pitch)
-    , seele2Pitch_(seele2Pitch)
+    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, FactoryPtr factory)
+    : memberParameterSet_(memberParameterSet)
     {
         for(auto n = size_t{ 0 }; n < 2; ++n)
         {
@@ -18,10 +19,9 @@ namespace hidonash
 
     void Engine::process(core::IAudioBuffer& inputBuffer)
     {
-        pitchShifters_[0]->setPitchRatio(seele1Pitch_);
-        pitchShifters_[1]->setPitchRatio(seele2Pitch_);
         for(auto n = size_t{ 0 }; n < 2; ++n)
         {
+            pitchShifters_[n]->setPitchRatio(memberParameterSet_.getPitchRatio(n));
             audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
             audioBuffers_[n]->copyFrom(inputBuffer);
             pitchShifters_[n]->process(*audioBuffers_[n]);

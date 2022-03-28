@@ -20,6 +20,7 @@ namespace hidonash
             constexpr auto oversamplingFactor = 64;
             constexpr auto stepSize = fftFrameSize / config::constants::oversamplingFactor;
             constexpr auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize;
+            constexpr auto numMembers = 15;
         }
     }
 }

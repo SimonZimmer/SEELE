@@ -1,11 +1,12 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
 #include "ISynthesis.h"
+#include "IMemberParameterSet.h"
+
 
 namespace hidonash
 {
@@ -14,7 +15,7 @@ namespace hidonash
     public:
         virtual ~IFactory() = default;
 
-        virtual AudioProcessorPtr createEngine(std::atomic<float>& seele1Pitch, std::atomic<float>& seele2Pitch, double sampleRate) const = 0;
+        virtual AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate) const = 0;
 
         virtual AnalysisPtr createAnalysis(int freqPerBin) const = 0;
 
@@ -23,3 +24,4 @@ namespace hidonash
 
     using FactoryPtr = std::unique_ptr<IFactory>;
 }
+

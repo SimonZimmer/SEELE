@@ -241,6 +241,11 @@
 },
 {
   "directory": "/Users/simonzimmermann/dev/seele",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DDEBUG=1 -DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1 -DJUCE_MODULE_AVAILABLE_juce_audio_basics=1 -DJUCE_MODULE_AVAILABLE_juce_audio_formats=1 -DJUCE_MODULE_AVAILABLE_juce_core=1 -DJUCE_MODULE_AVAILABLE_juce_dsp=1 -D_DEBUG=1 -I/Users/simonzimmermann/dev/seele/seele/seeleCore/inc/seeleCore -I/Users/simonzimmermann/dev/seele/seele/seeleCore/inc -I/Users/simonzimmermann/dev/seele/core/inc -I/Users/simonzimmermann/dev/seele/ThirdParty/JUCE/modules -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk -std=gnu++17 -o seele/seeleCore/CMakeFiles/seeleCore.dir/src/MemberParameterSet.cpp.o -c /Users/simonzimmermann/dev/seele/seele/seeleCore/src/MemberParameterSet.cpp",
+  "file": "/Users/simonzimmermann/dev/seele/seele/seeleCore/src/MemberParameterSet.cpp"
+},
+{
+  "directory": "/Users/simonzimmermann/dev/seele",
   "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DDEBUG=1 -DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1 -DJUCE_MODULE_AVAILABLE_juce_audio_basics=1 -DJUCE_MODULE_AVAILABLE_juce_audio_formats=1 -DJUCE_MODULE_AVAILABLE_juce_core=1 -DJUCE_MODULE_AVAILABLE_juce_dsp=1 -D_DEBUG=1 -I/Users/simonzimmermann/dev/seele/seele/seeleCore/inc/seeleCore -I/Users/simonzimmermann/dev/seele/seele/seeleCore/inc -I/Users/simonzimmermann/dev/seele/core/inc -I/Users/simonzimmermann/dev/seele/ThirdParty/JUCE/modules -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk -std=gnu++17 -o seele/seeleCore/CMakeFiles/seeleCore.dir/__/__/ThirdParty/JUCE/modules/juce_dsp/juce_dsp.mm.o -c /Users/simonzimmermann/dev/seele/ThirdParty/JUCE/modules/juce_dsp/juce_dsp.mm",
   "file": "/Users/simonzimmermann/dev/seele/ThirdParty/JUCE/modules/juce_dsp/juce_dsp.mm"
 },

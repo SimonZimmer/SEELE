@@ -8,16 +8,18 @@
 
 #include "IAudioProcessor.h"
 #include "IFactory.h"
+#include "IMemberParameterSet.h"
 #include "Factory.h"
 #include "PitchShifter.h"
 #include "Config.h"
+#include "seeleCore/IMemberParameterSet.h"
 
 namespace hidonash
 {
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(std::atomic<float>& seele1Pitch_, std::atomic<float>& seele2Pitch_, double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
+        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, FactoryPtr factory = std::make_unique<Factory>());
 
         ~Engine() = default;
 
@@ -26,8 +28,7 @@ namespace hidonash
     private:
         std::vector<std::unique_ptr<PitchShifter>> pitchShifters_;
         std::vector<std::unique_ptr<core::AudioBuffer>> audioBuffers_;
-        std::atomic<float>& seele1Pitch_;
-        std::atomic<float>& seele2Pitch_;
+        const IMemberParameterSet& memberParameterSet_;
     };
 }
 
