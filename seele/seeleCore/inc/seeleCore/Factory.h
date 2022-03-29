@@ -15,5 +15,9 @@ namespace hidonash
         [[nodiscard]] AnalysisPtr createAnalysis(int freqPerBin) const override;
 
         [[nodiscard]] SynthesisPtr createSynthesis(int freqPerBin, AnalysisPtr analysis) const override;
+
+        [[nodiscard]] PitchShifterPtr createPitchShifter(double sampleRate, IFactory& factory) const override;
+
+        [[nodiscard]] core::AudioBufferPtr createAudioBuffer(int numChannels, int numSamples) const override;
     };
 }

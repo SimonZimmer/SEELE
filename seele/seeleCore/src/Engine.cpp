@@ -7,19 +7,21 @@
 
 namespace hidonash
 {
-    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, FactoryPtr factory)
+    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+                   FactoryPtr factory, size_t numMembers)
     : memberParameterSet_(memberParameterSet)
+    , numMembers_(numMembers)
     {
-        for(auto n = size_t{ 0 }; n < config::constants::numMembers; ++n)
+        for(auto n = size_t{ 0 }; n < numMembers_; ++n)
         {
-            pitchShifters_.emplace_back(std::make_unique<PitchShifter>(sampleRate, *factory));
-            audioBuffers_.emplace_back(std::make_unique<core::AudioBuffer>(2, 4048));
+            pitchShifters_.emplace_back(factory->createPitchShifter(sampleRate, *factory));
+            audioBuffers_.emplace_back(factory->createAudioBuffer(2, 4048));
         }
     }
 
     void Engine::process(core::IAudioBuffer& inputBuffer)
     {
-        for(auto n = size_t{ 0 }; n < config::constants::numMembers; ++n)
+        for(auto n = size_t{ 0 }; n < numMembers_; ++n)
         {
             pitchShifters_[n]->setPitchRatio(memberParameterSet_.getPitchRatio(n));
             audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
@@ -29,7 +31,7 @@ namespace hidonash
 
         inputBuffer.fill(0.f);
 
-        for(auto n = size_t{ 0 }; n < config::constants::numMembers; ++n)
+        for(auto n = size_t{ 0 }; n < numMembers_; ++n)
             inputBuffer.add(*audioBuffers_[n], inputBuffer.getNumSamples());
 
         inputBuffer.multiply(1.f / static_cast<float>(config::constants::numMembers), inputBuffer.getNumSamples());

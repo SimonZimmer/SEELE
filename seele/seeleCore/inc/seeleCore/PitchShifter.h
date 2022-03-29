@@ -13,16 +13,16 @@
 
 namespace hidonash
 {
-    class PitchShifter : public IAudioProcessor
+    class PitchShifter : public IPitchShifter
     {
     public:
         explicit PitchShifter(double sampleRate, IFactory& factory);
         PitchShifter& operator=(PitchShifter&& other);
         ~PitchShifter() = default;
 
-        void process(core::IAudioBuffer& audioBuffer);
+        void process(core::IAudioBuffer& audioBuffer) override;
 
-        void setPitchRatio(float pitchRatio);
+        void setPitchRatio(float pitchRatio) override;
 
     private:
         int freqPerBin_;

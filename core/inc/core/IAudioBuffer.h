@@ -35,5 +35,7 @@ namespace hidonash::core
 
         virtual void setSize(size_t channelCount, size_t sampleCountPerChannel) = 0;
     };
+
+    using AudioBufferPtr = std::unique_ptr<IAudioBuffer>;
 }
 
