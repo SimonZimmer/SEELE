@@ -69,12 +69,12 @@ namespace hidonash
 
         {
             InSequence sequence;
-            EXPECT_CALL(*memberParameterSetMock_, getPitchRatio(_)).Times(1);
-            EXPECT_CALL(*pitchShifterMockPtr_, setPitchRatio(_)).Times(1);
             EXPECT_CALL(inputBufferMock, getNumChannels()).Times(1);
             EXPECT_CALL(inputBufferMock, getNumSamples()).Times(1);
             EXPECT_CALL(*audioBufferMockPtr_, setSize(_, _)).Times(1);
             EXPECT_CALL(*audioBufferMockPtr_, copyFrom(_)).Times(1);
+            EXPECT_CALL(*memberParameterSetMock_, getPitchRatio(_)).Times(1);
+            EXPECT_CALL(*pitchShifterMockPtr_, setPitchRatio(_)).Times(1);
             EXPECT_CALL(*pitchShifterMockPtr_, process(_)).Times(1);
             EXPECT_CALL(inputBufferMock, fill(Eq(0.f))).Times(1);
             EXPECT_CALL(inputBufferMock, getNumSamples()).Times(1);

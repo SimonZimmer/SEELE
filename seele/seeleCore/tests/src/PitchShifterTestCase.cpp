@@ -1,3 +1,4 @@
+#include "seeleCore/Config.h"
 #include <cmath>
 
 #include <gtest/gtest.h>
@@ -52,7 +53,7 @@ namespace hidonash
 
     TEST_F(UnitTest_PitchShifter, process)
     {
-        const auto bufferSize = 64;
+        const auto bufferSize = 128;
         auto fakeBuffer = std::array<float, bufferSize>();
         auto bufferMock = NiceMock<core::AudioBufferMock>();
 

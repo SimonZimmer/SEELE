@@ -23,9 +23,9 @@ namespace hidonash
     {
         for(auto n = size_t{ 0 }; n < numMembers_; ++n)
         {
-            pitchShifters_[n]->setPitchRatio(memberParameterSet_.getPitchRatio(n));
             audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
             audioBuffers_[n]->copyFrom(inputBuffer);
+            pitchShifters_[n]->setPitchRatio(memberParameterSet_.getPitchRatio(n));
             pitchShifters_[n]->process(*audioBuffers_[n]);
         }
 
