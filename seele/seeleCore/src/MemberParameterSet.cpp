@@ -15,6 +15,5 @@ namespace hidonash
         const auto parameterId = "seele" + std::to_string(index);
         return apts_.getRawParameterValue(parameterId)->load();
     }
-
 }
 

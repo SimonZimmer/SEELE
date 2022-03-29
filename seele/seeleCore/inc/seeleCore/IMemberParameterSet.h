@@ -14,6 +14,5 @@ namespace hidonash
     };
 
     using MemberParameterSetPtr = std::unique_ptr<IMemberParameterSet>;
-
 }
 

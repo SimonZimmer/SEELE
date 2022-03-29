@@ -11,17 +11,7 @@
 NewProjectAudioProcessor::NewProjectAudioProcessor()
 : AudioProcessor (BusesProperties().withInput("Input",  juce::AudioChannelSet::stereo(), true)
     .withOutput("Output", juce::AudioChannelSet::stereo(), true))
-, parameters_(*this, nullptr, juce::Identifier ("seele"),
-  {
-          std::make_unique<juce::AudioParameterFloat>("seele0", "Seele 0",
-                                                 hidonash::config::parameters::minPitchFactor,
-                                                 hidonash::config::parameters::maxPitchFactor,
-                                                 hidonash::config::parameters::defaultPitchFactor),
-          std::make_unique<juce::AudioParameterFloat>("seele1", "Seele 1",
-                                                 hidonash::config::parameters::minPitchFactor,
-                                                 hidonash::config::parameters::maxPitchFactor,
-                                                 hidonash::config::parameters::defaultPitchFactor)
-  })
+, parameters_(*this, nullptr, "Parameters", createParameters())
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 {
     setLatencySamples(latency_);
@@ -130,4 +120,16 @@ void NewProjectAudioProcessor::setStateInformation(const void* data, int sizeInB
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new NewProjectAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::createParameters()
+{
+    auto parameters = std::vector<std::unique_ptr<juce::RangedAudioParameter>>();
+
+    for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
+        parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>("seele" + std::to_string(n), "Seele " + std::to_string(n),
+                                               hidonash::config::parameters::minPitchFactor,
+                                               hidonash::config::parameters::maxPitchFactor,
+                                               hidonash::config::parameters::defaultPitchFactor));
+    return { parameters.begin(), parameters.end() };
 }
