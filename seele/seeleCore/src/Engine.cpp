@@ -32,7 +32,7 @@ namespace hidonash
         for(auto n = size_t{ 0 }; n < config::constants::numMembers; ++n)
             inputBuffer.add(*audioBuffers_[n], inputBuffer.getNumSamples());
 
-        inputBuffer.multiply(1 / config::constants::numMembers, inputBuffer.getNumSamples());
+        inputBuffer.multiply(1.f / static_cast<float>(config::constants::numMembers), inputBuffer.getNumSamples());
     }
 }
 
