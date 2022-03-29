@@ -1,6 +1,7 @@
 #include <string>
 
 #include "MemberParameterSet.h"
+#include "Config.h"
 
 
 namespace hidonash
@@ -10,9 +11,15 @@ namespace hidonash
     {
     }
 
-    float MemberParameterSet::getPitchRatio(size_t index) const
+    float MemberParameterSet::getSanctity(size_t index) const
     {
-        const auto parameterId = "seele" + std::to_string(index);
+        const auto parameterId = config::parameters::sanctityPrefix + std::to_string(index);
+        return apts_.getRawParameterValue(parameterId)->load();
+    }
+
+    float MemberParameterSet::getSummonState(size_t index) const
+    {
+        const auto parameterId = config::parameters::summonStatePrefix + std::to_string(index);
         return apts_.getRawParameterValue(parameterId)->load();
     }
 }

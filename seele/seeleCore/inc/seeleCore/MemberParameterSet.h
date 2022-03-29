@@ -17,7 +17,9 @@ namespace hidonash
         MemberParameterSet(const juce::AudioProcessorValueTreeState& apts);
         ~MemberParameterSet() override = default;
 
-        float getPitchRatio(size_t index) const override;
+        float getSanctity(size_t index) const override;
+
+        float getSummonState(size_t index) const override;
 
     private:
         const juce::AudioProcessorValueTreeState& apts_;

@@ -10,7 +10,9 @@ namespace hidonash
     public:
         virtual ~IMemberParameterSet() = default;
 
-        virtual float getPitchRatio(size_t index) const = 0;
+        virtual float getSanctity(size_t index) const = 0;
+
+        virtual float getSummonState(size_t index) const = 0;
     };
 
     using MemberParameterSetPtr = std::unique_ptr<IMemberParameterSet>;

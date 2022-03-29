@@ -10,7 +10,9 @@ namespace hidonash
     public:
         virtual ~MemberParameterSetMock() = default;
 
-        MOCK_METHOD(float, getPitchRatio, (size_t index), (const));
+        MOCK_METHOD(float, getSanctity, (size_t index), (const));
+
+        MOCK_METHOD(float, getSummonState, (size_t index), (const));
     };
 }
 

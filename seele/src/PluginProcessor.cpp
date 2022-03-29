@@ -127,9 +127,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
     auto parameters = std::vector<std::unique_ptr<juce::RangedAudioParameter>>();
 
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
-        parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>("seele" + std::to_string(n), "Seele " + std::to_string(n),
-                                               hidonash::config::parameters::minPitchFactor,
-                                               hidonash::config::parameters::maxPitchFactor,
-                                               hidonash::config::parameters::defaultPitchFactor));
+    {
+        parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>(hidonash::config::parameters::sanctityPrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Sanctity",
+                                                                            hidonash::config::parameters::minPitchFactor,
+                                                                            hidonash::config::parameters::maxPitchFactor,
+                                                                            hidonash::config::parameters::defaultPitchFactor));
+        parameters.emplace_back(std::make_unique<juce::AudioParameterBool>(hidonash::config::parameters::summonStatePrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Summoned",
+                                                                           false));
+    }
+
     return { parameters.begin(), parameters.end() };
 }

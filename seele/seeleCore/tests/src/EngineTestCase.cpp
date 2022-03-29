@@ -40,12 +40,12 @@ namespace hidonash
        }
 
     protected:
-        std::unique_ptr<NiceMock<FactoryMock>> factoryMock_;
+        std::unique_ptr<FactoryMock> factoryMock_;
         FactoryMock* factoryMockPtr_;
-        std::unique_ptr<NiceMock<MemberParameterSetMock>> memberParameterSetMock_;
-        std::unique_ptr<NiceMock<PitchShifterMock>> pitchShifterMock_;
+        std::unique_ptr<MemberParameterSetMock> memberParameterSetMock_;
+        std::unique_ptr<PitchShifterMock> pitchShifterMock_;
         PitchShifterMock* pitchShifterMockPtr_;
-        std::unique_ptr<NiceMock<core::AudioBufferMock>> audioBufferMock_;
+        std::unique_ptr<core::AudioBufferMock> audioBufferMock_;
         core::AudioBufferMock* audioBufferMockPtr_;
     };
 
@@ -59,29 +59,64 @@ namespace hidonash
 
     TEST_F(UnitTest_Engine, process)
     {
-        ON_CALL(*factoryMock_, createPitchShifter(_, _))
-            .WillByDefault(Return(ByMove(std::move(pitchShifterMock_))));
-        ON_CALL(*factoryMock_, createAudioBuffer(_, _))
-            .WillByDefault(Return(ByMove(std::move(audioBufferMock_))));
+         ON_CALL(*factoryMock_, createPitchShifter(_, _))
+             .WillByDefault(Return(ByMove(std::move(pitchShifterMock_))));
+         ON_CALL(*factoryMock_, createAudioBuffer(_, _))
+             .WillByDefault(Return(ByMove(std::move(audioBufferMock_))));
 
         auto&& engine = Engine(*memberParameterSetMock_, 44100., std::move(factoryMock_), 1);
         auto inputBufferMock = core::AudioBufferMock();
 
-        {
-            InSequence sequence;
-            EXPECT_CALL(inputBufferMock, getNumChannels()).Times(1);
-            EXPECT_CALL(inputBufferMock, getNumSamples()).Times(1);
-            EXPECT_CALL(*audioBufferMockPtr_, setSize(_, _)).Times(1);
-            EXPECT_CALL(*audioBufferMockPtr_, copyFrom(_)).Times(1);
-            EXPECT_CALL(*memberParameterSetMock_, getPitchRatio(_)).Times(1);
-            EXPECT_CALL(*pitchShifterMockPtr_, setPitchRatio(_)).Times(1);
-            EXPECT_CALL(*pitchShifterMockPtr_, process(_)).Times(1);
-            EXPECT_CALL(inputBufferMock, fill(Eq(0.f))).Times(1);
-            EXPECT_CALL(inputBufferMock, getNumSamples()).Times(1);
-            EXPECT_CALL(inputBufferMock, add(_, _, _, _)).Times(1);
-            EXPECT_CALL(inputBufferMock, getNumSamples()).Times(1);
-            EXPECT_CALL(inputBufferMock, multiply(Matcher<float>(_), Matcher<size_t>(_))).Times(1);
-        }
+        EXPECT_CALL(*memberParameterSetMock_, getSummonState(_)).Times(2);
+        EXPECT_CALL(inputBufferMock, fill(Eq(0.f))).Times(1);
+        EXPECT_CALL(inputBufferMock, multiply(Matcher<float>(_), Matcher<size_t>(_))).Times(1);
+
+        engine.process(inputBufferMock);
+    }
+
+    TEST_F(UnitTest_Engine, process_summon_state_true)
+    {
+         ON_CALL(*factoryMock_, createPitchShifter(_, _))
+             .WillByDefault(Return(ByMove(std::move(pitchShifterMock_))));
+         ON_CALL(*factoryMock_, createAudioBuffer(_, _))
+             .WillByDefault(Return(ByMove(std::move(audioBufferMock_))));
+         ON_CALL(*memberParameterSetMock_, getSummonState(_))
+             .WillByDefault(Return(true));
+
+        auto&& engine = Engine(*memberParameterSetMock_, 44100., std::move(factoryMock_), 1);
+        auto inputBufferMock = core::AudioBufferMock();
+
+        EXPECT_CALL(inputBufferMock, getNumChannels()).Times(1);
+        EXPECT_CALL(inputBufferMock, getNumSamples()).Times(3);
+        EXPECT_CALL(*audioBufferMockPtr_, setSize(_, _)).Times(1);
+        EXPECT_CALL(*audioBufferMockPtr_, copyFrom(_)).Times(1);
+        EXPECT_CALL(*memberParameterSetMock_, getSanctity(_)).Times(1);
+        EXPECT_CALL(*pitchShifterMockPtr_, setPitchRatio(_)).Times(1);
+        EXPECT_CALL(*pitchShifterMockPtr_, process(_)).Times(1);
+
+        engine.process(inputBufferMock);
+    }
+
+    TEST_F(UnitTest_Engine, process_summon_state_false)
+    {
+         ON_CALL(*factoryMock_, createPitchShifter(_, _))
+             .WillByDefault(Return(ByMove(std::move(pitchShifterMock_))));
+         ON_CALL(*factoryMock_, createAudioBuffer(_, _))
+             .WillByDefault(Return(ByMove(std::move(audioBufferMock_))));
+         ON_CALL(*memberParameterSetMock_, getSummonState(_))
+             .WillByDefault(Return(false));
+
+        auto&& engine = Engine(*memberParameterSetMock_, 44100., std::move(factoryMock_), 1);
+        auto inputBufferMock = core::AudioBufferMock();
+
+        EXPECT_CALL(*memberParameterSetMock_, getSummonState(_)).Times(2);
+        EXPECT_CALL(*audioBufferMockPtr_, getNumChannels()).Times(0);
+        EXPECT_CALL(*audioBufferMockPtr_, getNumSamples()).Times(0);
+        EXPECT_CALL(*audioBufferMockPtr_, setSize(_, _)).Times(0);
+        EXPECT_CALL(*audioBufferMockPtr_, copyFrom(_)).Times(0);
+        EXPECT_CALL(*memberParameterSetMock_, getSanctity(_)).Times(0);
+        EXPECT_CALL(*pitchShifterMockPtr_, setPitchRatio(_)).Times(0);
+        EXPECT_CALL(*pitchShifterMockPtr_, process(_)).Times(0);
 
         engine.process(inputBufferMock);
     }
