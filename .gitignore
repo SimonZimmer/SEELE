@@ -63,3 +63,6 @@ conan_paths.cmake
 
 #OS
 .plist
+
+#JUCE
+seele/resources/juce*

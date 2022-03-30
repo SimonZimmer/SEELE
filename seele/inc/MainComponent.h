@@ -4,6 +4,8 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "SliderLookAndFeel.h"
+
 
 namespace hidonash
 {
@@ -24,5 +26,6 @@ namespace hidonash
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::vector<std::unique_ptr<juce::Slider>> sanctitySliders_;
         std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
+        std::vector<std::unique_ptr<SliderLookAndFeel>> sliderLookAndFeels_;
     };
 }

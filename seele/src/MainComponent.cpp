@@ -18,11 +18,14 @@ namespace hidonash
                                                                          juce::Slider::TextEntryBoxPosition::TextBoxAbove));
             summonToggles_.emplace_back(std::make_unique<juce::ToggleButton>());
 
+            sliderLookAndFeels_.emplace_back(std::make_unique<SliderLookAndFeel>(n + 1));
+
             {
                 sanctitySliders_[n]->setBounds(10 + (70 * n), 230, 50, 220);
                 sanctitySliders_[n]->setRange(0, 100, 0.01f);
                 sanctitySliders_[n]->setDoubleClickReturnValue(true, config::parameters::defaultPitchFactor);
                 sanctitySliders_[n]->setTooltip("Sanctity of the Seele Member");
+                sanctitySliders_[n]->setLookAndFeel(sliderLookAndFeels_[n].get());
                 addAndMakeVisible(*sanctitySliders_[n]);
             }
 
@@ -51,5 +54,5 @@ namespace hidonash
         logoBounds.setPosition((500 / 2) - (logoBounds.getWidth() / 2), 10);
         seeleLogo_->drawWithin(g, logoBounds, juce::RectanglePlacement::centred, 1.f);
     }
-
 }
+

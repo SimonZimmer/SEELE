@@ -316,6 +316,11 @@
 },
 {
   "directory": "/Users/simonzimmermann/dev/seele",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk -std=gnu++17 -o seele/resources/CMakeFiles/GraphicAssets.dir/juce_binarydata_GraphicAssets/JuceLibraryCode/BinaryData2.cpp.o -c /Users/simonzimmermann/dev/seele/seele/resources/juce_binarydata_GraphicAssets/JuceLibraryCode/BinaryData2.cpp",
+  "file": "/Users/simonzimmermann/dev/seele/seele/resources/juce_binarydata_GraphicAssets/JuceLibraryCode/BinaryData2.cpp"
+},
+{
+  "directory": "/Users/simonzimmermann/dev/seele",
   "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -I/Users/simonzimmermann/dev/seele/core/inc/core -I/Users/simonzimmermann/dev/seele/core/inc -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk -std=gnu++17 -o core/CMakeFiles/core.dir/src/AudioBuffer.cpp.o -c /Users/simonzimmermann/dev/seele/core/src/AudioBuffer.cpp",
   "file": "/Users/simonzimmermann/dev/seele/core/src/AudioBuffer.cpp"
 },
