@@ -8,6 +8,7 @@
 
 
 class NewProjectAudioProcessorEditor : public juce::AudioProcessorEditor
+                                     , private juce::Slider::Listener
 {
 public:
     explicit NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);
@@ -16,6 +17,8 @@ public:
     void resized() override;
 
 private:
+    void sliderValueChanged (juce::Slider* slider) override;
+
     NewProjectAudioProcessor& processor;
     std::unique_ptr<hidonash::MainComponent> mainComponent_;
 

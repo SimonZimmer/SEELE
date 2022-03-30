@@ -7,8 +7,7 @@
 
 namespace hidonash
 {
-    class MainComponent : public juce::Component,
-                          public juce::Slider::Listener
+    class MainComponent : public juce::Component
     {
     public:
         MainComponent();
@@ -17,7 +16,7 @@ namespace hidonash
 
         void paint(juce::Graphics& g) override;
 
-        void sliderValueChanged (juce::Slider* slider) override;
+        juce::Slider& getSanctitySlider(size_t index);
 
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;

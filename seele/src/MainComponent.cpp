@@ -21,9 +21,15 @@ namespace hidonash
                 sanctitySliders_[n]->setRange(0, 100, 0.01f);
                 sanctitySliders_[n]->setDoubleClickReturnValue(true, config::parameters::defaultPitchFactor);
                 sanctitySliders_[n]->setTooltip("Sanctity of the Seele Member");
+                sanctitySliders_[n]->setComponentID("Seele " + std::to_string(n + 1) + " Sanctity");
                 addAndMakeVisible(*sanctitySliders_[n]);
             }
         }
+    }
+
+    juce::Slider& MainComponent::getSanctitySlider(size_t index)
+    {
+        return *sanctitySliders_[index];
     }
 
     void MainComponent::paint(juce::Graphics& g)
@@ -35,7 +41,4 @@ namespace hidonash
         seeleLogo_->drawWithin(g, logoBounds, juce::RectanglePlacement::centred, 1.f);
     }
 
-    void MainComponent::sliderValueChanged(juce::Slider* slider)
-    {
-    }
 }
