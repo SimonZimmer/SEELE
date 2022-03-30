@@ -6,6 +6,7 @@ if (NOT TARGET juceaide)
 endif()
 
 add_subdirectory(seeleCore)
+add_subdirectory(resources)
 
 set(PLUGIN_NAME "SEELE")
 set(FORMATS VST3 AU)
@@ -23,6 +24,7 @@ target_compile_features(seelePlugin PUBLIC cxx_std_17)
 target_sources(seelePlugin PRIVATE
         src/PluginEditor.cpp
         src/PluginProcessor.cpp
+        src/MainComponent.cpp
         )
 
 target_include_directories(seelePlugin PRIVATE inc)
@@ -40,6 +42,7 @@ target_link_libraries(seelePlugin
             juce::juce_audio_utils
             seeleCore
             core
+            GraphicAssets
         )
 
 set(common_definitions
