@@ -18,8 +18,11 @@ namespace hidonash
 
         juce::Slider& getSanctitySlider(size_t index);
 
+        juce::ToggleButton& getSummonToggle(size_t index);
+
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::vector<std::unique_ptr<juce::Slider>> sanctitySliders_;
+        std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
     };
 }

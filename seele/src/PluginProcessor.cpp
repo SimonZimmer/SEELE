@@ -138,3 +138,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
 
     return { parameters.begin(), parameters.end() };
 }
+
+juce::AudioProcessorValueTreeState& NewProjectAudioProcessor::getAudioProcessorValueTreeState()
+{
+    return parameters_;
+}
+

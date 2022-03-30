@@ -1,5 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+
+#include <memory>
 #include <seeleCore/Config.h>
 
 
@@ -11,7 +13,16 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     addAndMakeVisible(mainComponent_.get());
 
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
-        mainComponent_->getSanctitySlider(n).addListener(this);
+    {
+        const auto sanctityParameterID = hidonash::config::parameters::sanctityPrefix + std::to_string(n);
+        sliderAttachments_.emplace_back(std::make_unique<juce::SliderParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(sanctityParameterID)),
+                                                                                          mainComponent_->getSanctitySlider(n)));
+
+        const auto summonStateparameterID = hidonash::config::parameters::summonStatePrefix + std::to_string(n);
+        buttonAttachments_.emplace_back(std::make_unique<juce::ButtonParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(summonStateparameterID)),
+                                                                                          mainComponent_->getSummonToggle(n)));
+    }
+
 }
 
 void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
@@ -21,12 +32,5 @@ void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
 void NewProjectAudioProcessorEditor::resized()
 {
     mainComponent_->setBounds(0, 0, mainComponent_->getWidth(), mainComponent_->getHeight());
-
 }
 
-void NewProjectAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
-{
-    for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
-        if (processor.getParameters()[n]->getName(256) == slider->getComponentID())
-            processor.getParameters()[n]->setValue(slider->getValue());
-}
