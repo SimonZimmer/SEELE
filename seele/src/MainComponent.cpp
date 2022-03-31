@@ -17,6 +17,7 @@ namespace hidonash
             sanctitySliders_.emplace_back(std::make_unique<juce::Slider>(juce::Slider::LinearBarVertical,
                                                                          juce::Slider::TextEntryBoxPosition::TextBoxAbove));
             summonToggles_.emplace_back(std::make_unique<juce::ToggleButton>());
+            toggleButtonLookAndFeels_.emplace_back(std::make_unique<ToggleButtonLookAndFeel>());
 
             sliderLookAndFeels_.emplace_back(std::make_unique<SliderLookAndFeel>(n + 1));
 
@@ -30,7 +31,11 @@ namespace hidonash
             }
 
             {
-                summonToggles_[n]->setBounds(10 + (70 * n), 460, 50, 20);
+                /*glowEffect_ = std::make_unique<GlowEffect>();
+                glowEffect_->setGlowProperties(50, Colours::white);
+                summonToggles_[n]->setComponentEffect(glowEffect_.get());*/
+                summonToggles_[n]->setBounds(10 + (70 * n), 460, 50, 15);
+                summonToggles_[n]->setLookAndFeel(toggleButtonLookAndFeels_[n].get());
                 addAndMakeVisible(*summonToggles_[n]);
             }
         }
