@@ -1,6 +1,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
+#include <Font.h>
 
 
 namespace hidonash
@@ -18,8 +19,8 @@ namespace hidonash
         }
 
         void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
-                               float sliderPos, float minSliderPos, float maxSliderPos,
-                               const Slider::SliderStyle style, Slider& slider) override
+                              float sliderPos, float minSliderPos, float maxSliderPos,
+                              const Slider::SliderStyle style, Slider& slider) override
         {
             g.fillAll(Colour::fromRGB(40, 40, 70));
 
@@ -41,11 +42,10 @@ namespace hidonash
 
             g.setColour(Colours::red);
 
-            static const auto font = juce::Typeface::createSystemTypefaceFor(resources::graphicassets::ChicagoFLF_ttf,
-                                                                             resources::graphicassets::ChicagoFLF_ttfSize);
-            g.setFont(font);
+            g.setFont(Font::chicagoFLF());
             g.setFont(10.f);
             g.drawMultiLineText("SEELE\n\n\nSOUND\nONLY", width * 0.1f, height * 0.1, width * 0.9, Justification::centred);
+            g.drawText("SANCTITY", Rectangle<int>(width * 0.1f, height * 0.8, width * 0.9, height * 0.2), Justification::centred);
 
             g.setFont(20.0f);
             g.drawText(memberIdentifier_, Rectangle<int>(width * 0.1f, height * 0.055, width * 0.9, height * 0.2), Justification::centred);

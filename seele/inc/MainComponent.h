@@ -6,6 +6,7 @@
 
 #include "SliderLookAndFeel.h"
 #include "ToggleButtonLookAndFeel.h"
+#include "TextBox.h"
 
 
 namespace hidonash
@@ -27,6 +28,7 @@ namespace hidonash
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::vector<std::unique_ptr<SliderLookAndFeel>> sliderLookAndFeels_;
         std::vector<std::unique_ptr<juce::Slider>> sanctitySliders_;
+        std::vector<std::unique_ptr<TextBox>> textBoxes_;
         std::vector<std::unique_ptr<ToggleButtonLookAndFeel>> toggleButtonLookAndFeels_;
         std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
         juce::GlowEffect glowEffect_{};

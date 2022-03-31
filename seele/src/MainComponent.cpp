@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include "TextBox.h"
 
 #include <seeleCore/Config.h>
 #include <GraphicAssets.h>
@@ -15,7 +16,8 @@ namespace hidonash
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<juce::Slider>(juce::Slider::LinearBarVertical,
-                                                                         juce::Slider::TextEntryBoxPosition::TextBoxAbove));
+                                                                         juce::Slider::NoTextBox));
+            textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n]));
             summonToggles_.emplace_back(std::make_unique<juce::ToggleButton>());
             toggleButtonLookAndFeels_.emplace_back(std::make_unique<ToggleButtonLookAndFeel>());
 
@@ -30,6 +32,8 @@ namespace hidonash
                 sanctitySliders_[n]->setTooltip("Sanctity of the Seele Member");
                 sanctitySliders_[n]->setLookAndFeel(sliderLookAndFeels_[n].get());
                 addAndMakeVisible(*sanctitySliders_[n]);
+                textBoxes_[n]->setBounds(10 + (65 * n), 425, 50, 30 );
+                addAndMakeVisible(*textBoxes_[n]);
             }
 
             {
