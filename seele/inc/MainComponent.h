@@ -18,6 +18,8 @@ namespace hidonash
 
         ~MainComponent() override = default;
 
+        void resized() override;
+
         void paint(juce::Graphics& g) override;
 
         SeeleSlider& getSanctitySlider(size_t index);
@@ -30,5 +32,6 @@ namespace hidonash
         std::vector<std::unique_ptr<TextBox>> textBoxes_;
         std::vector<std::unique_ptr<SummonToggle>> toggleButtonLookAndFeels_;
         std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
+        juce::String currentSizeAsString_;
     };
 }

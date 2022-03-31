@@ -6,11 +6,13 @@
 
 
 NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
-: AudioProcessorEditor (&p), processor (p)
+: AudioProcessorEditor(&p), processor (p)
 {
     mainComponent_ = std::make_unique<hidonash::MainComponent>();
-    setSize(mainComponent_->getWidth(), mainComponent_->getHeight());
+    setSize(510, 480);
     addAndMakeVisible(mainComponent_.get());
+
+    setResizable(true, true);
 
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
     {
@@ -29,6 +31,6 @@ void NewProjectAudioProcessorEditor::paint (juce::Graphics& g) {}
 
 void NewProjectAudioProcessorEditor::resized()
 {
-    mainComponent_->setBounds(0, 0, mainComponent_->getWidth(), mainComponent_->getHeight());
+    mainComponent_->setBounds(0, 0, getWidth(), getHeight());
 }
 

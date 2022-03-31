@@ -4,6 +4,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
+#include <Font.h>
 
 
 namespace hidonash 
@@ -15,9 +16,7 @@ namespace hidonash
         explicit TextBox(juce::Slider& slider)
         : slider_(slider)
         {
-            static const auto font = juce::Font(juce::Typeface::createSystemTypefaceFor(resources::graphicassets::ChicagoFLF_ttf,
-                                                                                        resources::graphicassets::ChicagoFLF_ttfSize));
-            label_.setFont(font.withHeight(10.f));
+            font_ = Font::chicagoFLF();
             label_.setJustificationType(juce::Justification::centred);
             label_.setEditable(true, true, false);
             label_.setColour(juce::Label::backgroundColourId, juce::Colours::transparentBlack);
@@ -58,6 +57,7 @@ namespace hidonash
         void resized() override
         {
             label_.setBounds(getLocalBounds());
+            label_.setFont(font_.withHeight(slider_.getWidth() / 5.f));
         }
 
     private:
@@ -76,6 +76,7 @@ namespace hidonash
 
         juce::Slider& slider_;
         juce::Label label_;
+        juce::Font font_;
     };
 
 }

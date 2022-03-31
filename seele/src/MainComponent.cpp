@@ -11,7 +11,11 @@ namespace hidonash
     : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_logo_svg,
                                                      hidonash::resources::graphicassets::seele_logo_svgSize))
     {
-        setSize(465, 520);
+    }
+
+    void MainComponent::resized()
+    {
+        const auto padding = getWidth() / 50.f;
 
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {
@@ -19,14 +23,14 @@ namespace hidonash
             textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n])); summonToggles_.emplace_back(std::make_unique<SummonToggle>());
 
             {
-                sanctitySliders_[n]->setBounds(10 + (65 * n), 230, 55, 220);
+                sanctitySliders_[n]->setBounds(padding + ((getWidth() / 7.f) * n), getHeight() / 2.f, getWidth() / 10.f, getHeight() / 2.5f);
                 addAndMakeVisible(*sanctitySliders_[n]);
-                textBoxes_[n]->setBounds(10 + (65 * n), 425, 50, 30 );
+                textBoxes_[n]->setBounds(padding + ((getWidth() / 7.f) * n), (getHeight() / 1.2f), getWidth() / 10.f, getHeight() / 10.f);
                 addAndMakeVisible(*textBoxes_[n]);
             }
 
             {
-                summonToggles_[n]->setBounds(10 + (65 * n), 450, 55, 25);
+                summonToggles_[n]->setBounds(padding + ((getWidth() / 7.f) * n), getHeight() - 50.f, getWidth() / 10.f, getHeight() / 20.f);
                 addAndMakeVisible(*summonToggles_[n]);
             }
         }
