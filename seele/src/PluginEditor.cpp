@@ -25,9 +25,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
 
 }
 
-void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
-{
-}
+void NewProjectAudioProcessorEditor::paint (juce::Graphics& g) {}
 
 void NewProjectAudioProcessorEditor::resized()
 {

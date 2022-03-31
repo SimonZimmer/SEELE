@@ -29,6 +29,6 @@ namespace hidonash
         std::vector<std::unique_ptr<juce::Slider>> sanctitySliders_;
         std::vector<std::unique_ptr<ToggleButtonLookAndFeel>> toggleButtonLookAndFeels_;
         std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
-        std::unique_ptr<juce::GlowEffect> glowEffect_;
+        juce::GlowEffect glowEffect_{};
     };
 }
