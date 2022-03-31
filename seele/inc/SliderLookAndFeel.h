@@ -13,6 +13,8 @@ namespace hidonash
         SliderLookAndFeel(int memberNumber)
         : memberIdentifier_("0" + std::to_string(memberNumber))
         {
+            setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::black);
+            setColour(juce::Slider::ColourIds::textBoxTextColourId, juce::Colours::red);
         }
 
         void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
@@ -25,10 +27,7 @@ namespace hidonash
 
             Path p;
 
-            if (style == Slider::LinearBarVertical)
-                p.addRectangle (fx, sliderPos, fw, 1.0f + fh - sliderPos);
-            else
-                p.addRectangle (fx, fy, sliderPos - fx, fh);
+            p.addRectangle (fx, sliderPos, fw, 1.0f + fh - sliderPos);
 
             auto baseColour = Colour::fromRGB(110, 104, 162)
                                     .withMultipliedSaturation (slider.isEnabled() ? 1.0f : 0.5f)
