@@ -33,8 +33,8 @@ namespace hidonash
                                     .withMultipliedSaturation (slider.isEnabled() ? 1.0f : 0.5f)
                                     .withMultipliedAlpha (0.8f);
 
-            g.setGradientFill (ColourGradient::vertical (baseColour.brighter (0.08f), 0.0f,
-                                                         baseColour.darker (0.08f), (float) height));
+            g.setGradientFill (ColourGradient::vertical (baseColour.brighter (0.2f), 0.0f,
+                                                         baseColour.darker (1.f), (float) height));
             g.fillPath(p);
             g.setColour(baseColour.darker (0.2f));
             g.fillRect(fx, sliderPos, fw, 1.0f);

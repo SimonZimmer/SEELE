@@ -21,7 +21,7 @@ namespace hidonash
 
             sliderLookAndFeels_.emplace_back(std::make_unique<SliderLookAndFeel>(n + 1));
 
-            glowEffect_.setGlowProperties(5, Colour::fromRGBA(170, 160, 240, 240));
+            glowEffect_.setGlowProperties(3, Colour::fromRGBA(170, 160, 240, 240));
 
             {
                 sanctitySliders_[n]->setBounds(10 + (65 * n), 230, 55, 220);
