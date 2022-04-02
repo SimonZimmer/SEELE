@@ -29,7 +29,7 @@ namespace hidonash
             }
 
             {
-                summonToggles_[n]->setBounds(padding * n, getHeight() - getHeight() / 12.f, getWidth() / 10.f, getHeight() / 10.f);
+                summonToggles_[n]->setBounds(padding * n, getHeight() - getHeight() / 12.f, getWidth() / 10.f, 30.f);
                 addAndMakeVisible(*summonToggles_[n]);
             }
         }
