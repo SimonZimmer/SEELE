@@ -1,7 +1,7 @@
 # SEELE
 ![build & tests](https://github.com/SimonZimmer/SEELE/actions/workflows/main.yml/badge.svg)
 
-![demo](https://github.com/SimonZimmer/SEELE/demo.gif)
+![demo](https://github.com/SimonZimmer/SEELE/blob/main/demo.gif)
 
 # Introduction
 A DAW-plugin inspired by the ficticious Villian Group SEELE from the animated series "Neon Genesis Evangelion" directed by Hideaki Anno.
