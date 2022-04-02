@@ -64,6 +64,18 @@ namespace hidonash
             setLookAndFeel(&lookAndFeel_);
         }
 
+        void mouseEnter(const juce::MouseEvent& e) override
+        {
+            setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);
+            setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colour::greyLevel(0.5f)); 
+        }
+
+        void mouseExit(const juce::MouseEvent &) override
+        {
+            setMouseCursor(juce::MouseCursor::StandardCursorType::NormalCursor);
+            setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::transparentBlack); 
+        }
+
     private:
         SliderLookAndFeel lookAndFeel_;
     };

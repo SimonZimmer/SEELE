@@ -10,7 +10,10 @@ namespace hidonash
     class ToggleButtonLookAndFeel : public juce::LookAndFeel_V4
     {
     public:
-        ToggleButtonLookAndFeel() = default;
+        ToggleButtonLookAndFeel()
+        {
+            setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::transparentBlack); 
+        }
 
         void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool, bool) override
         {
@@ -22,7 +25,8 @@ namespace hidonash
             else
                 g.setColour(disabledColour);
 
-            g.fillRect(button.getLocalBounds().reduced(2, 10).toFloat());
+            const auto buttonBounds = button.getLocalBounds().reduced(2, 10).toFloat();
+            g.fillRect(buttonBounds);
 
             static const auto font = juce::Typeface::createSystemTypefaceFor(resources::graphicassets::ChicagoFLF_ttf,
                                                                              resources::graphicassets::ChicagoFLF_ttfSize);
@@ -42,8 +46,18 @@ namespace hidonash
             setComponentEffect(&glowEffect_);
         }
 
+        void mouseEnter(const juce::MouseEvent&) override
+        {
+            setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);
+        }
+
+        void mouseExit(const juce::MouseEvent &) override
+        {
+            setMouseCursor(juce::MouseCursor::StandardCursorType::NormalCursor);
+        }
+
     private:
-        ToggleButtonLookAndFeel lookAndFeel_;
+        ToggleButtonLookAndFeel lookAndFeel_{};
         juce::GlowEffect glowEffect_{};
     };
 }
