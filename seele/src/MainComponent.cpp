@@ -1,49 +1,36 @@
 #include "MainComponent.h"
-#include "TextBox.h"
+#include "MemberArea.h"
 
-#include <seeleCore/Config.h>
 #include <GraphicAssets.h>
 
 
 namespace hidonash
 {
     MainComponent::MainComponent()
-    : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_logo_svg,
-                                                     hidonash::resources::graphicassets::seele_logo_svgSize))
+    : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_frame_svg,
+                                                     hidonash::resources::graphicassets::seele_frame_svgSize))
     {
+        memberArea_ = std::make_unique<hidonash::MemberArea>();
+        addAndMakeVisible(memberArea_.get());
     }
 
     void MainComponent::resized()
     {
-        const auto padding = getWidth() / 50.f;
-
-        for(auto n = 0; n < config::constants::numMembers; ++n)
-        {
-            sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
-            textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n])); summonToggles_.emplace_back(std::make_unique<SummonToggle>());
-
-            {
-                sanctitySliders_[n]->setBounds(padding + ((getWidth() / 7.f) * n), getHeight() / 2.f, getWidth() / 10.f, getHeight() / 2.5f);
-                addAndMakeVisible(*sanctitySliders_[n]);
-                textBoxes_[n]->setBounds(padding + ((getWidth() / 7.f) * n), (getHeight() / 1.2f), getWidth() / 10.f, getHeight() / 10.f);
-                addAndMakeVisible(*textBoxes_[n]);
-            }
-
-            {
-                summonToggles_[n]->setBounds(padding + ((getWidth() / 7.f) * n), getHeight() - 50.f, getWidth() / 10.f, getHeight() / 20.f);
-                addAndMakeVisible(*summonToggles_[n]);
-            }
-        }
+        const auto widthPadding = getWidth() / 7.f;
+        const auto heightPadding = getHeight() / 7.f;
+        auto memberBounds = getBounds().reduced(widthPadding, heightPadding);
+        memberArea_->setBounds(memberBounds);
+        memberArea_->setTopLeftPosition(widthPadding, heightPadding * 1.3f);
     }
 
     SeeleSlider& MainComponent::getSanctitySlider(size_t index)
     {
-        return *sanctitySliders_[index];
+        return memberArea_->getSanctitySlider(index); 
     }
 
     juce::ToggleButton& MainComponent::getSummonToggle(size_t index)
     {
-        return *summonToggles_[index];
+        return memberArea_->getSummonToggle(index); 
     }
 
     void MainComponent::paint(juce::Graphics& g)
@@ -51,9 +38,7 @@ namespace hidonash
         g.fillAll(juce::Colour::greyLevel(0.f));
         g.setColour (juce::Colours::red);
 
-        auto logoBounds = juce::Rectangle<float>(getWidth() / 2.f, getWidth() / 2.f);
-        logoBounds.setPosition((getWidth() / 2.f) - (logoBounds.getWidth() / 2.f), 10);
-        seeleLogo_->drawWithin(g, logoBounds, juce::RectanglePlacement::centred, 1.f);
+        seeleLogo_->drawWithin(g, getBounds().toFloat(), juce::RectanglePlacement::centred, 1.f);
     }
 }
 

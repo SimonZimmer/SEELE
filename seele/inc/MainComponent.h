@@ -1,12 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <memory>
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#include "TextBox.h"
-#include "SeeleSlider.h"
-#include "SummonToggle.h"
+#include "MemberArea.h"
 
 
 namespace hidonash
@@ -28,10 +26,6 @@ namespace hidonash
 
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;
-        std::vector<std::unique_ptr<SeeleSlider>> sanctitySliders_;
-        std::vector<std::unique_ptr<TextBox>> textBoxes_;
-        std::vector<std::unique_ptr<SummonToggle>> toggleButtonLookAndFeels_;
-        std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
-        juce::String currentSizeAsString_;
+        std::unique_ptr<MemberArea> memberArea_;
     };
 }

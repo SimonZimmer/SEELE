@@ -25,6 +25,7 @@ target_sources(seelePlugin PRIVATE
         src/PluginEditor.cpp
         src/PluginProcessor.cpp
         src/MainComponent.cpp
+        src/MemberArea.cpp
         )
 
 target_include_directories(seelePlugin PRIVATE inc)

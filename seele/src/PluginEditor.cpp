@@ -3,16 +3,21 @@
 
 #include <memory>
 #include <seeleCore/Config.h>
+#include <utility>
 
 
 NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
 : AudioProcessorEditor(&p), processor (p)
 {
     mainComponent_ = std::make_unique<hidonash::MainComponent>();
-    setSize(510, 480);
+    setSize(640, 380);
     addAndMakeVisible(mainComponent_.get());
 
     setResizable(true, true);
+    const auto ratio = 1.7;
+    auto&& constrainer = getConstrainer();
+    constrainer->setFixedAspectRatio(ratio);
+    constrainer->setMinimumSize(320, 190);
 
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
     {
@@ -26,8 +31,6 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     }
 
 }
-
-void NewProjectAudioProcessorEditor::paint (juce::Graphics& g) {}
 
 void NewProjectAudioProcessorEditor::resized()
 {
