@@ -38,7 +38,7 @@ namespace hidonash
             auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
             /* get bin deviation from freq deviation */
             phaseDifference /= freqPerBin_;
-            phaseDifference = 2. * M_PI * phaseDifference / config::constants::oversamplingFactor;
+            phaseDifference = 2. * config::constants::pi * phaseDifference / config::constants::oversamplingFactor;
             /* add the overlap phase advance back in */
             phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
             /* accumulate delta phase to get bin phase */
