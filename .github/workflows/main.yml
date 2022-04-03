@@ -25,11 +25,13 @@ jobs:
     - name: Install dependencies
       run: conan install . -s build_type=${{env.BUILD_TYPE}}
 
-    - name: Configure CMake
-      run: |
-      if [ "$RUNNER_OS" == "Windows" ]; then
+    - name: Configure CMake Windows
+      if: ${{ env.RUNNER_OS == 'Windows' }}
+      run:
         cmake -G "Visual Studio 16 2019" -A x64 . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-      else
+    - name: Configure CMake Mac
+      if: ${{ env.RUNNER_OS == 'macOS' }}
+      run:
         cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       
     - name: Build
