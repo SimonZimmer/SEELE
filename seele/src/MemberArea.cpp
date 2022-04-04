@@ -17,7 +17,8 @@ namespace hidonash
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
-            textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n])); summonToggles_.emplace_back(std::make_unique<SummonToggle>());
+            summonToggles_.emplace_back(std::make_unique<SummonToggle>());
+            textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n]));
 
             const auto padding = getWidth() / 6.7f;
 
@@ -40,7 +41,7 @@ namespace hidonash
         return *sanctitySliders_[index];
     }
 
-    juce::ToggleButton& MemberArea::getSummonToggle(size_t index)
+    SummonToggle& MemberArea::getSummonToggle(size_t index)
     {
         return *summonToggles_[index];
     }

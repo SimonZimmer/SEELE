@@ -22,12 +22,12 @@ namespace hidonash
 
         SeeleSlider& getSanctitySlider(size_t index);
 
-        juce::ToggleButton& getSummonToggle(size_t index);
+        SummonToggle& getSummonToggle(size_t index);
 
     private:
         std::vector<std::unique_ptr<SeeleSlider>> sanctitySliders_;
+        std::vector<std::unique_ptr<SummonToggle>> summonToggles_;
         std::vector<std::unique_ptr<TextBox>> textBoxes_;
-        std::vector<std::unique_ptr<juce::ToggleButton>> summonToggles_;
     };
 }
 

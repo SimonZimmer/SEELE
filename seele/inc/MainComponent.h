@@ -5,6 +5,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "MemberArea.h"
+#include "SummonToggle.h"
 
 
 namespace hidonash
@@ -22,7 +23,7 @@ namespace hidonash
 
         SeeleSlider& getSanctitySlider(size_t index);
 
-        juce::ToggleButton& getSummonToggle(size_t index);
+        SummonToggle& getSummonToggle(size_t index);
 
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;

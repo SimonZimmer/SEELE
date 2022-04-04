@@ -28,7 +28,7 @@ namespace hidonash
         return memberArea_->getSanctitySlider(index); 
     }
 
-    juce::ToggleButton& MainComponent::getSummonToggle(size_t index)
+    SummonToggle& MainComponent::getSummonToggle(size_t index)
     {
         return memberArea_->getSummonToggle(index); 
     }
