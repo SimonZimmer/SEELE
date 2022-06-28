@@ -32,14 +32,14 @@ namespace hidonash
             lastPhase_[sa] = phase;
             phaseDifference -= static_cast<double>(sa) * config::constants::expectedPhaseDifference;
             /* map delta phase into +/- Pi interval */
-            long qpd = phaseDifference / M_PI;
+            long qpd = phaseDifference / config::constants::pi;
             if (qpd >= 0)
                 qpd += qpd&1;
             else
                 qpd -= qpd&1;
-            phaseDifference -= M_PI * static_cast<double>(qpd);
+            phaseDifference -= config::constants::pi * static_cast<double>(qpd);
             /* get deviation from bin frequency from the +/- Pi interval */
-            phaseDifference = config::constants::oversamplingFactor * phaseDifference / (2. * M_PI);
+            phaseDifference = config::constants::oversamplingFactor * phaseDifference / (2. * config::constants::pi);
             /* compute the k-th partials' true frequency */
             phaseDifference = static_cast<double>(sa) * freqPerBin_ + phaseDifference * freqPerBin_;
 

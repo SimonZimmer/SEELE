@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "AudioBuffer.h"
 
 
@@ -61,7 +62,7 @@ namespace hidonash::core
             const auto channelsToCopy = std::min(other.getNumChannels(), numChannels_);
             const auto samplesToCopy = std::min(numSamples_, other.getNumSamples());
 
-            for (auto c = size_t{ 0 }; c < channelsToCopy; ++c)
+            for (auto c = size_t{ 0 }; c < static_cast<size_t>(channelsToCopy); ++c)
                 memcpy(data_[c], other.getDataPointer(), samplesToCopy * sizeof(float));
         }
     }
@@ -73,23 +74,23 @@ namespace hidonash::core
 
     void AudioBuffer::add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset, const size_t internalOffset)
     {
-        const auto numChannels = std::min(numChannels_, from.getNumChannels());
+        const auto numChannels = size_t(std::min(numChannels_, from.getNumChannels()));
 
-        for(size_t c = 0; c < numChannels; ++c)
+        for(auto c = size_t{0}; c < numChannels; ++c)
             for (size_t i = 0 ; i < addLength; ++i)
                 data_[c][i + internalOffset] += from.getSample(c, i + fromOffset);
     }
 
     void AudioBuffer::multiply(float value, size_t multiplyLength)
     {
-        for(size_t c = 0; c < getNumChannels(); ++c)
+        for(auto c = size_t{0}; c < static_cast<size_t>(getNumChannels()); ++c)
             for (size_t i = 0 ; i < multiplyLength; ++i)
                 data_[c][i] *= value;
     }
 
     void AudioBuffer::multiply(const std::vector<float>& from, size_t multiplyLength)
     {
-        const auto numChannels = std::min(numChannels_, static_cast<int>(from.size()));
+        const auto numChannels = size_t(std::min(numChannels_, static_cast<int>(from.size())));
 
         for(size_t c = 0; c < numChannels; ++c)
             for (size_t i = 0 ; i < multiplyLength; ++i)

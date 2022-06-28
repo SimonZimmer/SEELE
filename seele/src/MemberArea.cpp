@@ -14,23 +14,23 @@ namespace hidonash
 
     void MemberArea::resized()
     {
+        const auto padding = getWidth() / 6.7f;
+        const auto elementWidth = static_cast<int>(getWidth() / 10.f);
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
             summonToggles_.emplace_back(std::make_unique<SummonToggle>());
             textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n]));
 
-            const auto padding = getWidth() / 6.7f;
-
             {
-                sanctitySliders_[n]->setBounds(padding * n, 0.f, getWidth() / 10.f, getHeight() / 1.1f);
+                sanctitySliders_[n]->setBounds(padding * n, 0.f, elementWidth, getHeight() / 1.1f);
                 addAndMakeVisible(*sanctitySliders_[n]);
-                textBoxes_[n]->setBounds(padding * n, (getHeight() / 1.25f), getWidth() / 10.f, getHeight() / 10.f);
+                textBoxes_[n]->setBounds(padding * n, (getHeight() / 1.25f), elementWidth, getHeight() / 10.f);
                 addAndMakeVisible(*textBoxes_[n]);
             }
 
             {
-                summonToggles_[n]->setBounds(padding * n, getHeight() - getHeight() / 12.f, getWidth() / 10.f, 30.f);
+                summonToggles_[n]->setBounds(padding * n, getHeight() - getHeight() / 12.f, elementWidth, 30.f);
                 addAndMakeVisible(*summonToggles_[n]);
             }
         }

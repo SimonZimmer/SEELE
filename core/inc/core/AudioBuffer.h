@@ -14,15 +14,15 @@ namespace hidonash::core
 
         ~AudioBuffer() override;
 
-        float getSample(int channel, int sample) const override;
+        [[nodiscard]] float getSample(int channel, int sample) const override;
 
         void setSample(int destChannel, int destSample, float newValue) override;
 
-        int getNumChannels() const override;
+        [[nodiscard]] int getNumChannels() const override;
 
-        int getNumSamples() const override;
+        [[nodiscard]] int getNumSamples() const override;
 
-        float* getDataPointer() const override;
+        [[nodiscard]] float* getDataPointer() const override;
 
         void fill(float value) override;
 
@@ -30,7 +30,7 @@ namespace hidonash::core
 
         void copy(const IAudioBuffer& from, size_t fromOffset, size_t internalOffset, size_t copyLength) override;
 
-        void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0) override;
+        void add(const IAudioBuffer& from, size_t addLength, size_t fromOffset = 0, size_t internalOffset = 0) override;
 
         void multiply(float value, size_t multiplyLength) override;
 

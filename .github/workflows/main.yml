@@ -1,32 +1,35 @@
 name: unit-tests
 on:
   push:
-    branches: [ main ]
+    branches: [ multi_platform_builds ]
   
 env:
   BUILD_TYPE: Release
 jobs:
   build:
-    runs-on: macos-10.15
+    strategy:
+      matrix:
+        os: [macos-10.15, windows-2019]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-        
-    - name: Install Ninja
-      run: brew upgrade && brew install ninja
 
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.0
       
-    - name: Create default profile
-      run: conan profile new default --detect
-      
     - name: Install dependencies
       run: conan install . -s build_type=${{env.BUILD_TYPE}}
-      
-    - name: Configure CMake
-      run: cmake . -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Configure CMake Windows
+      if: runner.os == 'Windows'
+      run:
+        cmake -G "Visual Studio 16 2019" -A x64 . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Configure CMake Mac
+      if: runner.os == 'macOS'
+      run:
+        cmake . -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       
     - name: Build
       run: cmake --build .
@@ -34,4 +37,3 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}
       run: ctest -C ${{env.BUILD_TYPE}}
-      

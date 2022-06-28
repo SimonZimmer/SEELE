@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include <array>
 
 
@@ -19,11 +18,12 @@ namespace hidonash
 
         namespace constants
         {
+            constexpr auto pi = 3.141592653589793238463;
             constexpr auto fftFrameSize = 2048;
             constexpr auto analysisSize = 2 * fftFrameSize;
             constexpr auto oversamplingFactor = 16;
             constexpr auto stepSize = fftFrameSize / config::constants::oversamplingFactor;
-            constexpr auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize;
+            constexpr auto expectedPhaseDifference = 2. * pi * (double)stepSize / (double)fftFrameSize;
             constexpr auto numMembers = 7;
         }
     }

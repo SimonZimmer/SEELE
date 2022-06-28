@@ -1,6 +1,6 @@
 include(GoogleTest)
 include(CTest)
-
+#set(CMAKE_EXE_LINKER_FLAGS)
 add_executable(seeleCoreTestHost)
 
 add_dependencies(seeleCoreTestHost GTest::gtest)
