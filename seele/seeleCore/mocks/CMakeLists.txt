@@ -6,4 +6,4 @@ target_link_libraries(seeleCore_mocks
     INTERFACE
         GTest::gmock
         seeleCore
-    )
+        )

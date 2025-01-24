@@ -21,15 +21,39 @@ namespace hidonash
 
     void Engine::process(core::IAudioBuffer& inputBuffer)
     {
-        if (numMembers_ > 0 && memberParameterSet_.getSummonState(0))
+        int numSummonedMembers = 0;
+
+        // Temporary buffer to accumulate results
+        core::AudioBuffer outputBuffer(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
+        outputBuffer.fill(0.f);
+
+        for (auto n = size_t{0}; n < numMembers_; ++n)
         {
-            audioBuffers_[0]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
-            audioBuffers_[0]->copyFrom(inputBuffer);
+            if (memberParameterSet_.getSummonState(n))
+            {
+                // Prepare the audio buffer for processing
+                audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
+                audioBuffers_[n]->copyFrom(inputBuffer);
 
-            pitchShifters_[0]->process(*audioBuffers_[0]);
+                // Set pitch shift ratio and process the buffer
+                pitchShifters_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
+                pitchShifters_[n]->process(*audioBuffers_[n]);
 
-            inputBuffer.copyFrom(*audioBuffers_[0]); // Replace the input with processed output
+                // Accumulate the processed buffer into the output buffer
+                outputBuffer.add(*audioBuffers_[n], inputBuffer.getNumSamples());
+
+                ++numSummonedMembers;
+            }
         }
+
+        if (numSummonedMembers > 0)
+        {
+            // Normalize the accumulated output buffer
+            outputBuffer.multiply(1.f / static_cast<float>(numSummonedMembers), inputBuffer.getNumSamples());
+        }
+
+        // Copy the output buffer back to the input buffer
+        inputBuffer.copyFrom(outputBuffer);
     }
 }
 

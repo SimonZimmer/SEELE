@@ -1,8 +1,10 @@
+include(GoogleTest)
 include(CTest)
 
 add_executable(seeleCoreTestHost)
 
 add_dependencies(seeleCoreTestHost GTest::gtest)
+find_package(GTest REQUIRED)
 
 target_sources(seeleCoreTestHost PRIVATE
         src/EngineTestCase.cpp
@@ -14,12 +16,13 @@ target_sources(seeleCoreTestHost PRIVATE
 target_compile_features(seeleCoreTestHost PUBLIC cxx_std_17)
 
 target_link_libraries(seeleCoreTestHost PRIVATE
-        GTest::gtest
-        GTest::gtest_main
         seeleCore_mocks
         seeleCore
         core
         core_mocks
+        GTest::gtest
+        GTest::gmock
+        GTest::gtest_main
         )
 
 target_compile_options(seeleCoreTestHost PRIVATE
