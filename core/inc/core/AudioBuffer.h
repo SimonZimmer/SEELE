@@ -10,7 +10,7 @@ namespace hidonash::core
     public:
         AudioBuffer(int numChannels, int numSamples);
 
-        AudioBuffer(float** dataToReferTo, int numChannels, int numSamples);
+        AudioBuffer(float* const* dataToReferTo, int numChannels, int numSamples);
 
         ~AudioBuffer() override;
 
@@ -73,6 +73,6 @@ namespace hidonash::core
             int numSamples_ = 0;
 
             MemoryBlock memoryBlock_;
-            float** data_;
+            float* const* data_;
         };
 }

@@ -4,6 +4,6 @@ target_include_directories(seeleCore_mocks INTERFACE inc)
 
 target_link_libraries(seeleCore_mocks
     INTERFACE
-        gmock
+        GTest::gmock
         seeleCore
-        )
+    )

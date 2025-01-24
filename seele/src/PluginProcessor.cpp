@@ -91,10 +91,11 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     auto&& inputBuffer = hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(),
-                                                            buffer.getNumChannels(),
-                                                            buffer.getNumSamples());
+                                                     static_cast<int>(buffer.getNumChannels()),
+                                                     static_cast<int>(buffer.getNumSamples()));
 
     engine_->process(inputBuffer);
+
     buffer.copyFrom (0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
 }
