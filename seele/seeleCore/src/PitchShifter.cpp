@@ -29,18 +29,17 @@ namespace hidonash
     : freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(constants::fftFrameSize)))
     , factory_(factory)
     , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
+    , pitchFactor_(1.0f)
+    , gainCompensation_(std::pow(10, (65. / 20.)))
     , sampleCounter_(0)
     , stepSize_(config::constants::fftFrameSize / config::constants::oversamplingFactor)
     , inFifoLatency_(config::constants::fftFrameSize - stepSize_)
+    , fft_(std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(constants::fftFrameSize))))
     {
         fifoIn_.fill(0.0f);
         fifoOut_.fill(0.0f);
 
         outputAccumulationBuffer_.fill(0.0f);
-
-        const auto fftOrder = std::log2(constants::fftFrameSize);
-        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-        gainCompensation_ = std::pow(10, (65. / 20.));
     }
 
     void PitchShifter::process(core::IAudioBuffer& audioBuffer)
