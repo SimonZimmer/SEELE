@@ -3,6 +3,7 @@
 #include "PitchShifter.h"
 #include "Config.h"
 #include "Analysis.h"
+#include "core/IAudioBuffer.h"
 
 
 namespace hidonash
@@ -14,6 +15,13 @@ namespace hidonash
         double getWindowFactor(size_t k, size_t windowSize)
         {
             return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
+        }
+
+        void accumulateInFirstChannel(core::IAudioBuffer& audioBuffer)
+        {
+            for (auto ch = 0; ch < audioBuffer.getNumChannels() - 1; ++ch)
+                for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+                    audioBuffer.setSample(0, sa, audioBuffer.getSample(ch, sa) + audioBuffer.getSample(ch + 1, sa) * 0.5f);
         }
     }
     
@@ -28,6 +36,8 @@ namespace hidonash
         fifoIn_.fill(0.0f);
         fifoOut_.fill(0.0f);
 
+        outputAccumulationBuffer_.fill(0.0f);
+
         const auto fftOrder = std::log2(constants::fftFrameSize);
         fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
         gainCompensation_ = std::pow(10, (65. / 20.));
@@ -36,8 +46,7 @@ namespace hidonash
     void PitchShifter::process(core::IAudioBuffer& audioBuffer)
     {
         const auto numSamples = audioBuffer.getNumSamples();
-        for(auto sa = 0; sa < numSamples; ++sa)
-            audioBuffer.setSample(0, sa, audioBuffer.getSample(0, sa) + audioBuffer.getSample(1, sa) * 0.5f);
+        accumulateInFirstChannel(audioBuffer);
 
         for (auto sa = 0; sa < numSamples; sa++)
         {
