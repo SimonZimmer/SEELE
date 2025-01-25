@@ -72,7 +72,7 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock);
+    engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
 }
 
 void NewProjectAudioProcessor::releaseResources()

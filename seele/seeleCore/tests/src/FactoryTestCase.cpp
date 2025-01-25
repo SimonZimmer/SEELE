@@ -22,7 +22,7 @@ namespace hidonash
     {
         auto pitchRatio = std::atomic<float>(1.f);
         auto memberParameterSetMock = MemberParameterSetMock();
-        auto&& engine = Factory().createEngine(memberParameterSetMock, 44100., 64);
+        auto&& engine = Factory().createEngine(memberParameterSetMock, 44100., 64, 1);
         EXPECT_THAT(engine.get(), WhenDynamicCastTo<IAudioProcessor*>(NotNull()));
     }
 

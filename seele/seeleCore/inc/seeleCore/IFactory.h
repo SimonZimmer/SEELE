@@ -19,7 +19,7 @@ namespace hidonash
     public:
         virtual ~IFactory() = default;
 
-        virtual AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock) const = 0;
+        virtual AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock, size_t numChannels) const = 0;
 
         virtual AnalysisPtr createAnalysis(int freqPerBin) const = 0;
 

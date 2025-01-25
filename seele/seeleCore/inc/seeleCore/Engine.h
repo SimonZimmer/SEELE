@@ -15,7 +15,8 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
+        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+               int samplesPerBlock, size_t numChannels,
                FactoryPtr factory = std::make_unique<Factory>(),
                size_t numMembers = config::constants::numMembers);
 

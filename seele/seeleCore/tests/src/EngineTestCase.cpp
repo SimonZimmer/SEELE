@@ -54,7 +54,7 @@ namespace hidonash
         EXPECT_CALL(*factoryMockPtr_, createPitchShifter(_, _)).Times(config::constants::numMembers);
         EXPECT_CALL(*factoryMockPtr_, createAudioBuffer(_, _)).Times(config::constants::numMembers);
 
-        Engine(*memberParameterSetMock_, 44100., 64, std::move(factoryMock_));
+        Engine(*memberParameterSetMock_, 44100., 64, 1, std::move(factoryMock_));
     }
 
     TEST_F(UnitTest_Engine, process)
@@ -64,7 +64,7 @@ namespace hidonash
          ON_CALL(*factoryMock_, createAudioBuffer(_, _))
              .WillByDefault(Return(ByMove(std::move(audioBufferMock_))));
 
-        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, std::move(factoryMock_), 1);
+        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, 1, std::move(factoryMock_), 1);
         auto inputBufferMock = core::AudioBufferMock();
 
         EXPECT_CALL(*memberParameterSetMock_, getSummonState(_)).Times(2);
@@ -83,7 +83,7 @@ namespace hidonash
          ON_CALL(*memberParameterSetMock_, getSummonState(_))
              .WillByDefault(Return(true));
 
-        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, std::move(factoryMock_), 1);
+        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, 1, std::move(factoryMock_), 1);
         auto inputBufferMock = core::AudioBufferMock();
 
         EXPECT_CALL(inputBufferMock, getNumChannels()).Times(1);
@@ -106,7 +106,7 @@ namespace hidonash
          ON_CALL(*memberParameterSetMock_, getSummonState(_))
              .WillByDefault(Return(false));
 
-        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, std::move(factoryMock_), 1);
+        auto&& engine = Engine(*memberParameterSetMock_, 44100., 64, 1, std::move(factoryMock_), 1);
         auto inputBufferMock = core::AudioBufferMock();
 
         EXPECT_CALL(*memberParameterSetMock_, getSummonState(_)).Times(2);

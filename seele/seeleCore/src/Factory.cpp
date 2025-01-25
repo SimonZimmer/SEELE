@@ -12,9 +12,9 @@
 namespace hidonash
 {
     AudioProcessorPtr
-    Factory::createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock) const
+    Factory::createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock, size_t numChannels) const
     {
-        return std::make_unique<Engine>(memberParameterSet, sampleRate, samplesPerBlock);
+        return std::make_unique<Engine>(memberParameterSet, sampleRate, samplesPerBlock, numChannels);
     }
 
     AnalysisPtr Factory::createAnalysis(int freqPerBin) const

@@ -5,14 +5,14 @@
 
 namespace hidonash
 {
-    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
-                   FactoryPtr factory, size_t numMembers)
+    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+                   int samplesPerBlock, size_t numChannels, FactoryPtr factory, size_t numMembers)
     : memberParameterSet_(memberParameterSet)
     , numMembers_(numMembers)
     {
         for(auto n = 0; n < numMembers_; ++n)
         {
-            pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, 2, *factory));
+            pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, numChannels, *factory));
             audioBuffers_.emplace_back(factory->createAudioBuffer(2, samplesPerBlock));
         }
     }

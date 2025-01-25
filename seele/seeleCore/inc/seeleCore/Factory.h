@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IAudioProcessor.h"
 #include "IFactory.h"
 
 
@@ -10,7 +11,7 @@ namespace hidonash
     public:
         ~Factory() override = default;
 
-        AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock) const override;
+        AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock, size_t numChannels) const override;
 
         [[nodiscard]] AnalysisPtr createAnalysis(int freqPerBin) const override;
 
