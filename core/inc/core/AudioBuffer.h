@@ -8,25 +8,24 @@ namespace hidonash::core
     class AudioBuffer : public IAudioBuffer
     {
     public:
-        class Channel
+        class Channel : public IChannel
         {
         public:
-            const float& operator[](size_t sample) const;
+            Channel(float* buffer, size_t size);
 
-            float& operator[](size_t sample);
+            const float& operator[](size_t sample) const override;
 
-            size_t size() const;
+            float& operator[](size_t sample) override;
 
-            void fill(float value);
+            size_t size() const override;
 
-            void applyGain(float gain);
+            void fill(float value) override;
+
+            void applyGain(float gain) override;
 
         private:
             friend AudioBuffer;
 
-            explicit Channel(float* buffer, size_t size);
-
-        private:
             float* buffer_;
             size_t size_;
         };
@@ -48,10 +47,10 @@ namespace hidonash::core
 
         float* getDataPointer() const override;
 
-        const AudioBuffer::Channel getChannel(size_t channel) const;
+        const std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) const override;
 
-        AudioBuffer::Channel getChannel(size_t channel);
-
+        std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) override;
+ 
         void fill(float value) override;
 
         void copyFrom(const IAudioBuffer& other) override;

@@ -193,7 +193,7 @@ namespace hidonash
         auto&& channel = buffer.getChannel(0);
 
         for (size_t sa = 0; sa < noSamples; ++sa)
-            EXPECT_FLOAT_EQ(channel[sa], 0.1212f);
+            EXPECT_FLOAT_EQ((*channel)[sa], 0.1212f);
     }
 
     TEST_P(AudioBufferTest, channel_size)
@@ -203,7 +203,7 @@ namespace hidonash
         core::AudioBuffer buffer(1, noSamples);
         auto&& channel = buffer.getChannel(0);
 
-        EXPECT_EQ(channel.size(), noSamples);
+        EXPECT_EQ(channel->size(), noSamples);
     }
 
     TEST_P(AudioBufferTest, channel_fill)
@@ -212,10 +212,10 @@ namespace hidonash
 
         core::AudioBuffer buffer(1, noSamples);
         auto&& channel = buffer.getChannel(0);
-        channel.fill(0.4444f);
+        channel->fill(0.4444f);
 
         for (size_t sa = 0; sa < noSamples; ++sa)
-            EXPECT_FLOAT_EQ(channel[sa], 0.4444f);
+            EXPECT_FLOAT_EQ((*channel)[sa], 0.4444f);
     }
 
     TEST_P(AudioBufferTest, channel_applyGain)
@@ -224,10 +224,10 @@ namespace hidonash
 
         core::AudioBuffer buffer(1, noSamples);
         auto&& channel = buffer.getChannel(0);
-        channel.fill(0.4444f);
-        channel.applyGain(0.5f);
+        channel->fill(0.4444f);
+        channel->applyGain(0.5f);
 
         for (size_t sa = 0; sa < noSamples; ++sa)
-            EXPECT_FLOAT_EQ(channel[sa], 0.2222f);
+            EXPECT_FLOAT_EQ((*channel)[sa], 0.2222f);
     }
 }

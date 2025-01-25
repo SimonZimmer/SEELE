@@ -15,7 +15,7 @@ namespace hidonash
 
         MOCK_METHOD(void, setPitchRatio, (float));
 
-        MOCK_METHOD(void, process, (core::IAudioBuffer&));
+        MOCK_METHOD(void, process, (core::IAudioBuffer::IChannel&));
     };
 }
 

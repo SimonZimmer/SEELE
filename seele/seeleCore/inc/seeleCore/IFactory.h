@@ -9,6 +9,7 @@
 #include "ISynthesis.h"
 #include "IMemberParameterSet.h"
 #include "IPitchShifter.h"
+#include "IPitchShifterManager.h"
 
 
 namespace hidonash
@@ -25,6 +26,8 @@ namespace hidonash
         virtual SynthesisPtr createSynthesis(int freqPerBin, AnalysisPtr analysis) const = 0;
 
         virtual PitchShifterPtr createPitchShifter(double sampleRate, IFactory& factory) const = 0;
+
+        virtual PitchShifterManagerPtr createPitchShifterManager(double sampleRate, size_t numChannels, IFactory& factory) const = 0;
 
         virtual core::AudioBufferPtr createAudioBuffer(int numChannels, int numSamples) const = 0;
     };

@@ -23,6 +23,10 @@ namespace hidonash::core
 
         MOCK_METHOD(float*, getDataPointer, (), (const));
 
+        MOCK_METHOD(const std::unique_ptr<IAudioBuffer::IChannel>, getChannel, (size_t channel), (const));
+
+        MOCK_METHOD(std::unique_ptr<IAudioBuffer::IChannel>, getChannel, (size_t channel));
+
         MOCK_METHOD(void, fill, (float));
 
         MOCK_METHOD(void, copyFrom, (const IAudioBuffer&));
@@ -38,4 +42,3 @@ namespace hidonash::core
         MOCK_METHOD(void, setSize, (size_t, size_t));
     };
 }
-

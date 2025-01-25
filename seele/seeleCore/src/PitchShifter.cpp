@@ -15,13 +15,6 @@ namespace hidonash
         {
             return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
         }
-
-        void accumulateInFirstChannel(core::IAudioBuffer& audioBuffer)
-        {
-            for (auto ch = 0; ch < audioBuffer.getNumChannels() - 1; ++ch)
-                for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
-                    audioBuffer.setSample(0, sa, audioBuffer.getSample(ch, sa) + audioBuffer.getSample(ch + 1, sa) * 0.5f);
-        }
     }
     
     PitchShifter::PitchShifter(double sampleRate, IFactory& factory)
@@ -40,16 +33,15 @@ namespace hidonash
         outputAccumulationBuffer_.fill(0.0f);
     }
 
-    void PitchShifter::process(core::IAudioBuffer& audioBuffer)
+    void PitchShifter::process(core::IAudioBuffer::IChannel& channel)
     {
-        const auto numSamples = audioBuffer.getNumSamples();
-        accumulateInFirstChannel(audioBuffer);
+        const auto numSamples = channel.size();
 
         std::vector<float> processedSamples(numSamples);
 
         for (auto sa = 0; sa < numSamples; sa++)
         {
-            fifoIn_[sampleCounter_] = audioBuffer.getSample(0, sa);
+            fifoIn_[sampleCounter_] = channel[sa];
             processedSamples[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
             sampleCounter_++;
             
@@ -81,11 +73,10 @@ namespace hidonash
             }
         }
     
-        for (auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
-            for (auto sa = 0; sa < numSamples; sa++)
-                audioBuffer.setSample(ch, sa, processedSamples[sa]);
+        for (auto sa = 0; sa < numSamples; sa++)
+            channel[sa] = processedSamples[sa];
         
-        audioBuffer.multiply(gainCompensation_, numSamples);
+        channel.applyGain(gainCompensation_);
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

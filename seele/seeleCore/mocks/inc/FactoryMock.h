@@ -18,6 +18,8 @@ namespace hidonash
 
         MOCK_METHOD(PitchShifterPtr, createPitchShifter, (double sampleRate, IFactory& factory), (const));
 
+        MOCK_METHOD(PitchShifterManagerPtr, createPitchShifterManager, (double sampleRate, size_t numChannels, IFactory& factory), (const));
+
         MOCK_METHOD(core::AudioBufferPtr, createAudioBuffer, (int numChannels, int numSamples), (const));
     };
 }

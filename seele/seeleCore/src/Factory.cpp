@@ -1,9 +1,12 @@
 #include "Factory.h"
+
+#include <core/AudioBuffer.h>
+
 #include "Engine.h"
 #include "Analysis.h"
+#include "PitchShifterManager.h"
 #include "PitchShifter.h"
 #include "Synthesis.h"
-#include <core/AudioBuffer.h>
 
 
 namespace hidonash
@@ -27,6 +30,11 @@ namespace hidonash
     PitchShifterPtr Factory::createPitchShifter(double sampleRate, IFactory& factory) const
     {
         return std::make_unique<PitchShifter>(sampleRate, factory);
+    }
+
+    PitchShifterManagerPtr Factory::createPitchShifterManager(double sampleRate, size_t numChannels, IFactory& factory) const
+    {
+        return std::make_unique<PitchShifterManager>(sampleRate, numChannels, factory);
     }
 
     core::AudioBufferPtr Factory::createAudioBuffer(int numChannels, int numSamples) const

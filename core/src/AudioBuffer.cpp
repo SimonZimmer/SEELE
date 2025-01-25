@@ -77,20 +77,20 @@ namespace hidonash::core
         return *data_;
     }
 
-    const AudioBuffer::Channel AudioBuffer::getChannel(size_t channel) const
+    const std::unique_ptr<IAudioBuffer::IChannel> AudioBuffer::getChannel(size_t channel) const
     {
         if (channel >= numChannels_)
-            return Channel(nullptr, 0);
+            return std::make_unique<Channel>(nullptr, 0);
 
-        return Channel(data_[channel], numSamples_);
+        return std::make_unique<Channel>(data_[channel], numSamples_);
     }
 
-    AudioBuffer::Channel AudioBuffer::getChannel(size_t channel)
+    std::unique_ptr<IAudioBuffer::IChannel> AudioBuffer::getChannel(size_t channel)
     {
         if (channel >= numChannels_)
-            return Channel(nullptr, 0);
+            return std::make_unique<Channel>(nullptr, 0);
 
-        return Channel(data_[channel], numSamples_);
+        return std::make_unique<Channel>(data_[channel], numSamples_);
     }
 
     void AudioBuffer::fill(float value)

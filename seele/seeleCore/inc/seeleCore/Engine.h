@@ -4,12 +4,10 @@
 
 #include <core/AudioBuffer.h>
 
-#include "IAudioProcessor.h"
 #include "IFactory.h"
 #include "IMemberParameterSet.h"
-#include "IPitchShifter.h"
+#include "IPitchShifterManager.h"
 #include "Factory.h"
-#include "Config.h"
 
 
 namespace hidonash
@@ -26,7 +24,7 @@ namespace hidonash
         void process(core::IAudioBuffer& inputBuffer) override;
 
     private:
-        std::vector<PitchShifterPtr> pitchShifters_;
+        std::vector<PitchShifterManagerPtr> pitchShifterManagers_;
         std::vector<core::AudioBufferPtr> audioBuffers_;
         const IMemberParameterSet& memberParameterSet_;
         size_t numMembers_;

@@ -12,7 +12,7 @@ namespace hidonash
     {
         for(auto n = 0; n < numMembers_; ++n)
         {
-            pitchShifters_.emplace_back(factory->createPitchShifter(sampleRate, *factory));
+            pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, 2, *factory));
             audioBuffers_.emplace_back(factory->createAudioBuffer(2, samplesPerBlock));
         }
     }
@@ -28,8 +28,8 @@ namespace hidonash
             if (memberParameterSet_.getSummonState(n))
             {
                 audioBuffers_[n]->copyFrom(inputBuffer);
-                pitchShifters_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
-                pitchShifters_[n]->process(*audioBuffers_[n]);
+                pitchShifterManagers_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
+                pitchShifterManagers_[n]->process(*audioBuffers_[n]);
                 outputBuffer.add(*audioBuffers_[n], inputBuffer.getNumSamples());
                 activeMembers++;
             }

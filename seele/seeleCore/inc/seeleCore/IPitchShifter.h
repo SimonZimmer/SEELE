@@ -1,14 +1,13 @@
-
 #pragma once
 
 #include <memory>
 
-#include "IAudioProcessor.h"
+#include "IChannelProcessor.h"
 
 
 namespace hidonash
 {
-    class IPitchShifter : public IAudioProcessor
+    class IPitchShifter : public IChannelProcessor
     {
     public:
         virtual ~IPitchShifter() = default;

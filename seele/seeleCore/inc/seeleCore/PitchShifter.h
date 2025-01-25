@@ -6,8 +6,6 @@
 
 #include <core/IAudioBuffer.h>
 
-#include "IAudioProcessor.h"
-#include "IAnalysis.h"
 #include "IFactory.h"
 
 
@@ -16,11 +14,13 @@ namespace hidonash
     class PitchShifter : public IPitchShifter
     {
     public:
-        explicit PitchShifter(double sampleRate, IFactory& factory);
-        PitchShifter& operator=(PitchShifter&& other);
+        PitchShifter(double sampleRate, IFactory& factory);
+
         ~PitchShifter() = default;
 
-        void process(core::IAudioBuffer& audioBuffer) override;
+        PitchShifter& operator=(PitchShifter&& other);
+
+        void process(core::IAudioBuffer::IChannel& channel) override;
 
         void setPitchRatio(float pitchRatio) override;
 
@@ -43,5 +43,4 @@ namespace hidonash
         std::array<float, config::constants::analysisSize> fifoOut_;
         std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
     };
-
 }

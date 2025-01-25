@@ -9,6 +9,20 @@ namespace hidonash::core
     class IAudioBuffer
     {
     public:
+        class IChannel
+        {
+        public:
+            virtual const float& operator[](size_t sample) const = 0;
+
+            virtual float& operator[](size_t sample) = 0;
+
+            virtual size_t size() const = 0;
+
+            virtual void fill(float value) = 0;
+
+            virtual void applyGain(float gain) = 0;
+        };
+
         virtual ~IAudioBuffer() = default;
 
         virtual float getSample(int channel, int sample) const = 0;
@@ -20,6 +34,10 @@ namespace hidonash::core
         virtual int getNumSamples() const = 0;
 
         virtual float* getDataPointer() const = 0;
+
+        virtual const std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) const = 0;
+
+        virtual std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) = 0;
 
         virtual void fill(float value) = 0;
 
