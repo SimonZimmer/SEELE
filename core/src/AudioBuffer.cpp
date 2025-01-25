@@ -1,8 +1,42 @@
 #include "AudioBuffer.h"
 
+#include <algorithm>
+
 
 namespace hidonash::core
 {
+    const float& AudioBuffer::Channel::operator[](size_t sample) const
+    {
+        return buffer_[sample];
+    }
+
+    float& AudioBuffer::Channel::operator[](size_t sample)
+    {
+        return buffer_[sample];
+    }
+
+    size_t AudioBuffer::Channel::size() const
+    {
+        return size_;
+    }
+
+    void AudioBuffer::Channel::fill(float value)
+    {
+        for(auto sa = 0; sa < size_; ++sa)
+            buffer_[sa] = value;
+    }
+
+    void AudioBuffer::Channel::applyGain(float gain)
+    {
+        for (auto sa = 0; sa < size_; ++sa)
+            buffer_[sa] *= gain;
+    }
+
+    AudioBuffer::Channel::Channel(float* buffer, size_t size)
+    : buffer_(buffer)
+    , size_(size)
+    {}
+
     AudioBuffer::AudioBuffer(int numChannels, int numSamples)
     : numChannels_(numChannels)
     , numSamples_(numSamples)
@@ -17,8 +51,6 @@ namespace hidonash::core
     , data_(dataToReferTo)
     {
     }
-
-    AudioBuffer::~AudioBuffer() = default;
 
     float AudioBuffer::getSample(int channel, int sample) const
     {
@@ -43,6 +75,22 @@ namespace hidonash::core
     float* AudioBuffer::getDataPointer() const
     {
         return *data_;
+    }
+
+    const AudioBuffer::Channel AudioBuffer::getChannel(size_t channel) const
+    {
+        if (channel >= numChannels_)
+            return Channel(nullptr, 0);
+
+        return Channel(data_[channel], numSamples_);
+    }
+
+    AudioBuffer::Channel AudioBuffer::getChannel(size_t channel)
+    {
+        if (channel >= numChannels_)
+            return Channel(nullptr, 0);
+
+        return Channel(data_[channel], numSamples_);
     }
 
     void AudioBuffer::fill(float value)
