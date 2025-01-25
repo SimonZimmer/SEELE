@@ -2,12 +2,13 @@
 
 #include <memory>
 
+#include <core/IAudioBuffer.h>
+
 #include "IAudioProcessor.h"
 #include "IAnalysis.h"
 #include "ISynthesis.h"
 #include "IMemberParameterSet.h"
 #include "IPitchShifter.h"
-#include <core/IAudioBuffer.h>
 
 
 namespace hidonash
@@ -17,7 +18,7 @@ namespace hidonash
     public:
         virtual ~IFactory() = default;
 
-        virtual AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate) const = 0;
+        virtual AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock) const = 0;
 
         virtual AnalysisPtr createAnalysis(int freqPerBin) const = 0;
 

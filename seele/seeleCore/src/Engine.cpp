@@ -5,7 +5,7 @@
 
 namespace hidonash
 {
-    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
                    FactoryPtr factory, size_t numMembers)
     : memberParameterSet_(memberParameterSet)
     , numMembers_(numMembers)
@@ -13,7 +13,7 @@ namespace hidonash
         for(auto n = 0; n < numMembers_; ++n)
         {
             pitchShifters_.emplace_back(factory->createPitchShifter(sampleRate, *factory));
-            audioBuffers_.emplace_back(factory->createAudioBuffer(2, 4048));
+            audioBuffers_.emplace_back(factory->createAudioBuffer(2, samplesPerBlock));
         }
     }
 
@@ -27,7 +27,6 @@ namespace hidonash
         {
             if (memberParameterSet_.getSummonState(n))
             {
-                audioBuffers_[n]->setSize(inputBuffer.getNumChannels(), inputBuffer.getNumSamples());
                 audioBuffers_[n]->copyFrom(inputBuffer);
                 pitchShifters_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
                 pitchShifters_[n]->process(*audioBuffers_[n]);
@@ -42,6 +41,6 @@ namespace hidonash
             return;
 
         inputBuffer.copyFrom(outputBuffer);
-}
+    }
 }
 
