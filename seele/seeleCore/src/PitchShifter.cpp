@@ -47,12 +47,14 @@ namespace hidonash
         const auto numSamples = audioBuffer.getNumSamples();
         accumulateInFirstChannel(audioBuffer);
 
+        std::vector<float> processedSamples(numSamples);
+
         for (auto sa = 0; sa < numSamples; sa++)
         {
-            fifoIn_[sampleCounter_] = audioBuffer.getDataPointer()[sa];
-            audioBuffer.getDataPointer()[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
+            fifoIn_[sampleCounter_] = audioBuffer.getSample(0, sa);
+            processedSamples[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
             sampleCounter_++;
-
+            
             if (sampleCounter_ >= constants::fftFrameSize)
             {
                 sampleCounter_ = inFifoLatency_;
@@ -61,28 +63,29 @@ namespace hidonash
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
                     fftWorkspace_[sa].imag(0.);
                 }
-
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
                 synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
-
-                /* do windowing and add to output accumulator */
+                
                 for(auto sa = 0; sa < constants::fftFrameSize; sa++)
                     outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
-
+                
                 for (auto sa = 0; sa < stepSize_; sa++)
                     fifoOut_[sa] = outputAccumulationBuffer_[sa];
-
-                /* shift accumulator */
+                
                 memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize_, constants::fftFrameSize * sizeof(float));
-                /* move input FIFO */
+                
                 for (auto sa = 0; sa < inFifoLatency_; sa++)
                     fifoIn_[sa] = fifoIn_[sa + stepSize_];
-
+                
                 sampleCounter_ = inFifoLatency_;
             }
         }
-
+    
+        for (auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
+            for (auto sa = 0; sa < numSamples; sa++)
+                audioBuffer.setSample(ch, sa, processedSamples[sa]);
+        
         audioBuffer.multiply(gainCompensation_, numSamples);
     }
 

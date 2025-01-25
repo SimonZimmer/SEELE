@@ -134,7 +134,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
                                                                             hidonash::config::parameters::maxPitchFactor,
                                                                             hidonash::config::parameters::defaultPitchFactor));
         parameters.emplace_back(std::make_unique<juce::AudioParameterBool>(hidonash::config::parameters::summonStatePrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Summoned",
-                                                                           false));
+                                                                           true));
     }
 
     return { parameters.begin(), parameters.end() };

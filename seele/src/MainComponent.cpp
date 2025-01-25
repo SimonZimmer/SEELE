@@ -1,6 +1,8 @@
 #include "MainComponent.h"
 #include "MemberArea.h"
 
+#include <seeleCore/Config.h>
+
 #include <GraphicAssets.h>
 
 
@@ -16,8 +18,8 @@ namespace hidonash
 
     void MainComponent::resized()
     {
-        const auto widthPadding = getWidth() / 7.f;
-        const auto heightPadding = getHeight() / 7.f;
+        const auto widthPadding = getWidth() / config::constants::numMembers;
+        const auto heightPadding = getHeight() / config::constants::numMembers;
         auto memberBounds = getBounds().reduced(widthPadding, heightPadding);
         memberArea_->setBounds(memberBounds);
         memberArea_->setTopLeftPosition(widthPadding, heightPadding * 1.3f);
