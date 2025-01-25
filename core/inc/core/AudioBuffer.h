@@ -8,11 +8,35 @@ namespace hidonash::core
     class AudioBuffer : public IAudioBuffer
     {
     public:
+        class Channel
+        {
+        public:
+            const float& operator[](size_t sample) const;
+
+            float& operator[](size_t sample);
+
+            size_t size() const;
+
+            void fill(float value);
+
+            void applyGain(float gain);
+
+        private:
+            friend AudioBuffer;
+
+            explicit Channel(float* buffer, size_t size);
+
+        private:
+            float* buffer_;
+            size_t size_;
+        };
+
+    public:
         AudioBuffer(int numChannels, int numSamples);
 
         AudioBuffer(float* const* dataToReferTo, int numChannels, int numSamples);
 
-        ~AudioBuffer() override;
+        ~AudioBuffer() override = default;
 
         float getSample(int channel, int sample) const override;
 
@@ -23,6 +47,10 @@ namespace hidonash::core
         int getNumSamples() const override;
 
         float* getDataPointer() const override;
+
+        const AudioBuffer::Channel getChannel(size_t channel) const;
+
+        AudioBuffer::Channel getChannel(size_t channel);
 
         void fill(float value) override;
 
@@ -74,5 +102,6 @@ namespace hidonash::core
 
             MemoryBlock memoryBlock_;
             float* const* data_;
+            std::vector<float*> channelData_;
         };
 }
