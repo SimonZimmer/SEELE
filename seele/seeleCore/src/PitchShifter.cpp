@@ -1,9 +1,8 @@
 #include <cmath>
 
+#include "core/IAudioBuffer.h"
 #include "PitchShifter.h"
 #include "Config.h"
-#include "Analysis.h"
-#include "core/IAudioBuffer.h"
 
 
 namespace hidonash

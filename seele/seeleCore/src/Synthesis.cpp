@@ -19,7 +19,6 @@ namespace hidonash
     {
         analysis_->perform(fftWorkspace);
         
-        // Reset buffers
         std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.0f);
         std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.0f);
         
@@ -30,20 +29,16 @@ namespace hidonash
         
         for (int sa = 0; sa <= halfFrameSize; sa++)
         {
-            // Use safe floating-point indexing
             float targetIndex = static_cast<float>(sa) * pitchFactor;
             int index = static_cast<int>(std::floor(targetIndex));
             
             if (index >= 0 && index <= halfFrameSize)
             {
-                // Interpolate magnitude if needed
                 float weight = targetIndex - index;
                 magnitudeBuffer_[index] += analysisMagnitudeBuffer[sa] * (1.0f - weight);
                 
                 if (index + 1 <= halfFrameSize)
-                {
                     magnitudeBuffer_[index + 1] += analysisMagnitudeBuffer[sa] * weight;
-                }
                 
                 frequencyBuffer_[index] = analysisFrequencyBuffer[sa] * pitchFactor;
             }
