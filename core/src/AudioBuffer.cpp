@@ -11,7 +11,7 @@ namespace hidonash::core
     {
     }
 
-    AudioBuffer::AudioBuffer(float** dataToReferTo, int numChannels, int numSamples)
+    AudioBuffer::AudioBuffer(float* const* dataToReferTo, int numChannels, int numSamples)
     : numChannels_(numChannels)
     , numSamples_(numSamples)
     , data_(dataToReferTo)

@@ -18,6 +18,7 @@ target_link_libraries(coreTestHost
             core
             GTest::gtest_main
             GTest::gtest
+            GTest::gmock
         )
 
 gtest_discover_tests(coreTestHost)

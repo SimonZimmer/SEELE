@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <seeleCore/Config.h>
-#include <utility>
 
 
 NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)

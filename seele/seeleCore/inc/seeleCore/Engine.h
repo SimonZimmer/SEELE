@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-#include <functional>
 #include <vector>
 
 #include <core/AudioBuffer.h>
@@ -9,8 +7,8 @@
 #include "IAudioProcessor.h"
 #include "IFactory.h"
 #include "IMemberParameterSet.h"
+#include "IPitchShifter.h"
 #include "Factory.h"
-#include "PitchShifter.h"
 #include "Config.h"
 
 
@@ -19,7 +17,7 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
                FactoryPtr factory = std::make_unique<Factory>(),
                size_t numMembers = config::constants::numMembers);
 

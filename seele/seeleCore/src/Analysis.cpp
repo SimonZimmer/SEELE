@@ -7,6 +7,7 @@ namespace hidonash
 {
     Analysis::Analysis(int freqPerBin)
     : freqPerBin_(freqPerBin)
+    , lastPhase_{}
     {
     }
 

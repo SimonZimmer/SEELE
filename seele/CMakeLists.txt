@@ -15,7 +15,7 @@ juce_add_plugin(seelePlugin
         PLUGIN_CODE SLPL
         FORMATS ${FORMATS}
         PRODUCT_NAME ${PLUGIN_NAME}
-        COMPANY_NAME "Hidonash (Simon Zimmermann)"
+        COMPANY_NAME "hidonash"
         VERSION 1.0
         )
 

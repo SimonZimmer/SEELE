@@ -1,8 +1,8 @@
 #include <cmath>
 
+#include "core/IAudioBuffer.h"
 #include "PitchShifter.h"
 #include "Config.h"
-#include "Analysis.h"
 
 
 namespace hidonash
@@ -15,39 +15,47 @@ namespace hidonash
         {
             return (-.5 * cos(2. * M_PI * (double)k / (double)windowSize) + .5);
         }
+
+        void accumulateInFirstChannel(core::IAudioBuffer& audioBuffer)
+        {
+            for (auto ch = 0; ch < audioBuffer.getNumChannels() - 1; ++ch)
+                for(auto sa = 0; sa < audioBuffer.getNumSamples(); ++sa)
+                    audioBuffer.setSample(0, sa, audioBuffer.getSample(ch, sa) + audioBuffer.getSample(ch + 1, sa) * 0.5f);
+        }
     }
     
     PitchShifter::PitchShifter(double sampleRate, IFactory& factory)
     : freqPerBin_(static_cast<int>(sampleRate / static_cast<double>(constants::fftFrameSize)))
     , factory_(factory)
     , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
+    , pitchFactor_(1.0f)
+    , gainCompensation_(std::pow(10, (65. / 20.)))
+    , sampleCounter_(0)
+    , stepSize_(config::constants::fftFrameSize / config::constants::oversamplingFactor)
+    , inFifoLatency_(config::constants::fftFrameSize - stepSize_)
+    , fft_(std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(constants::fftFrameSize))))
     {
-        const auto fftOrder = std::log2(constants::fftFrameSize);
-        fft_ = std::make_unique<juce::dsp::FFT>(static_cast<int>(fftOrder));
-        gainCompensation_ = std::pow(10, (65. / 20.));
+        fifoIn_.fill(0.0f);
+        fifoOut_.fill(0.0f);
+        outputAccumulationBuffer_.fill(0.0f);
     }
 
     void PitchShifter::process(core::IAudioBuffer& audioBuffer)
     {
-        auto stepSize = constants::fftFrameSize / constants::oversamplingFactor;
-        const auto inFifoLatency = constants::fftFrameSize - stepSize;
-        static long sampleCounter = false;
-        if (sampleCounter == false)
-            sampleCounter = inFifoLatency;
-
         const auto numSamples = audioBuffer.getNumSamples();
-        for(auto sa = 0; sa < numSamples; ++sa)
-            audioBuffer.setSample(0, sa, audioBuffer.getSample(0, sa) + audioBuffer.getSample(1, sa) * 0.5f);
+        accumulateInFirstChannel(audioBuffer);
+
+        std::vector<float> processedSamples(numSamples);
 
         for (auto sa = 0; sa < numSamples; sa++)
         {
-            fifoIn_[sampleCounter] = audioBuffer.getDataPointer()[sa];
-            audioBuffer.getDataPointer()[sa] = fifoOut_[sampleCounter - inFifoLatency];
-            sampleCounter++;
-
-            if (sampleCounter >= constants::fftFrameSize)
+            fifoIn_[sampleCounter_] = audioBuffer.getSample(0, sa);
+            processedSamples[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
+            sampleCounter_++;
+            
+            if (sampleCounter_ >= constants::fftFrameSize)
             {
-                sampleCounter = inFifoLatency;
+                sampleCounter_ = inFifoLatency_;
                 for (auto sa = 0; sa < constants::fftFrameSize; sa++)
                 {
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
@@ -57,22 +65,26 @@ namespace hidonash
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
                 synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
-
-                /* do windowing and add to output accumulator */
+                
                 for(auto sa = 0; sa < constants::fftFrameSize; sa++)
                     outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real() / ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
-
-                for (auto sa = 0; sa < stepSize; sa++)
+                
+                for (auto sa = 0; sa < stepSize_; sa++)
                     fifoOut_[sa] = outputAccumulationBuffer_[sa];
-
-                /* shift accumulator */
-                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize, constants::fftFrameSize * sizeof(float));
-                /* move input FIFO */
-                for (auto sa = 0; sa < inFifoLatency; sa++)
-                    fifoIn_[sa] = fifoIn_[sa + stepSize];
+                
+                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize_, constants::fftFrameSize * sizeof(float));
+                
+                for (auto sa = 0; sa < inFifoLatency_; sa++)
+                    fifoIn_[sa] = fifoIn_[sa + stepSize_];
+                
+                sampleCounter_ = inFifoLatency_;
             }
         }
-
+    
+        for (auto ch = 0; ch < audioBuffer.getNumChannels(); ++ch)
+            for (auto sa = 0; sa < numSamples; sa++)
+                audioBuffer.setSample(ch, sa, processedSamples[sa]);
+        
         audioBuffer.multiply(gainCompensation_, numSamples);
     }
 

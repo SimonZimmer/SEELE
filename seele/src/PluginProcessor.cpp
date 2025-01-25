@@ -72,7 +72,7 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate);
+    engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock);
 }
 
 void NewProjectAudioProcessor::releaseResources()
@@ -91,10 +91,11 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     auto&& inputBuffer = hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(),
-                                                            buffer.getNumChannels(),
-                                                            buffer.getNumSamples());
+                                                     static_cast<int>(buffer.getNumChannels()),
+                                                     static_cast<int>(buffer.getNumSamples()));
 
     engine_->process(inputBuffer);
+
     buffer.copyFrom (0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
 }
@@ -133,7 +134,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
                                                                             hidonash::config::parameters::maxPitchFactor,
                                                                             hidonash::config::parameters::defaultPitchFactor));
         parameters.emplace_back(std::make_unique<juce::AudioParameterBool>(hidonash::config::parameters::summonStatePrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Summoned",
-                                                                           false));
+                                                                           true));
     }
 
     return { parameters.begin(), parameters.end() };

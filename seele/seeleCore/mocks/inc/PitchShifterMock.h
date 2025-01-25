@@ -17,6 +17,5 @@ namespace hidonash
 
         MOCK_METHOD(void, process, (core::IAudioBuffer&));
     };
-
 }
 
