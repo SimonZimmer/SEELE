@@ -6,6 +6,7 @@
 
 #include <core/IAudioBuffer.h>
 
+#include "Config.h"
 #include "IFactory.h"
 
 
@@ -42,5 +43,7 @@ namespace hidonash
         std::array<float, config::constants::analysisSize> fifoIn_;
         std::array<float, config::constants::analysisSize> fifoOut_;
         std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
+
+        std::array<float, config::constants::analysisSize> processedSamples_;
     };
 }

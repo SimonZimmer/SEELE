@@ -31,18 +31,17 @@ namespace hidonash
         fifoIn_.fill(0.0f);
         fifoOut_.fill(0.0f);
         outputAccumulationBuffer_.fill(0.0f);
+        processedSamples_.fill(0.0f);
     }
 
     void PitchShifter::process(core::IAudioBuffer::IChannel& channel)
     {
         const auto numSamples = channel.size();
 
-        std::vector<float> processedSamples(numSamples);
-
         for (auto sa = 0; sa < numSamples; sa++)
         {
             fifoIn_[sampleCounter_] = channel[sa];
-            processedSamples[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
+            processedSamples_[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
             sampleCounter_++;
             
             if (sampleCounter_ >= constants::fftFrameSize)
@@ -74,7 +73,7 @@ namespace hidonash
         }
     
         for (auto sa = 0; sa < numSamples; sa++)
-            channel[sa] = processedSamples[sa];
+            channel[sa] = processedSamples_[sa];
         
         channel.applyGain(gainCompensation_);
     }
