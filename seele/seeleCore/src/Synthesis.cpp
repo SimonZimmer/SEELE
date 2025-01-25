@@ -9,43 +9,61 @@ namespace hidonash
     Synthesis::Synthesis(int freqPerBin, AnalysisPtr analysis)
     : analysis_(std::move(analysis))
     , freqPerBin_(freqPerBin)
+    , sumPhase_{}
+    , frequencyBuffer_{}
+    , magnitudeBuffer_{}
     {
     }
 
     void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor)
     {
         analysis_->perform(fftWorkspace);
-        memset(magnitudeBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
-        memset(frequencyBuffer_.data(), 0, config::constants::fftFrameSize * sizeof(float));
-
+        
+        // Reset buffers
+        std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.0f);
+        std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.0f);
+        
         auto&& analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
         auto&& analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
-        for (auto sa = 0; sa <= config::constants::fftFrameSize / 2; sa++)
+        
+        const int halfFrameSize = config::constants::fftFrameSize / 2;
+        
+        for (int sa = 0; sa <= halfFrameSize; sa++)
         {
-            auto index = sa * pitchFactor;
-            if (index <= (config::constants::fftFrameSize / 2))
+            // Use safe floating-point indexing
+            float targetIndex = static_cast<float>(sa) * pitchFactor;
+            int index = static_cast<int>(std::floor(targetIndex));
+            
+            if (index >= 0 && index <= halfFrameSize)
             {
-                magnitudeBuffer_[index] += analysisMagnitudeBuffer[sa];
+                // Interpolate magnitude if needed
+                float weight = targetIndex - index;
+                magnitudeBuffer_[index] += analysisMagnitudeBuffer[sa] * (1.0f - weight);
+                
+                if (index + 1 <= halfFrameSize)
+                {
+                    magnitudeBuffer_[index + 1] += analysisMagnitudeBuffer[sa] * weight;
+                }
+                
                 frequencyBuffer_[index] = analysisFrequencyBuffer[sa] * pitchFactor;
             }
         }
-
-        for (auto sa = 0; sa <= config::constants::fftFrameSize; sa++)
+        
+        for (int sa = 0; sa <= config::constants::fftFrameSize; sa++)
         {
             const auto magnitude = magnitudeBuffer_[sa];
             auto phase = frequencyBuffer_[sa];
-            /* subtract bin mid frequency */
+            
             auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
-            /* get bin deviation from freq deviation */
             phaseDifference /= freqPerBin_;
             phaseDifference = 2. * M_PI * phaseDifference / config::constants::oversamplingFactor;
-            /* add the overlap phase advance back in */
             phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
-            /* accumulate delta phase to get bin phase */
+            
             sumPhase_[sa] += phaseDifference;
             phase = sumPhase_[sa];
-            fftWorkspace[sa].real(magnitude * cos(phase));
-            fftWorkspace[sa].imag(magnitude * sin(phase));
+            
+            fftWorkspace[sa].real(magnitude * std::cos(phase));
+            fftWorkspace[sa].imag(magnitude * std::sin(phase));
         }
     }
 }

@@ -38,7 +38,6 @@ namespace hidonash
     {
         fifoIn_.fill(0.0f);
         fifoOut_.fill(0.0f);
-
         outputAccumulationBuffer_.fill(0.0f);
     }
 
@@ -63,6 +62,7 @@ namespace hidonash
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
                     fftWorkspace_[sa].imag(0.);
                 }
+
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
                 synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
