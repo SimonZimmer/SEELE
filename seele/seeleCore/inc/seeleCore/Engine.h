@@ -17,8 +17,7 @@ namespace hidonash
     public:
         Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
                int samplesPerBlock, size_t numChannels,
-               FactoryPtr factory = std::make_unique<Factory>(),
-               size_t numMembers = config::constants::numMembers);
+               FactoryPtr factory = std::make_unique<Factory>());
 
         ~Engine() = default;
 
@@ -28,7 +27,7 @@ namespace hidonash
         std::vector<PitchShifterManagerPtr> pitchShifterManagers_;
         std::vector<core::AudioBufferPtr> audioBuffers_;
         const IMemberParameterSet& memberParameterSet_;
-        size_t numMembers_;
+        core::AudioBuffer internalBuffer_;
     };
 }
 
