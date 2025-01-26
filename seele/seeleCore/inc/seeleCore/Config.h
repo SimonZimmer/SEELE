@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <array>
 
 
 namespace hidonash
@@ -24,7 +23,7 @@ namespace hidonash
             constexpr auto oversamplingFactor = 2;
             constexpr auto stepSize = fftFrameSize / config::constants::oversamplingFactor;
             constexpr auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize;
-            constexpr auto numMembers = 3;
+            constexpr auto numMembers = 7;
         }
     }
 }

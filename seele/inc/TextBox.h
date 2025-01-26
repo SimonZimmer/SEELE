@@ -18,7 +18,7 @@ namespace hidonash
         {
             font_ = Font::chicagoFLF();
             label_.setJustificationType(juce::Justification::centred);
-            label_.setEditable(true, true, false);
+            label_.setEditable(false, false, false);
             label_.setColour(juce::Label::backgroundColourId, juce::Colours::transparentBlack);
             label_.setColour(juce::Label::outlineColourId, juce::Colours::transparentBlack);
             label_.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);

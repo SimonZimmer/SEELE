@@ -1,5 +1,6 @@
 #include "MainComponent.h"
 #include "MemberArea.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 #include <seeleCore/Config.h>
 
@@ -18,11 +19,11 @@ namespace hidonash
 
     void MainComponent::resized()
     {
-        const auto widthPadding = getWidth() / config::constants::numMembers;
-        const auto heightPadding = getHeight() / config::constants::numMembers;
+        const auto widthPadding = 50.f;
+        const auto heightPadding = 50.f;
         auto memberBounds = getBounds().reduced(widthPadding, heightPadding);
         memberArea_->setBounds(memberBounds);
-        memberArea_->setTopLeftPosition(widthPadding, heightPadding * 1.3f);
+        memberArea_->setTopLeftPosition(widthPadding, heightPadding);
     }
 
     SeeleSlider& MainComponent::getSanctitySlider(size_t index)
@@ -40,7 +41,7 @@ namespace hidonash
         g.fillAll(juce::Colour::greyLevel(0.f));
         g.setColour (juce::Colours::red);
 
-        seeleLogo_->drawWithin(g, getBounds().toFloat(), juce::RectanglePlacement::centred, 1.f);
+        //seeleLogo_->drawWithin(g, getBounds().toFloat(), juce::RectanglePlacement::centred, 1.f);
     }
 }
 

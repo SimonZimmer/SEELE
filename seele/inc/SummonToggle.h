@@ -25,7 +25,7 @@ namespace hidonash
             else
                 g.setColour(disabledColour);
 
-            const auto buttonBounds = button.getLocalBounds().reduced(2, 10).toFloat();
+            const auto buttonBounds = button.getLocalBounds().toFloat();
             g.fillRect(buttonBounds);
 
             static const auto font = juce::Typeface::createSystemTypefaceFor(resources::graphicassets::ChicagoFLF_ttf,
@@ -41,9 +41,6 @@ namespace hidonash
         SummonToggle()
         {
             setLookAndFeel(&lookAndFeel_);
-
-            glowEffect_.setGlowProperties(3, juce::Colour::fromRGBA(170, 160, 240, 240));
-            setComponentEffect(&glowEffect_);
         }
 
         void mouseEnter(const juce::MouseEvent&) override

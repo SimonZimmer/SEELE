@@ -27,10 +27,10 @@ namespace hidonash
         
         const int halfFrameSize = config::constants::fftFrameSize / 2;
         
-        for (int sa = 0; sa <= halfFrameSize; sa++)
+        for (int sa = 0; sa <= halfFrameSize; ++sa)
         {
-            float targetIndex = static_cast<float>(sa) * pitchFactor;
-            int index = static_cast<int>(std::floor(targetIndex));
+            const float targetIndex = static_cast<float>(sa) * pitchFactor;
+            const int index = static_cast<int>(std::floor(targetIndex));
             
             if (index >= 0 && index <= halfFrameSize)
             {
@@ -44,14 +44,14 @@ namespace hidonash
             }
         }
         
-        for (int sa = 0; sa <= config::constants::fftFrameSize; sa++)
+        for (int sa = 0; sa <= config::constants::fftFrameSize; ++sa)
         {
             const auto magnitude = magnitudeBuffer_[sa];
             auto phase = frequencyBuffer_[sa];
             
             auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
             phaseDifference /= freqPerBin_;
-            phaseDifference = 2. * M_PI * phaseDifference / config::constants::oversamplingFactor;
+            phaseDifference = 2.0 * M_PI * phaseDifference / config::constants::oversamplingFactor;
             phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
             
             sumPhase_[sa] += phaseDifference;
@@ -62,4 +62,3 @@ namespace hidonash
         }
     }
 }
-

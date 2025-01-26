@@ -14,25 +14,33 @@ namespace hidonash
 
     void MemberArea::resized()
     {
+        auto localBounds = getLocalBounds();
+        const auto padding = getWidth() / 6.7f;
+        const auto singleMemberWidth = getWidth() / config::constants::numMembers;
+        const auto summonTogglesHeight = 20.f;
+
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
             summonToggles_.emplace_back(std::make_unique<SummonToggle>());
             textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n]));
 
-            const auto padding = getWidth() / 6.7f;
+            auto singleMemberBounds = localBounds.removeFromLeft(singleMemberWidth);
+            auto sliderBounds = (singleMemberBounds.removeFromLeft(singleMemberWidth / 2));
+            sliderBounds.setHeight(localBounds.getHeight() - 2 * summonTogglesHeight);
+            sanctitySliders_[n]->setBounds(sliderBounds);
+            addAndMakeVisible(*sanctitySliders_[n]);
 
-            {
-                sanctitySliders_[n]->setBounds(padding * n, 0.f, getWidth() / 10.f, getHeight() / 1.1f);
-                addAndMakeVisible(*sanctitySliders_[n]);
-                textBoxes_[n]->setBounds(padding * n, (getHeight() / 1.25f), getWidth() / 10.f, getHeight() / 10.f);
-                addAndMakeVisible(*textBoxes_[n]);
-            }
+            auto summonToggleBounds = sliderBounds;
+            summonToggleBounds.setTop(sliderBounds.getHeight() / 1.25);
+            summonToggles_[n]->setBounds(summonToggleBounds);
+            summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
+            addAndMakeVisible(*summonToggles_[n]);
 
-            {
-                summonToggles_[n]->setBounds(padding * n, getHeight() - getHeight() / 12.f, getWidth() / 10.f, 30.f);
-                addAndMakeVisible(*summonToggles_[n]);
-            }
+            auto textBoxBounds = summonToggleBounds;
+            textBoxBounds.setY(textBoxBounds.getY() - summonTogglesHeight);
+            textBoxes_[n]->setBounds(textBoxBounds);
+            addAndMakeVisible(*textBoxes_[n]);
         }
     }
 
