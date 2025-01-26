@@ -10,8 +10,8 @@
 namespace hidonash
 {
     MainComponent::MainComponent()
-    : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_frame_svg,
-                                                     hidonash::resources::graphicassets::seele_frame_svgSize))
+    : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_frame_png,
+                                                     hidonash::resources::graphicassets::seele_frame_pngSize))
     {
         memberArea_ = std::make_unique<hidonash::MemberArea>();
         addAndMakeVisible(memberArea_.get());
@@ -19,11 +19,12 @@ namespace hidonash
 
     void MainComponent::resized()
     {
-        const auto widthPadding = 50.f;
-        const auto heightPadding = 50.f;
+        const auto widthPadding = getWidth() / 15.f;
+        const auto heightPadding = getHeight() / 8.f;
+
         auto memberBounds = getBounds().reduced(widthPadding, heightPadding);
         memberArea_->setBounds(memberBounds);
-        memberArea_->setTopLeftPosition(widthPadding, heightPadding);
+        memberArea_->setTopLeftPosition(widthPadding, 1.25f * heightPadding);
     }
 
     SeeleSlider& MainComponent::getSanctitySlider(size_t index)
@@ -41,7 +42,7 @@ namespace hidonash
         g.fillAll(juce::Colour::greyLevel(0.f));
         g.setColour (juce::Colours::red);
 
-        //seeleLogo_->drawWithin(g, getBounds().toFloat(), juce::RectanglePlacement::centred, 1.f);
+        seeleLogo_->drawWithin(g, getBounds().toFloat(), juce::RectanglePlacement::centred, 1.f);
     }
 }
 

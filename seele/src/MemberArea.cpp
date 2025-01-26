@@ -15,9 +15,8 @@ namespace hidonash
     void MemberArea::resized()
     {
         auto localBounds = getLocalBounds();
-        const auto padding = getWidth() / 6.7f;
         const auto singleMemberWidth = getWidth() / config::constants::numMembers;
-        const auto summonTogglesHeight = 20.f;
+        const auto summonTogglesHeight = localBounds.getHeight() / 15.f;
 
         for(auto n = 0; n < config::constants::numMembers; ++n)
         {

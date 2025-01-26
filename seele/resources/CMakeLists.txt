@@ -6,7 +6,7 @@ juce_add_binary_data(GraphicAssets
     NAMESPACE
         hidonash::resources::graphicassets
     SOURCES
-        "seele_frame.svg"
+        "seele_frame.png"
         "ChicagoFLF.ttf"
     )
 
