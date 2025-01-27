@@ -43,7 +43,7 @@ namespace hidonash
                 g.setFont(Font::chicagoFLF());
                 g.setFont(sliderWidth / 5.f);
                 g.drawMultiLineText("SEELE\n\n\n\nSOUND\nONLY", sliderWidth * 0.1f, height * 0.1, sliderWidth * 0.9, juce::Justification::centred);
-                g.drawText("SANCTITY", juce::Rectangle<int>(sliderWidth * 0.1f, height * 0.8, sliderWidth * 0.9, height * 0.25), juce::Justification::centred);
+                g.drawText("SANCTITY", juce::Rectangle<int>(sliderWidth * 0.05f, height * 0.8, sliderWidth * 0.9, height * 0.25), juce::Justification::centred);
                 g.setFont(sliderWidth / 2.5f);
                 g.drawText(memberIdentifier_, juce::Rectangle<int>(sliderWidth * 0.1f, height * 0.055, sliderWidth * 0.9, height * 0.2), juce::Justification::centred);
             }

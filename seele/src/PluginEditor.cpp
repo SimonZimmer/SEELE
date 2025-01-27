@@ -9,7 +9,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
 : AudioProcessorEditor(&p), processor_ (p)
 {
     mainComponent_ = std::make_unique<hidonash::MainComponent>(processor_);
-    setSize(640, 380);
+    setSize(704, 418);
     addAndMakeVisible(mainComponent_.get());
 
     setResizable(true, true);

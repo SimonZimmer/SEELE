@@ -13,17 +13,20 @@ namespace hidonash
             constexpr auto minPitchFactor = 0.4f;
             constexpr auto defaultPitchFactor = 1.f;
             constexpr auto sanctityPrefix = "sanctityPrefix";
+
             constexpr auto summonStatePrefix = "summonStatePrefix";
+
+            constexpr auto defaultDelay = 0;
         }
 
         namespace constants
         {
             constexpr auto fftFrameSize = 2048;
             constexpr auto analysisSize = 2 * fftFrameSize;
-            constexpr auto oversamplingFactor = 2;
+            constexpr auto oversamplingFactor = 16;
             constexpr auto stepSize = fftFrameSize / config::constants::oversamplingFactor;
             constexpr auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize;
-            constexpr auto numMembers = 7;
+            constexpr auto numMembers = 5;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace hidonash
         : slider_(slider)
         {
             font_ = Font::chicagoFLF();
-            label_.setJustificationType(juce::Justification::centred);
+            label_.setJustificationType(juce::Justification::right);
             label_.setEditable(false, false, false);
             label_.setColour(juce::Label::backgroundColourId, juce::Colours::transparentBlack);
             label_.setColour(juce::Label::outlineColourId, juce::Colours::transparentBlack);
@@ -57,7 +57,7 @@ namespace hidonash
         void resized() override
         {
             label_.setBounds(getLocalBounds());
-            label_.setFont(font_.withHeight(slider_.getWidth() / 5.f));
+            label_.setFont(font_.withHeight(slider_.getWidth() / 8.f));
         }
 
     private:
