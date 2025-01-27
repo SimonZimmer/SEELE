@@ -1,8 +1,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "juce_core/juce_core.h"
 #include "seeleCore/MemberParameterSet.h"
 
-#include <functional>
 #include <seeleCore/Factory.h>
 #include <seeleCore/Config.h>
 
@@ -13,8 +13,10 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
     .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 , parameters_(*this, nullptr, "Parameters", createParameters())
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
+, currentProgram_(1)
+, audioFifo_(64)
 {
-    setLatencySamples(latency_);
+    setLatencySamples(16);
 
     programs_.emplace_back("program one");
     programs_.emplace_back("program two");
@@ -73,6 +75,7 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     engine_ = hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
+    visualizationBuffer_.setSize(getTotalNumInputChannels(), samplesPerBlock);
 }
 
 void NewProjectAudioProcessor::releaseResources()
@@ -98,6 +101,9 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     buffer.copyFrom (0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom (1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
+
+    const std::lock_guard<std::mutex> lock(bufferMutex_);
+    pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
 }
 
 bool NewProjectAudioProcessor::hasEditor() const
@@ -123,6 +129,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new NewProjectAudioProcessor();
 }
 
+void NewProjectAudioProcessor::pushNextAudioBlock(const float* data, int numSamples)
+{
+   auto* bufferToWrite = visualizationBuffer_.getWritePointer(0);
+   std::memcpy(bufferToWrite, data, numSamples * sizeof(float));
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::createParameters()
 {
     auto parameters = std::vector<std::unique_ptr<juce::RangedAudioParameter>>();
@@ -143,5 +155,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
 juce::AudioProcessorValueTreeState& NewProjectAudioProcessor::getAudioProcessorValueTreeState()
 {
     return parameters_;
+}
+
+void NewProjectAudioProcessor::getLatestAudioBlock(float* data, int numSamples)
+{
+   const std::lock_guard<std::mutex> lock(bufferMutex_);
+
+   auto* bufferToRead = visualizationBuffer_.getReadPointer(0);
+   std::memcpy(data, bufferToRead, numSamples * sizeof(float));
 }
 

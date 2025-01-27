@@ -26,6 +26,7 @@ target_sources(seelePlugin PRIVATE
         src/PluginProcessor.cpp
         src/MainComponent.cpp
         src/MemberArea.cpp
+        src/Oscilloscope.cpp
         )
 
 target_include_directories(seelePlugin PRIVATE inc)

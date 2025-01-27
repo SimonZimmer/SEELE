@@ -8,10 +8,6 @@
 
 namespace hidonash
 {
-    MemberArea::MemberArea()
-    {
-    }
-
     void MemberArea::resized()
     {
         auto localBounds = getLocalBounds();
@@ -25,21 +21,22 @@ namespace hidonash
             textBoxes_.emplace_back(std::make_unique<TextBox>(*sanctitySliders_[n]));
 
             auto singleMemberBounds = localBounds.removeFromLeft(singleMemberWidth);
-            auto sliderBounds = (singleMemberBounds.removeFromLeft(singleMemberWidth / 2));
-            sliderBounds.setHeight(localBounds.getHeight() - 2 * summonTogglesHeight);
+            auto sliderBounds = singleMemberBounds.removeFromLeft(singleMemberWidth);
+            const int widthPadding = singleMemberWidth / 6;
+            sliderBounds.reduce(widthPadding, 0);
+            sliderBounds.setHeight(localBounds.getHeight() - 4 * summonTogglesHeight);
             sanctitySliders_[n]->setBounds(sliderBounds);
             addAndMakeVisible(*sanctitySliders_[n]);
 
             auto summonToggleBounds = sliderBounds;
-            summonToggleBounds.setTop(sliderBounds.getHeight() / 1.25);
             summonToggles_[n]->setBounds(summonToggleBounds);
-            summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
+            summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + 3 * summonTogglesHeight);
             addAndMakeVisible(*summonToggles_[n]);
 
-            auto textBoxBounds = summonToggleBounds;
-            textBoxBounds.setY(textBoxBounds.getY() - summonTogglesHeight);
-            textBoxes_[n]->setBounds(textBoxBounds);
-            addAndMakeVisible(*textBoxes_[n]);
+            //auto textBoxBounds = sliderBounds;
+            //textBoxes_[n]->setBounds(textBoxBounds);
+            //textBoxes_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() - summonTogglesHeight);
+            //addAndMakeVisible(*textBoxes_[n]);
         }
     }
 

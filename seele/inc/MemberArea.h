@@ -14,7 +14,7 @@ namespace hidonash
     class MemberArea : public juce::Component
     {
     public:
-        MemberArea();
+        MemberArea() = default;
 
         ~MemberArea() override = default;
 

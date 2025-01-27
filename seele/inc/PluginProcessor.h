@@ -38,7 +38,11 @@ public:
 
     juce::AudioProcessorValueTreeState& getAudioProcessorValueTreeState();
 
+    void getLatestAudioBlock(float* data, int numSamples);
+
 private:
+    void pushNextAudioBlock(const float* data, int numSamples);
+
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessor)
@@ -47,7 +51,10 @@ private:
     hidonash::MemberParameterSetPtr memberParameterSet_;
 
     std::vector<std::string> programs_;
-    int currentProgram_{1};
-    const int latency_{16};
+    int currentProgram_;
     hidonash::AudioProcessorPtr engine_;
+
+    juce::AudioBuffer<float> visualizationBuffer_;
+    juce::AbstractFifo audioFifo_;
+    std::mutex bufferMutex_;
 };

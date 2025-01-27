@@ -6,9 +6,9 @@
 
 
 NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
-: AudioProcessorEditor(&p), processor (p)
+: AudioProcessorEditor(&p), processor_ (p)
 {
-    mainComponent_ = std::make_unique<hidonash::MainComponent>();
+    mainComponent_ = std::make_unique<hidonash::MainComponent>(processor_);
     setSize(640, 380);
     addAndMakeVisible(mainComponent_.get());
 
@@ -28,7 +28,6 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
         buttonAttachments_.emplace_back(std::make_unique<juce::ButtonParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(summonStateparameterID)),
                                                                                           mainComponent_->getSummonToggle(n)));
     }
-
 }
 
 void NewProjectAudioProcessorEditor::resized()
