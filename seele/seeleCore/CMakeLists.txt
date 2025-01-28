@@ -8,6 +8,7 @@ add_library(seeleCore
         src/Engine.cpp
         src/PitchShifter.cpp
         src/PitchShifterManager.cpp
+        src/DelayProcessor.cpp
         src/Analysis.cpp
         src/Synthesis.cpp
         src/MemberParameterSet.cpp

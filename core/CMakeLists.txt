@@ -5,6 +5,7 @@ project(core)
 add_library(core
     STATIC
         src/AudioBuffer.cpp
+        src/InterpolatingValue.cpp
         )
 
 target_include_directories(core

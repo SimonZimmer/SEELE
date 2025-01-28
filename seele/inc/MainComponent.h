@@ -28,6 +28,8 @@ namespace hidonash
 
         SummonToggle& getSummonToggle(size_t index);
 
+        MiniSlider& getDistanceSlider(size_t index);
+
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::unique_ptr<MemberArea> memberArea_;

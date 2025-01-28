@@ -57,6 +57,11 @@ namespace hidonash
         return memberArea_->getSummonToggle(index); 
     }
 
+    MiniSlider& MainComponent::getDistanceSlider(size_t index)
+    {
+        return memberArea_->getDistanceSlider(index);
+    }
+
     void MainComponent::paint(juce::Graphics& g)
     {
         g.fillAll(juce::Colour::greyLevel(0.f));

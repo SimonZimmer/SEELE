@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 #include "PluginEditor.h"
 
 #include <memory>
@@ -21,12 +22,16 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
     {
         const auto sanctityParameterID = hidonash::config::parameters::sanctityPrefix + std::to_string(n);
-        sliderAttachments_.emplace_back(std::make_unique<juce::SliderParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(sanctityParameterID)),
-                                                                                          mainComponent_->getSanctitySlider(n)));
+        sanctitySliderAttachments_.emplace_back(std::make_unique<juce::SliderParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(sanctityParameterID)),
+                                                                                                  mainComponent_->getSanctitySlider(n)));
 
         const auto summonStateparameterID = hidonash::config::parameters::summonStatePrefix + std::to_string(n);
         buttonAttachments_.emplace_back(std::make_unique<juce::ButtonParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(summonStateparameterID)),
                                                                                           mainComponent_->getSummonToggle(n)));
+
+        const auto distanceParameterID = hidonash::config::parameters::distancePrefix + std::to_string(n);
+        distanceSliderAttachments_.emplace_back(std::make_unique<juce::SliderParameterAttachment>(*(p.getAudioProcessorValueTreeState().getParameter(distanceParameterID)),
+                                                                                                  mainComponent_->getDistanceSlider(n)));
     }
 }
 

@@ -50,7 +50,7 @@ namespace hidonash
         {
             setSliderStyle(juce::Slider::LinearBar);
             setTextBoxStyle(NoTextBox, false, 0, 0);
-            setDoubleClickReturnValue(true, config::parameters::defaultDelay);
+            setDoubleClickReturnValue(true, config::parameters::minDistanceInSamples);
             setRange(0.f, 100.f, 0.01f);
             setTooltip("Distance (delay in ms) of the SEELE Member");
             setLookAndFeel(&lookAndFeel_);

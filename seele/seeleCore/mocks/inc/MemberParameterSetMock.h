@@ -1,5 +1,3 @@
-#include <memory>
-
 #include <seeleCore/IMemberParameterSet.h>
 
 
@@ -12,7 +10,9 @@ namespace hidonash
 
         MOCK_METHOD(float, getSanctity, (size_t index), (const));
 
-        MOCK_METHOD(float, getSummonState, (size_t index), (const));
+        MOCK_METHOD(bool, getSummonState, (size_t index), (const));
+
+        MOCK_METHOD(float, getDistance, (size_t index), (const));
     };
 }
 

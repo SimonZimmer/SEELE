@@ -1,11 +1,7 @@
 #pragma once
 
-#include <atomic>
-#include <array>
-
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#include "Config.h"
 #include "IMemberParameterSet.h"
 
 
@@ -19,7 +15,9 @@ namespace hidonash
 
         float getSanctity(size_t index) const override;
 
-        float getSummonState(size_t index) const override;
+        bool getSummonState(size_t index) const override;
+
+        float getDistance(size_t index) const override;
 
     private:
         const juce::AudioProcessorValueTreeState& apts_;

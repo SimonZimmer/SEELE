@@ -25,17 +25,17 @@ namespace hidonash
             sanctitySliders_[n]->setBounds(sliderBounds);
             addAndMakeVisible(*sanctitySliders_[n]);
 
-            delaySliders_.emplace_back(std::make_unique<MiniSlider>());
-            auto delaySliderBounds = sliderBounds;
-            delaySliderBounds.removeFromBottom(sliderBounds.getHeight() - summonTogglesHeight);
-            delaySliders_[n]->setBounds(delaySliderBounds);
-            delaySliders_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
-            addAndMakeVisible(*delaySliders_[n]);
+            distanceSliders_.emplace_back(std::make_unique<MiniSlider>());
+            auto distanceSliderBounds = sliderBounds;
+            distanceSliderBounds.removeFromBottom(sliderBounds.getHeight() - summonTogglesHeight);
+            distanceSliders_[n]->setBounds(distanceSliderBounds);
+            distanceSliders_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
+            addAndMakeVisible(*distanceSliders_[n]);
 
-            textBoxes_.emplace_back(std::make_unique<TextBox>(*delaySliders_[n]));
-            auto textBoxBounds = delaySliderBounds;
-            const auto textBoxHeight = delaySliderBounds.getHeight();
-            textBoxes_[n]->setBounds(delaySliderBounds);
+            textBoxes_.emplace_back(std::make_unique<TextBox>(*distanceSliders_[n]));
+            auto textBoxBounds = distanceSliderBounds;
+            const auto textBoxHeight = distanceSliderBounds.getHeight();
+            textBoxes_[n]->setBounds(distanceSliderBounds);
             textBoxes_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + 1.5 * summonTogglesHeight);
             addAndMakeVisible(*textBoxes_[n]);
 
@@ -57,9 +57,9 @@ namespace hidonash
         return *summonToggles_[index];
     }
 
-    MiniSlider& MemberArea::getDelaySlider(size_t index)
+    MiniSlider& MemberArea::getDistanceSlider(size_t index)
     {
-        return *delaySliders_[index];
+        return *distanceSliders_[index];
     }
 
     MiniSlider& MemberArea::getPanSlider(size_t index)

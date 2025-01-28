@@ -17,9 +17,15 @@ namespace hidonash
         return apts_.getRawParameterValue(parameterId)->load();
     }
 
-    float MemberParameterSet::getSummonState(size_t index) const
+    bool MemberParameterSet::getSummonState(size_t index) const
     {
         const auto parameterId = config::parameters::summonStatePrefix + std::to_string(index);
+        return apts_.getRawParameterValue(parameterId)->load();
+    }
+
+    float MemberParameterSet::getDistance(size_t index) const
+    {
+        const auto parameterId = config::parameters::distancePrefix + std::to_string(index);
         return apts_.getRawParameterValue(parameterId)->load();
     }
 }

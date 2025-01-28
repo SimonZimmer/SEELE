@@ -45,6 +45,13 @@ namespace hidonash
         EXPECT_THAT(pitchShifter.get(), WhenDynamicCastTo<IPitchShifter*>(NotNull()));
     }
 
+    TEST(UnitTest_Factory, createDelayProcessor)
+    {
+        auto&& factoryMock = std::make_unique<NiceMock<FactoryMock>>();
+        auto&& delayProcessor = Factory().createDelayProcessor(10.0f, 0.0f, 44100.);
+        EXPECT_THAT(delayProcessor.get(), WhenDynamicCastTo<IDelayProcessor*>(NotNull()));
+    }
+
     TEST(UnitTest_Factory, createAudioBuffer)
     {
         auto&& audioBuffer = Factory().createAudioBuffer(2, 64);

@@ -10,6 +10,7 @@
 #include "IMemberParameterSet.h"
 #include "IPitchShifter.h"
 #include "IPitchShifterManager.h"
+#include "IDelayProcessor.h"
 
 
 namespace hidonash
@@ -28,6 +29,8 @@ namespace hidonash
         virtual PitchShifterPtr createPitchShifter(double sampleRate, IFactory& factory) const = 0;
 
         virtual PitchShifterManagerPtr createPitchShifterManager(double sampleRate, size_t numChannels, IFactory& factory) const = 0;
+
+        virtual DelayProcessorPtr createDelayProcessor(size_t maxDelaySamples, size_t delaySamples, double sampleRate) const = 0;
 
         virtual core::AudioBufferPtr createAudioBuffer(int numChannels, int numSamples) const = 0;
     };

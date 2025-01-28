@@ -12,7 +12,9 @@ namespace hidonash
 
         virtual float getSanctity(size_t index) const = 0;
 
-        virtual float getSummonState(size_t index) const = 0;
+        virtual bool getSummonState(size_t index) const = 0;
+
+        virtual float getDistance(size_t index) const = 0;
     };
 
     using MemberParameterSetPtr = std::unique_ptr<IMemberParameterSet>;

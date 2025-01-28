@@ -1,7 +1,9 @@
 #include "Factory.h"
 
 #include <core/AudioBuffer.h>
+#include <memory>
 
+#include "DelayProcessor.h"
 #include "Engine.h"
 #include "Analysis.h"
 #include "PitchShifterManager.h"
@@ -35,6 +37,11 @@ namespace hidonash
     PitchShifterManagerPtr Factory::createPitchShifterManager(double sampleRate, size_t numChannels, IFactory& factory) const
     {
         return std::make_unique<PitchShifterManager>(sampleRate, numChannels, factory);
+    }
+
+    DelayProcessorPtr Factory::createDelayProcessor(size_t maxDelaySamples, size_t delaySamples, double sampleRate) const
+    {
+        return std::make_unique<DelayProcessor>(maxDelaySamples, delaySamples, sampleRate);
     }
 
     core::AudioBufferPtr Factory::createAudioBuffer(int numChannels, int numSamples) const

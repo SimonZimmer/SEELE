@@ -5,9 +5,10 @@
 #include <core/AudioBuffer.h>
 
 #include "IFactory.h"
+#include "Factory.h"
 #include "IMemberParameterSet.h"
 #include "IPitchShifterManager.h"
-#include "Factory.h"
+#include "IDelayProcessor.h"
 
 
 namespace hidonash
@@ -25,9 +26,13 @@ namespace hidonash
 
     private:
         std::vector<PitchShifterManagerPtr> pitchShifterManagers_;
+        std::vector<DelayProcessorPtr> delayProcessorsLeft_;
+        std::vector<DelayProcessorPtr> delayProcessorsRight_;
         std::vector<core::AudioBufferPtr> audioBuffers_;
         const IMemberParameterSet& memberParameterSet_;
         core::AudioBuffer internalBuffer_;
+        size_t numChannels_;
+        double sampleRate_;
+        std::vector<float> lastDistances_;
     };
 }
-

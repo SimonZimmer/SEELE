@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_core/juce_core.h"
 #include "seeleCore/MemberParameterSet.h"
 
@@ -14,7 +15,6 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 , parameters_(*this, nullptr, "Parameters", createParameters())
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 , currentProgram_(1)
-, audioFifo_(64)
 {
     setLatencySamples(16);
 
@@ -142,11 +142,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
     for(auto n = 0; n < hidonash::config::constants::numMembers; ++n)
     {
         parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>(hidonash::config::parameters::sanctityPrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Sanctity",
-                                                                            hidonash::config::parameters::minPitchFactor,
-                                                                            hidonash::config::parameters::maxPitchFactor,
-                                                                            hidonash::config::parameters::defaultPitchFactor));
+                    hidonash::config::parameters::minPitchFactor,
+                    hidonash::config::parameters::maxPitchFactor,
+                    hidonash::config::parameters::defaultPitchFactor));
         parameters.emplace_back(std::make_unique<juce::AudioParameterBool>(hidonash::config::parameters::summonStatePrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Summoned",
-                                                                           true));
+                    true));
+        parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>(hidonash::config::parameters::distancePrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + "Distance",
+                    hidonash::config::parameters::minDistanceInSamples,
+                    hidonash::config::parameters::maxDistanceInSamples,
+                    hidonash::config::parameters::defaultDistanceInSamples));
     }
 
     return { parameters.begin(), parameters.end() };

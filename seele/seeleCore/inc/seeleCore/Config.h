@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-
 namespace hidonash
 {
     namespace config
@@ -12,11 +11,14 @@ namespace hidonash
             constexpr auto maxPitchFactor = 2.f;
             constexpr auto minPitchFactor = 0.4f;
             constexpr auto defaultPitchFactor = 1.f;
-            constexpr auto sanctityPrefix = "sanctityPrefix";
+            constexpr auto sanctityPrefix = "sanctity_";
 
-            constexpr auto summonStatePrefix = "summonStatePrefix";
+            constexpr auto summonStatePrefix = "summonState_";
 
-            constexpr auto defaultDelay = 0;
+            constexpr auto distancePrefix = "distance_";
+            constexpr auto maxDistanceInSamples = 20000.0f;
+            constexpr auto minDistanceInSamples = 0.0f;
+            constexpr auto defaultDistanceInSamples = 0.0f;
         }
 
         namespace constants
@@ -30,4 +32,3 @@ namespace hidonash
         }
     }
 }
-

@@ -25,7 +25,7 @@ namespace hidonash
 
         SummonToggle& getSummonToggle(size_t index);
 
-        MiniSlider& getDelaySlider(size_t index);
+        MiniSlider& getDistanceSlider(size_t index);
 
         MiniSlider& getPanSlider(size_t index);
 
@@ -34,7 +34,7 @@ namespace hidonash
         std::vector<std::unique_ptr<SummonToggle>> summonToggles_;
         std::vector<std::unique_ptr<TextBox>> textBoxes_;
 
-        std::vector<std::unique_ptr<MiniSlider>> delaySliders_;
+        std::vector<std::unique_ptr<MiniSlider>> distanceSliders_;
         std::vector<std::unique_ptr<MiniSlider>> panSliders_;
     };
 }

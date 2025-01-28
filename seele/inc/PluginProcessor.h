@@ -55,6 +55,5 @@ private:
     hidonash::AudioProcessorPtr engine_;
 
     juce::AudioBuffer<float> visualizationBuffer_;
-    juce::AbstractFifo audioFifo_;
     std::mutex bufferMutex_;
 };

@@ -17,7 +17,8 @@ public:
 private:
     NewProjectAudioProcessor& processor_;
     std::unique_ptr<hidonash::MainComponent> mainComponent_;
-    std::vector<std::unique_ptr<juce::SliderParameterAttachment>> sliderAttachments_;
+    std::vector<std::unique_ptr<juce::SliderParameterAttachment>> sanctitySliderAttachments_;
+    std::vector<std::unique_ptr<juce::SliderParameterAttachment>> distanceSliderAttachments_;
     std::vector<std::unique_ptr<juce::ButtonParameterAttachment>> buttonAttachments_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessorEditor)
