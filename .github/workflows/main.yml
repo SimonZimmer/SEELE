@@ -44,7 +44,7 @@ jobs:
     - name: Install dependencies
       run: |
         source venv/bin/activate
-        conan install . -s build_type=${{env.BUILD_TYPE}}
+        conan install . -s build_type=${{env.BUILD_TYPE}} --build=missing
       
     - name: Configure CMake
       run: cmake . -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
