@@ -88,6 +88,11 @@ namespace hidonash
             setLookAndFeel(&lookAndFeel_);
         }
 
+        ~SeeleSlider() override
+        {
+            setLookAndFeel(nullptr);
+        }
+
         void mouseEnter(const juce::MouseEvent& e) override
         {
             setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);

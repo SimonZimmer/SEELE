@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <array>
 #include <juce_dsp/juce_dsp.h>
+#include <memory>
 
 #include "Config.h"
 #include "IAnalysis.h"

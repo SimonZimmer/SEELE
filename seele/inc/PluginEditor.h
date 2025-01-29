@@ -15,7 +15,6 @@ public:
     void resized() override;
 
 private:
-    NewProjectAudioProcessor& processor_;
     std::unique_ptr<hidonash::MainComponent> mainComponent_;
     std::vector<std::unique_ptr<juce::SliderParameterAttachment>> sanctitySliderAttachments_;
     std::vector<std::unique_ptr<juce::SliderParameterAttachment>> distanceSliderAttachments_;

@@ -3,7 +3,6 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 
 #include "MemberArea.h"
-#include "Oscilloscope.h"
 
 #include <GraphicAssets.h>
 #include <seeleCore/Config.h>

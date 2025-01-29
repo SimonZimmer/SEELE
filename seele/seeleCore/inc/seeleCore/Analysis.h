@@ -9,6 +9,7 @@ namespace hidonash
     {
     public:
         explicit Analysis(int freqPerBin);
+
         ~Analysis() override = default;
 
         std::array<float, config::constants::analysisSize> getMagnitudeBuffer() const override;
@@ -26,4 +27,3 @@ namespace hidonash
     };
 
 }
-

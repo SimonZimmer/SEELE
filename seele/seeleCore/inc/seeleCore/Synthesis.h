@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ISynthesis.h"
-#include "IFactory.h"
 #include "Config.h"
+#include "IFactory.h"
+#include "ISynthesis.h"
 
 
 namespace hidonash
@@ -11,6 +11,7 @@ namespace hidonash
     {
     public:
         explicit Synthesis(int freqPerBin, AnalysisPtr analysis);
+
         ~Synthesis() override = default;
 
         void perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor) override;

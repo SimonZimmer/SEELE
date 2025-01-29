@@ -17,8 +17,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 , currentProgram_(1)
 {
-    setLatencySamples(16);
-
+    //TODO: add actual presets
     programs_.emplace_back("program one");
     programs_.emplace_back("program two");
     programs_.emplace_back("program three");
@@ -76,6 +75,7 @@ void NewProjectAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBl
 {
     engine_ =
         hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
+
     visualizationBuffer_.setSize(getTotalNumInputChannels(), samplesPerBlock);
 }
 

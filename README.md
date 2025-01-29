@@ -3,7 +3,7 @@ SEELE
 </h1>
 
 <p align="center">
-<i align="center"><b>PitchShifter Voice Mixer</b></i>
+<i align="center"><b>pitch-shifting voice mixer</b></i>
 </p>
 
 ![build & tests](https://github.com/SimonZimmer/SEELE/actions/workflows/main.yml/badge.svg)
@@ -14,7 +14,7 @@ This is still under construction. If you want to support me in implementing wind
 
 <a href="https://www.buymeacoffee.com/simonzimmermann" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-![demo](https://github.com/SimonZimmer/SEELE/blob/main/demo.gif)
+![](https://github.com/SimonZimmer/SEELE/blob/main/demo.gif)
 
 # Introduction
 A DAW-plugin featuring a pitch shifter, delay, level and mute control per voice.

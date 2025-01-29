@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <array>
+#include <memory>
 //TODO get rid of juce
 #include <juce_dsp/juce_dsp.h>
 

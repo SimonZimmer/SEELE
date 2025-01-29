@@ -22,7 +22,7 @@ namespace hidonash::core
 
     void AudioBuffer::Channel::fill(float value)
     {
-        for(auto sa = 0; sa < size_; ++sa)
+        for (auto sa = 0; sa < size_; ++sa)
             buffer_[sa] = value;
     }
 
@@ -42,15 +42,13 @@ namespace hidonash::core
     , numSamples_(numSamples)
     , memoryBlock_(numChannels, numSamples)
     , data_(memoryBlock_.getData())
-    {
-    }
+    {}
 
     AudioBuffer::AudioBuffer(float* const* dataToReferTo, int numChannels, int numSamples)
     : numChannels_(numChannels)
     , numSamples_(numSamples)
     , data_(dataToReferTo)
-    {
-    }
+    {}
 
     float AudioBuffer::getSample(int channel, int sample) const
     {
@@ -95,8 +93,8 @@ namespace hidonash::core
 
     void AudioBuffer::fill(float value)
     {
-        for(auto ch = 0; ch < numChannels_; ++ch)
-            for(auto sa = 0; sa < numSamples_; ++sa)
+        for (auto ch = 0; ch < numChannels_; ++ch)
+            for (auto sa = 0; sa < numSamples_; ++sa)
                 setSample(ch, sa, value);
     }
 
@@ -109,7 +107,7 @@ namespace hidonash::core
             const auto channelsToCopy = std::min(other.getNumChannels(), numChannels_);
             const auto samplesToCopy = std::min(numSamples_, other.getNumSamples());
 
-            for (auto c = size_t{ 0 }; c < channelsToCopy; ++c)
+            for (auto c = size_t {0}; c < channelsToCopy; ++c)
                 memcpy(data_[c], other.getDataPointer(), samplesToCopy * sizeof(float));
         }
     }
@@ -119,19 +117,20 @@ namespace hidonash::core
         memcpy(getDataPointer() + internalOffset, from.getDataPointer() + fromOffset, copyLength * sizeof(float));
     }
 
-    void AudioBuffer::add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset, const size_t internalOffset)
+    void AudioBuffer::add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset,
+                          const size_t internalOffset)
     {
         const auto numChannels = std::min(numChannels_, from.getNumChannels());
 
-        for(size_t c = 0; c < numChannels; ++c)
-            for (size_t i = 0 ; i < addLength; ++i)
+        for (size_t c = 0; c < numChannels; ++c)
+            for (size_t i = 0; i < addLength; ++i)
                 data_[c][i + internalOffset] += from.getSample(c, i + fromOffset);
     }
 
     void AudioBuffer::multiply(float value, size_t multiplyLength)
     {
-        for(size_t c = 0; c < getNumChannels(); ++c)
-            for (size_t i = 0 ; i < multiplyLength; ++i)
+        for (size_t c = 0; c < getNumChannels(); ++c)
+            for (size_t i = 0; i < multiplyLength; ++i)
                 data_[c][i] *= value;
     }
 
@@ -139,8 +138,8 @@ namespace hidonash::core
     {
         const auto numChannels = std::min(numChannels_, static_cast<int>(from.size()));
 
-        for(size_t c = 0; c < numChannels; ++c)
-            for (size_t i = 0 ; i < multiplyLength; ++i)
+        for (size_t c = 0; c < numChannels; ++c)
+            for (size_t i = 0; i < multiplyLength; ++i)
                 data_[c][i] *= from[i];
     }
 
@@ -152,4 +151,3 @@ namespace hidonash::core
         numSamples_ = sampleCountPerChannel;
     }
 }
-

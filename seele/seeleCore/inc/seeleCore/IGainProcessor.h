@@ -10,6 +10,8 @@ namespace hidonash
     class IGainProcessor : public IChannelProcessor
     {
     public:
+        virtual ~IGainProcessor() = default;
+
         virtual void setGainDb(float gainDb) = 0;
     };
 

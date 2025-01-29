@@ -1,6 +1,6 @@
 #include "Oscilloscope.h"
 
-#include <algorithm>
+#include <cmath>
 
 
 namespace hidonash

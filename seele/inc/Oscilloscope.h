@@ -11,12 +11,11 @@ namespace hidonash
                          public juce::Timer
     {
     public:
-        Oscilloscope(NewProjectAudioProcessor& processor, size_t numSamples,
-                     int refreshRateHz = 30);
+        Oscilloscope(NewProjectAudioProcessor& processor, size_t numSamples, int refreshRateHz = 30);
 
         ~Oscilloscope() override = default;
 
-        void paint (juce::Graphics& g) override;
+        void paint(juce::Graphics& g) override;
 
         void timerCallback() override;
 
