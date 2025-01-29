@@ -39,7 +39,7 @@ jobs:
     - name: Create default profile
       run: |
         source venv/bin/activate
-        conan profile new default --detect
+        conan profile detect
       
     - name: Install dependencies
       run: |
