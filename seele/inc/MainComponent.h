@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <array>
+#include <memory>
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -29,6 +29,8 @@ namespace hidonash
         SummonToggle& getSummonToggle(size_t index);
 
         MiniSlider& getDistanceSlider(size_t index);
+
+        MiniSlider& getGainSlider(size_t index);
 
     private:
         std::unique_ptr<juce::Drawable> seeleLogo_;

@@ -11,14 +11,14 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
 , processor_(p)
 {
     mainComponent_ = std::make_unique<hidonash::MainComponent>(processor_);
-    setSize(704, 418);
+    setSize(700, 500);
     addAndMakeVisible(mainComponent_.get());
 
     setResizable(true, true);
-    const auto ratio = 1.7;
+    const auto ratio = 1.4f;
     auto&& constrainer = getConstrainer();
     constrainer->setFixedAspectRatio(ratio);
-    constrainer->setMinimumSize(320, 190);
+    constrainer->setMinimumSize(350, 250);
 
     for (auto n = 0; n < hidonash::config::constants::numMembers; ++n)
     {
@@ -37,11 +37,9 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
             *(p.getAudioProcessorValueTreeState().getParameter(distanceParameterID)),
             mainComponent_->getDistanceSlider(n)));
 
-        /*
         const auto levelParameterID = hidonash::config::parameters::levelPrefix + std::to_string(n);
         levelSliderAttachments_.emplace_back(std::make_unique<juce::SliderParameterAttachment>(
             *(p.getAudioProcessorValueTreeState().getParameter(levelParameterID)), mainComponent_->getGainSlider(n)));
-            */
     }
 }
 

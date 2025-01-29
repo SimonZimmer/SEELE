@@ -3,6 +3,7 @@
 #include <seeleCore/Config.h>
 
 #include "MemberArea.h"
+#include "SummonToggle.h"
 #include "TextBox.h"
 
 
@@ -12,41 +13,58 @@ namespace hidonash
     {
         auto localBounds = getLocalBounds();
         const auto singleMemberWidth = getWidth() / config::constants::numMembers;
-        const auto summonTogglesHeight = localBounds.getHeight() / 15.f;
+        const auto subsectionHeight = localBounds.getHeight() / 20.f;
+        const auto numSubSections = 3;
 
         for (auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
             auto singleMemberBounds = localBounds.removeFromLeft(singleMemberWidth);
             auto sliderBounds = singleMemberBounds.removeFromLeft(singleMemberWidth);
-            const int widthPadding = singleMemberWidth / 6;
+            const int widthPadding = singleMemberWidth / (2 * numSubSections);
             sliderBounds.reduce(widthPadding, 0);
-            sliderBounds.setHeight(localBounds.getHeight() - 4 * summonTogglesHeight);
+            sliderBounds.setHeight(localBounds.getHeight() - (2 * numSubSections) * subsectionHeight);
             sanctitySliders_[n]->setBounds(sliderBounds);
             addAndMakeVisible(*sanctitySliders_[n]);
 
-            distanceSliders_.emplace_back(std::make_unique<MiniSlider>());
-            auto distanceSliderBounds = sliderBounds;
-            distanceSliderBounds.removeFromBottom(sliderBounds.getHeight() - summonTogglesHeight);
-            distanceSliders_[n]->setBounds(distanceSliderBounds);
-            distanceSliders_[n]->setTopLeftPosition(
-                sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
+            auto subSectionBounds = sliderBounds;
+            subSectionBounds.removeFromBottom(sliderBounds.getHeight() - subsectionHeight);
+
+            distanceSliders_.emplace_back(
+                std::make_unique<MiniSlider>("DISTANCE", "Distance (delay in ms) of the SEELE Member"));
+            distanceSliders_[n]->setBounds(subSectionBounds);
+            distanceSliders_[n]->setTopLeftPosition(sliderBounds.getX(),
+                                                    sliderBounds.getY() + sliderBounds.getHeight() + subsectionHeight);
             addAndMakeVisible(*distanceSliders_[n]);
 
-            /*
-            textBoxes_.emplace_back(std::make_unique<TextBox>(*distanceSliders_[n]));
-            auto textBoxBounds = distanceSliderBounds;
-            const auto textBoxHeight = distanceSliderBounds.getHeight();
-            textBoxes_[n]->setBounds(distanceSliderBounds);
-            textBoxes_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() +
-            addAndMakeVisible(*textBoxes_[n]);
-            */
+            distanceTextBoxes_.emplace_back(std::make_unique<TextBox>(*distanceSliders_[n]));
+            auto distanceTextBoxBounds = subSectionBounds;
+            const auto distanceTextBoxHeight = subSectionBounds.getHeight() + 0.5f * subsectionHeight;
+            distanceTextBoxes_[n]->setBounds(subSectionBounds);
+            distanceTextBoxes_[n]->setTopLeftPosition(sliderBounds.getX() + 0.05f * sliderBounds.getWidth(),
+                                                      sliderBounds.getY() + sliderBounds.getHeight() +
+                                                          1.4f * subsectionHeight);
+            addAndMakeVisible(*distanceTextBoxes_[n]);
+
+            gainSliders_.emplace_back(std::make_unique<MiniSlider>("LEVEL", "Level (gain in dB) of the SEELE Member"));
+            gainSliders_[n]->setBounds(subSectionBounds);
+            gainSliders_[n]->setTopLeftPosition(sliderBounds.getX(),
+                                                sliderBounds.getY() + sliderBounds.getHeight() + 3 * subsectionHeight);
+            addAndMakeVisible(*gainSliders_[n]);
+
+            gainTextBoxes_.emplace_back(std::make_unique<TextBox>(*gainSliders_[n]));
+            auto gainTextBoxBounds = subSectionBounds;
+            const auto gainTextBoxHeight = subSectionBounds.getHeight() + 0.5f * subsectionHeight;
+            gainTextBoxes_[n]->setBounds(subSectionBounds);
+            gainTextBoxes_[n]->setTopLeftPosition(sliderBounds.getX() + 0.05f * sliderBounds.getWidth(),
+                                                  sliderBounds.getY() + sliderBounds.getHeight() +
+                                                      3.4f * subsectionHeight);
+            addAndMakeVisible(*gainTextBoxes_[n]);
 
             summonToggles_.emplace_back(std::make_unique<SummonToggle>());
-            auto summonToggleBounds = sliderBounds;
-            summonToggles_[n]->setBounds(summonToggleBounds);
+            summonToggles_[n]->setBounds(subSectionBounds);
             summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() +
-                                                                           3 * summonTogglesHeight);
+                                                                           5 * subsectionHeight);
             addAndMakeVisible(*summonToggles_[n]);
         }
     }
@@ -66,8 +84,8 @@ namespace hidonash
         return *distanceSliders_[index];
     }
 
-    MiniSlider& MemberArea::getPanSlider(size_t index)
+    MiniSlider& MemberArea::getGainSlider(size_t index)
     {
-        return *panSliders_[index];
+        return *gainSliders_[index];
     }
 }

@@ -13,6 +13,8 @@ namespace hidonash::core
         public:
             Channel(float* buffer, size_t size);
 
+            ~Channel() override = default;
+
             const float& operator[](size_t sample) const override;
 
             float& operator[](size_t sample) override;
@@ -50,14 +52,15 @@ namespace hidonash::core
         const std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) const override;
 
         std::unique_ptr<IAudioBuffer::IChannel> getChannel(size_t channel) override;
- 
+
         void fill(float value) override;
 
         void copyFrom(const IAudioBuffer& other) override;
 
         void copy(const IAudioBuffer& from, size_t fromOffset, size_t internalOffset, size_t copyLength) override;
 
-        void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0) override;
+        void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0,
+                 const size_t internalOffset = 0) override;
 
         void multiply(float value, size_t multiplyLength) override;
 
@@ -95,12 +98,12 @@ namespace hidonash::core
             std::vector<float*> channels_;
         };
 
-        private:
-            int numChannels_ = 0;
-            int numSamples_ = 0;
+    private:
+        int numChannels_ = 0;
+        int numSamples_ = 0;
 
-            MemoryBlock memoryBlock_;
-            float* const* data_;
-            std::vector<float*> channelData_;
-        };
+        MemoryBlock memoryBlock_;
+        float* const* data_;
+        std::vector<float*> channelData_;
+    };
 }

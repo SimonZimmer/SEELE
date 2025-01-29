@@ -2,8 +2,10 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
-#include <Font.h>
 #include <seeleCore/Config.h>
+
+#include "Font.h"
+#include "UiConstants.h"
 
 
 namespace hidonash
@@ -13,17 +15,18 @@ namespace hidonash
         class MiniSliderLookAndFeel : public juce::LookAndFeel_V4
         {
         public:
-            MiniSliderLookAndFeel()
+            MiniSliderLookAndFeel(const std::string& name)
+            : name_(name)
             {
                 setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::transparentBlack);
             }
 
-            void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
-                                  float sliderPos, float minSliderPos, float maxSliderPos,
-                                  const juce::Slider::SliderStyle style, juce::Slider& slider) override
+            void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
+                                  float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle style,
+                                  juce::Slider& slider) override
             {
                 const auto sliderWidth = slider.getWidth();
-                g.setColour(juce::Colours::red);
+                g.setColour(currentColour_);
 
                 auto bigBarPath = juce::Path();
                 bigBarPath.addRectangle(x, y, 1.0f + sliderPos, 0.4f * height);
@@ -37,37 +40,54 @@ namespace hidonash
                 g.fillPath(smallBarPath);
                 g.setFont(Font::chicagoFLF());
                 g.setFont(sliderWidth * 0.125f);
-                g.drawText("DISTANCE", textBounds, juce::Justification::left);
+                g.drawText(name_, textBounds, juce::Justification::left);
             }
+
+            void setHighlightColour()
+            {
+                currentColour_ = highlightColour_;
+            }
+
+            void setBaseColour()
+            {
+                currentColour_ = baseColour_;
+            }
+
+        private:
+            std::string name_;
+            juce::Colour baseColour_ {uiconstants::baseColour};
+            juce::Colour highlightColour_ {uiconstants::highlightColour};
+            juce::Colour currentColour_ {baseColour_};
         };
     }
 
     class MiniSlider : public juce::Slider
     {
     public:
-        MiniSlider()
-        : lookAndFeel_()
+        MiniSlider(const std::string& name, const std::string& tooltip)
+        : lookAndFeel_(name)
         {
             setSliderStyle(juce::Slider::LinearBar);
             setTextBoxStyle(NoTextBox, false, 0, 0);
             setDoubleClickReturnValue(true, config::parameters::minDistanceInSamples);
             setRange(0.f, 100.f, 0.01f);
-            setTooltip("Distance (delay in ms) of the SEELE Member");
+            setTooltip(tooltip);
             setLookAndFeel(&lookAndFeel_);
         }
 
         void mouseEnter(const juce::MouseEvent& e) override
         {
             setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);
+            lookAndFeel_.setHighlightColour();
         }
 
-        void mouseExit(const juce::MouseEvent &) override
+        void mouseExit(const juce::MouseEvent&) override
         {
             setMouseCursor(juce::MouseCursor::StandardCursorType::NormalCursor);
+            lookAndFeel_.setBaseColour();
         }
 
     private:
         MiniSliderLookAndFeel lookAndFeel_;
     };
 }
-

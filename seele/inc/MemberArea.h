@@ -4,10 +4,10 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#include "TextBox.h"
-#include "SeeleSlider.h"
 #include "MiniSlider.h"
+#include "SeeleSlider.h"
 #include "SummonToggle.h"
+#include "TextBox.h"
 
 
 namespace hidonash
@@ -27,15 +27,15 @@ namespace hidonash
 
         MiniSlider& getDistanceSlider(size_t index);
 
-        MiniSlider& getPanSlider(size_t index);
+        MiniSlider& getGainSlider(size_t index);
 
     private:
         std::vector<std::unique_ptr<SeeleSlider>> sanctitySliders_;
         std::vector<std::unique_ptr<SummonToggle>> summonToggles_;
-        std::vector<std::unique_ptr<TextBox>> textBoxes_;
+        std::vector<std::unique_ptr<TextBox>> distanceTextBoxes_;
+        std::vector<std::unique_ptr<TextBox>> gainTextBoxes_;
 
         std::vector<std::unique_ptr<MiniSlider>> distanceSliders_;
-        std::vector<std::unique_ptr<MiniSlider>> panSliders_;
+        std::vector<std::unique_ptr<MiniSlider>> gainSliders_;
     };
 }
-

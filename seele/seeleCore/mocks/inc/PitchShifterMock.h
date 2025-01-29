@@ -13,9 +13,8 @@ namespace hidonash
     public:
         ~PitchShifterMock() = default;
 
-        MOCK_METHOD(void, setPitchRatio, (float));
+        MOCK_METHOD(void, setPitchRatio, (float) );
 
-        MOCK_METHOD(void, process, (core::IAudioBuffer::IChannel&));
+        MOCK_METHOD(void, process, (core::IAudioBuffer::IChannel&) );
     };
 }
-

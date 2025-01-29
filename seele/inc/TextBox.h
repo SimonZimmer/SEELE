@@ -4,10 +4,12 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
-#include <Font.h>
+
+#include "Font.h"
+#include "UiConstants.h"
 
 
-namespace hidonash 
+namespace hidonash
 {
     class TextBox : public juce::Component,
                     public juce::Slider::Listener
@@ -16,21 +18,22 @@ namespace hidonash
         explicit TextBox(juce::Slider& slider)
         : slider_(slider)
         {
-            font_ = Font::chicagoFLF();
+            fontOptions_ = Font::chicagoFLF();
             label_.setJustificationType(juce::Justification::right);
             label_.setEditable(false, false, false);
             label_.setColour(juce::Label::backgroundColourId, juce::Colours::transparentBlack);
             label_.setColour(juce::Label::outlineColourId, juce::Colours::transparentBlack);
             label_.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
-            label_.setColour(juce::TextEditor::textColourId, juce::Colours::red);
-            label_.setColour(juce::Label::ColourIds::textColourId, juce::Colours::red);
+            label_.setColour(juce::TextEditor::textColourId, uiconstants::baseColour);
+            label_.setColour(juce::Label::ColourIds::textColourId, uiconstants::baseColour);
 
             updateFromSlider();
 
-            label_.onEditorShow = [this] {label_.getCurrentTextEditor()->setInputRestrictions(0, "-.0123456789");};
+            label_.onEditorShow = [this] {
+                label_.getCurrentTextEditor()->setInputRestrictions(0, "-.0123456789");
+            };
 
-            label_.onTextChange = [this]
-            {
+            label_.onTextChange = [this] {
                 const auto value = slider_.getRange().clipValue(label_.getText(false).getDoubleValue());
 
                 if (slider_.getValue() != value)
@@ -44,20 +47,10 @@ namespace hidonash
             addAndMakeVisible(label_);
         }
 
-        ~TextBox() override
-        {
-            try
-            {
-                slider_.removeListener(this);
-            }
-            catch (...)
-            {}
-        }
-
         void resized() override
         {
             label_.setBounds(getLocalBounds());
-            label_.setFont(font_.withHeight(slider_.getWidth() / 8.f));
+            label_.setFont(fontOptions_.withHeight(slider_.getWidth() / 6.f));
         }
 
     private:
@@ -76,7 +69,6 @@ namespace hidonash
 
         juce::Slider& slider_;
         juce::Label label_;
-        juce::Font font_;
+        juce::FontOptions fontOptions_;
     };
-
 }

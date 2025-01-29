@@ -17,4 +17,3 @@ namespace hidonash
 
     using PitchShifterManagerPtr = std::unique_ptr<IPitchShifterManager>;
 }
-

@@ -5,8 +5,7 @@
 
 namespace hidonash
 {
-    Oscilloscope::Oscilloscope(NewProjectAudioProcessor& processor, size_t numSamples,
-                               int refreshRateHz)
+    Oscilloscope::Oscilloscope(NewProjectAudioProcessor& processor, size_t numSamples, int refreshRateHz)
     : processor_(processor)
     , displayBuffer_(1, numSamples)
     {
@@ -21,17 +20,16 @@ namespace hidonash
         const auto size = displayBuffer_.getNumSamples();
         auto&& readPointer = displayBuffer_.getReadPointer(0);
 
-        const auto maxValue = displayBuffer_.getMagnitude(0, 0, size);
-
         for (int i = 1; i < size; ++i)
         {
-            const auto width  = getLocalBounds().getWidth();
+            const auto width = getLocalBounds().getWidth();
             const auto height = getLocalBounds().getHeight();
- 
-            g.drawLine ({ (float) juce::jmap (i - 1, 0, size - 1, 0, width),
-                                  juce::jmap (readPointer[i - 1] / maxValue, 0.0f, 1.0f, (float) height, 0.0f),
-                          (float) juce::jmap (i, 0, size - 1, 0, width),
-                                  juce::jmap (readPointer[i] / maxValue, 0.0f, 1.0f, (float) height, 0.0f)}, 2);
+
+            g.drawLine({(float) juce::jmap(i - 1, 0, size - 1, 0, width),
+                        juce::jmap(readPointer[i - 1], -1.0f, 1.0f, (float) height, 0.0f),
+                        (float) juce::jmap(i, 0, size - 1, 0, width),
+                        juce::jmap(readPointer[i], -1.0f, 1.0f, (float) height, 0.0f)},
+                       2);
         }
     }
 

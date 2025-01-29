@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 
 namespace hidonash::core
@@ -13,6 +13,8 @@ namespace hidonash::core
         {
         public:
             virtual const float& operator[](size_t sample) const = 0;
+
+            virtual ~IChannel() = default;
 
             virtual float& operator[](size_t sample) = 0;
 
@@ -45,7 +47,8 @@ namespace hidonash::core
 
         virtual void copy(const IAudioBuffer& from, size_t fromOffset, size_t internalOffset, size_t copyLength) = 0;
 
-        virtual void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0, const size_t internalOffset = 0) = 0;
+        virtual void add(const IAudioBuffer& from, const size_t addLength, const size_t fromOffset = 0,
+                         const size_t internalOffset = 0) = 0;
 
         virtual void multiply(float value, size_t multiplyLength) = 0;
 
@@ -56,4 +59,3 @@ namespace hidonash::core
 
     using AudioBufferPtr = std::unique_ptr<IAudioBuffer>;
 }
-

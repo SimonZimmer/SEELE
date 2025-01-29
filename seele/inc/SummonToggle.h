@@ -2,6 +2,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "Font.h"
 #include <GraphicAssets.h>
 
 
@@ -12,7 +13,7 @@ namespace hidonash
     public:
         ToggleButtonLookAndFeel()
         {
-            setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::transparentBlack); 
+            setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::transparentBlack);
         }
 
         void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool, bool) override
@@ -20,7 +21,7 @@ namespace hidonash
             const auto enabledColour = juce::Colour::fromRGBA(255, 245, 255, 255);
             const auto disabledColour = juce::Colour::fromRGBA(255, 245, 255, 30);
 
-            if(button.getToggleState())
+            if (button.getToggleState())
                 g.setColour(enabledColour);
             else
                 g.setColour(disabledColour);
@@ -28,9 +29,7 @@ namespace hidonash
             const auto buttonBounds = button.getLocalBounds().toFloat();
             g.fillRect(buttonBounds);
 
-            static const auto font = juce::Typeface::createSystemTypefaceFor(resources::graphicassets::ChicagoFLF_ttf,
-                                                                             resources::graphicassets::ChicagoFLF_ttfSize);
-            g.setFont(font);
+            g.setFont(Font::chicagoFLF());
             g.setFont(10.f);
         }
     };
@@ -48,14 +47,13 @@ namespace hidonash
             setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);
         }
 
-        void mouseExit(const juce::MouseEvent &) override
+        void mouseExit(const juce::MouseEvent&) override
         {
             setMouseCursor(juce::MouseCursor::StandardCursorType::NormalCursor);
         }
 
     private:
-        ToggleButtonLookAndFeel lookAndFeel_{};
-        juce::GlowEffect glowEffect_{};
+        ToggleButtonLookAndFeel lookAndFeel_ {};
+        juce::GlowEffect glowEffect_ {};
     };
 }
-
