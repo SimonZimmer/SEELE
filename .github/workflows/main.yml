@@ -4,10 +4,11 @@ on:
     branches: [ main ]
   
 env:
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
+
 jobs:
   build:
-    runs-on: macos-10.latest
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -15,7 +16,7 @@ jobs:
         
     - name: Install Ninja
       run: brew upgrade && brew install ninja
-
+      
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.0
       
@@ -34,4 +35,3 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}
       run: ctest -C ${{env.BUILD_TYPE}}
-      
