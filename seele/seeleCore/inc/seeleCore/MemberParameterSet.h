@@ -19,9 +19,10 @@ namespace hidonash
 
         float getDistance(size_t index) const override;
 
+        float getGain(size_t index) const override;
+
     private:
         const juce::AudioProcessorValueTreeState& apts_;
     };
 
 }
-

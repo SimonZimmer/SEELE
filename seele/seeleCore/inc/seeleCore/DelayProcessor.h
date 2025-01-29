@@ -3,19 +3,19 @@
 #include <core/AudioBuffer.h>
 #include <core/InterpolatingValue.h>
 
-#include "IChannelProcessor.h"
+#include "IDelayProcessor.h"
 
 
 namespace hidonash
 {
-    class DelayProcessor : public hidonash::IChannelProcessor
+    class DelayProcessor : public hidonash::IDelayProcessor
     {
     public:
         DelayProcessor(size_t maxDelaySamples, float delaySamples, double sampleRate);
 
         void process(core::IAudioBuffer::IChannel& input) override;
 
-        void setDelayInSamples(int delayInSamples);
+        void setDelayInSamples(int delayInSamples) override;
 
     private:
         std::vector<float> circularBuffer_;
@@ -26,4 +26,3 @@ namespace hidonash
         double sampleRate_;
     };
 }
-

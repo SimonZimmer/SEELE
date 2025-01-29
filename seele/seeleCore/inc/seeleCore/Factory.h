@@ -11,7 +11,8 @@ namespace hidonash
     public:
         ~Factory() override = default;
 
-        AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock, size_t numChannels) const override;
+        AudioProcessorPtr createEngine(const IMemberParameterSet& memberParameterSet, double sampleRate,
+                                       int samplesPerBlock, size_t numChannels) const override;
 
         [[nodiscard]] AnalysisPtr createAnalysis(int freqPerBin) const override;
 
@@ -19,9 +20,13 @@ namespace hidonash
 
         [[nodiscard]] PitchShifterPtr createPitchShifter(double sampleRate, IFactory& factory) const override;
 
-        [[nodiscard]] DelayProcessorPtr createDelayProcessor(size_t maxDelaySamples, size_t delaySamples, double sampleRate) const override;
+        [[nodiscard]] DelayProcessorPtr createDelayProcessor(size_t maxDelaySamples, size_t delaySamples,
+                                                             double sampleRate) const override;
 
-        [[nodiscard]] PitchShifterManagerPtr createPitchShifterManager(double sampleRate, size_t numChannels, IFactory& factory) const override;
+        [[nodiscard]] GainProcessorPtr createGainProcessor(float gainValue, double sampleRate) const override;
+
+        [[nodiscard]] PitchShifterManagerPtr createPitchShifterManager(double sampleRate, size_t numChannels,
+                                                                       IFactory& factory) const override;
 
         [[nodiscard]] core::AudioBufferPtr createAudioBuffer(int numChannels, int numSamples) const override;
     };

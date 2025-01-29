@@ -20,9 +20,10 @@ namespace hidonash
 
         MOCK_METHOD(DelayProcessorPtr, createDelayProcessor, (size_t, size_t, double), (const));
 
+        MOCK_METHOD(GainProcessorPtr, createGainProcessor, (float, double), (const));
+
         MOCK_METHOD(PitchShifterManagerPtr, createPitchShifterManager, (double, size_t, IFactory&), (const));
 
         MOCK_METHOD(core::AudioBufferPtr, createAudioBuffer, (int, int), (const));
     };
 }
-

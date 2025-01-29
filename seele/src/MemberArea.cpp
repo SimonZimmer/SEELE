@@ -2,8 +2,8 @@
 
 #include <seeleCore/Config.h>
 
-#include "TextBox.h"
 #include "MemberArea.h"
+#include "TextBox.h"
 
 
 namespace hidonash
@@ -14,7 +14,7 @@ namespace hidonash
         const auto singleMemberWidth = getWidth() / config::constants::numMembers;
         const auto summonTogglesHeight = localBounds.getHeight() / 15.f;
 
-        for(auto n = 0; n < config::constants::numMembers; ++n)
+        for (auto n = 0; n < config::constants::numMembers; ++n)
         {
             sanctitySliders_.emplace_back(std::make_unique<SeeleSlider>(n + 1));
             auto singleMemberBounds = localBounds.removeFromLeft(singleMemberWidth);
@@ -29,20 +29,24 @@ namespace hidonash
             auto distanceSliderBounds = sliderBounds;
             distanceSliderBounds.removeFromBottom(sliderBounds.getHeight() - summonTogglesHeight);
             distanceSliders_[n]->setBounds(distanceSliderBounds);
-            distanceSliders_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
+            distanceSliders_[n]->setTopLeftPosition(
+                sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + summonTogglesHeight);
             addAndMakeVisible(*distanceSliders_[n]);
 
+            /*
             textBoxes_.emplace_back(std::make_unique<TextBox>(*distanceSliders_[n]));
             auto textBoxBounds = distanceSliderBounds;
             const auto textBoxHeight = distanceSliderBounds.getHeight();
             textBoxes_[n]->setBounds(distanceSliderBounds);
-            textBoxes_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + 1.5 * summonTogglesHeight);
+            textBoxes_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() +
             addAndMakeVisible(*textBoxes_[n]);
+            */
 
             summonToggles_.emplace_back(std::make_unique<SummonToggle>());
             auto summonToggleBounds = sliderBounds;
             summonToggles_[n]->setBounds(summonToggleBounds);
-            summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() + 3 * summonTogglesHeight);
+            summonToggles_[n]->setTopLeftPosition(sliderBounds.getX(), sliderBounds.getY() + sliderBounds.getHeight() +
+                                                                           3 * summonTogglesHeight);
             addAndMakeVisible(*summonToggles_[n]);
         }
     }
@@ -67,4 +71,3 @@ namespace hidonash
         return *panSliders_[index];
     }
 }
-

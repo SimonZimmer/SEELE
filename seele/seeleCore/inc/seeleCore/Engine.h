@@ -4,11 +4,12 @@
 
 #include <core/AudioBuffer.h>
 
-#include "IFactory.h"
 #include "Factory.h"
+#include "IDelayProcessor.h"
+#include "IFactory.h"
+#include "IGainProcessor.h"
 #include "IMemberParameterSet.h"
 #include "IPitchShifterManager.h"
-#include "IDelayProcessor.h"
 
 
 namespace hidonash
@@ -16,9 +17,8 @@ namespace hidonash
     class Engine : public IAudioProcessor
     {
     public:
-        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
-               int samplesPerBlock, size_t numChannels,
-               FactoryPtr factory = std::make_unique<Factory>());
+        Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
+               size_t numChannels, FactoryPtr factory = std::make_unique<Factory>());
 
         ~Engine() = default;
 
@@ -28,6 +28,8 @@ namespace hidonash
         std::vector<PitchShifterManagerPtr> pitchShifterManagers_;
         std::vector<DelayProcessorPtr> delayProcessorsLeft_;
         std::vector<DelayProcessorPtr> delayProcessorsRight_;
+        std::vector<GainProcessorPtr> gainProcessorsLeft_;
+        std::vector<GainProcessorPtr> gainProcessorsRight_;
         std::vector<core::AudioBufferPtr> audioBuffers_;
         const IMemberParameterSet& memberParameterSet_;
         core::AudioBuffer internalBuffer_;

@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include "IGainProcessor.h"
 #include "core/AudioBuffer.h"
 
 #include "Config.h"
@@ -19,19 +20,21 @@ namespace hidonash
         }
     }
 
-    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate,
-                   int samplesPerBlock, size_t numChannels, FactoryPtr factory)
+    Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
+                   size_t numChannels, FactoryPtr factory)
     : memberParameterSet_(memberParameterSet)
     , internalBuffer_(numChannels, samplesPerBlock)
     , numChannels_(numChannels)
     , sampleRate_(sampleRate)
     {
-        for(auto n = 0; n < config::constants::numMembers; ++n)
+        for (auto n = 0; n < config::constants::numMembers; ++n)
         {
             pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, numChannels_, *factory));
             audioBuffers_.emplace_back(factory->createAudioBuffer(numChannels_, samplesPerBlock));
             delayProcessorsLeft_.emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
             delayProcessorsRight_.emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
+            gainProcessorsLeft_.emplace_back(factory->createGainProcessor(0.0f, sampleRate));
+            gainProcessorsRight_.emplace_back(factory->createGainProcessor(0.0f, sampleRate));
         }
     }
 
@@ -50,6 +53,10 @@ namespace hidonash
                 delayProcessorsRight_[n]->setDelayInSamples(std::floor(memberParameterSet_.getDistance(n)));
                 delayProcessorsLeft_[n]->process(*audioBuffers_[n]->getChannel(0));
                 delayProcessorsRight_[n]->process(*audioBuffers_[n]->getChannel(1));
+                gainProcessorsLeft_[n]->setGainDb(memberParameterSet_.getGain(n));
+                gainProcessorsRight_[n]->setGainDb(memberParameterSet_.getGain(n));
+                gainProcessorsLeft_[n]->process(*audioBuffers_[n]->getChannel(0));
+                gainProcessorsRight_[n]->process(*audioBuffers_[n]->getChannel(1));
                 internalBuffer_.add(*audioBuffers_[n], inputBuffer.getNumSamples());
                 activeMembers++;
             }

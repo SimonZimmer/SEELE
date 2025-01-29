@@ -13,6 +13,7 @@ namespace hidonash
         MOCK_METHOD(bool, getSummonState, (size_t index), (const));
 
         MOCK_METHOD(float, getDistance, (size_t index), (const));
+
+        MOCK_METHOD(float, getGain, (size_t index), (const));
     };
 }
-

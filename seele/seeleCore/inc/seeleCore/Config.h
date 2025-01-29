@@ -19,6 +19,11 @@ namespace hidonash
             constexpr auto maxDistanceInSamples = 20000.0f;
             constexpr auto minDistanceInSamples = 0.0f;
             constexpr auto defaultDistanceInSamples = 0.0f;
+
+            constexpr auto levelPrefix = "level_";
+            constexpr auto maxLevelDb = 6.0f;
+            constexpr auto minLevelDb = -30.0f;
+            constexpr auto defaultLevelDb = 0.0f;
         }
 
         namespace constants
@@ -27,7 +32,7 @@ namespace hidonash
             constexpr auto analysisSize = 2 * fftFrameSize;
             constexpr auto oversamplingFactor = 16;
             constexpr auto stepSize = fftFrameSize / config::constants::oversamplingFactor;
-            constexpr auto expectedPhaseDifference = 2. * M_PI * (double)stepSize / (double)fftFrameSize;
+            constexpr auto expectedPhaseDifference = 2. * M_PI * (double) stepSize / (double) fftFrameSize;
             constexpr auto numMembers = 5;
         }
     }

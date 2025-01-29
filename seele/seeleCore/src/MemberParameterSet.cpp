@@ -1,15 +1,14 @@
 #include <string>
 
-#include "MemberParameterSet.h"
 #include "Config.h"
+#include "MemberParameterSet.h"
 
 
 namespace hidonash
 {
     MemberParameterSet::MemberParameterSet(const juce::AudioProcessorValueTreeState& apts)
     : apts_(apts)
-    {
-    }
+    {}
 
     float MemberParameterSet::getSanctity(size_t index) const
     {
@@ -28,5 +27,10 @@ namespace hidonash
         const auto parameterId = config::parameters::distancePrefix + std::to_string(index);
         return apts_.getRawParameterValue(parameterId)->load();
     }
-}
 
+    float MemberParameterSet::getGain(size_t index) const
+    {
+        const auto parameterId = config::parameters::levelPrefix + std::to_string(index);
+        return apts_.getRawParameterValue(parameterId)->load();
+    }
+}
