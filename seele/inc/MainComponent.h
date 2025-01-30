@@ -7,7 +7,6 @@
 
 #include "MemberArea.h"
 #include "Oscilloscope.h"
-#include "PluginProcessor.h"
 #include "SummonToggle.h"
 
 
@@ -16,7 +15,7 @@ namespace hidonash
     class MainComponent : public juce::Component
     {
     public:
-        MainComponent(NewProjectAudioProcessor& processor);
+        MainComponent();
 
         ~MainComponent() override = default;
 
@@ -36,6 +35,5 @@ namespace hidonash
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::unique_ptr<MemberArea> memberArea_;
         std::array<std::unique_ptr<Oscilloscope>, 2> oscilloscope_;
-        NewProjectAudioProcessor& processor_;
     };
 }
