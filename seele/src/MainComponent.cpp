@@ -10,16 +10,17 @@
 
 namespace hidonash
 {
-    MainComponent::MainComponent()
+    MainComponent::MainComponent(NewProjectAudioProcessor& processor)
     : seeleLogo_(juce::Drawable::createFromImageData(hidonash::resources::graphicassets::seele_frame_png,
                                                      hidonash::resources::graphicassets::seele_frame_pngSize))
+    , processor_(processor)
     {
         memberArea_ = std::make_unique<hidonash::MemberArea>();
         addAndMakeVisible(memberArea_.get());
 
         for (auto n = 0; n < oscilloscope_.size(); ++n)
         {
-            //oscilloscope_[n] = std::make_unique<hidonash::Oscilloscope>(processor_, processor_.getBlockSize());
+            oscilloscope_[n] = std::make_unique<hidonash::Oscilloscope>(processor_, processor_.getBlockSize());
             addAndMakeVisible(oscilloscope_[n].get());
         }
     }
@@ -33,7 +34,7 @@ namespace hidonash
         memberArea_->setBounds(memberBounds);
         memberArea_->setTopLeftPosition(widthPadding, heightPadding + 0.25f * heightPadding);
 
-        /*        auto oscilloscopeBoundsLeft = getBounds();
+        auto oscilloscopeBoundsLeft = getBounds();
         oscilloscopeBoundsLeft.removeFromLeft(getWidth() * 0.784f);
         oscilloscopeBoundsLeft.removeFromBottom(getHeight() * 0.928f);
         oscilloscopeBoundsLeft.removeFromRight(getWidth() * 0.125f);
@@ -43,7 +44,6 @@ namespace hidonash
         oscilloscope_[1]->setBounds(oscilloscopeBoundsRight);
         oscilloscope_[1]->setTopLeftPosition(oscilloscopeBoundsLeft.getX() + getWidth() / 9.8f,
                                              oscilloscopeBoundsLeft.getY());
-                                             */
     }
 
     SeeleSlider& MainComponent::getSanctitySlider(size_t index)

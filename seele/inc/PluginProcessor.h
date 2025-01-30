@@ -54,6 +54,6 @@ private:
     int currentProgram_;
     hidonash::AudioProcessorPtr engine_;
 
-    //juce::AudioBuffer<float> visualizationBuffer_;
-    //std::mutex bufferMutex_;
+    juce::AudioBuffer<float> visualizationBuffer_;
+    std::mutex bufferMutex_;
 };

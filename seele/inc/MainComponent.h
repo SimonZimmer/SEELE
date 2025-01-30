@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 
+#include "PluginProcessor.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "MemberArea.h"
@@ -15,7 +16,7 @@ namespace hidonash
     class MainComponent : public juce::Component
     {
     public:
-        MainComponent();
+        MainComponent(NewProjectAudioProcessor& processor);
 
         ~MainComponent() override = default;
 
@@ -35,5 +36,6 @@ namespace hidonash
         std::unique_ptr<juce::Drawable> seeleLogo_;
         std::unique_ptr<MemberArea> memberArea_;
         std::array<std::unique_ptr<Oscilloscope>, 2> oscilloscope_;
+        NewProjectAudioProcessor& processor_;
     };
 }

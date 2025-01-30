@@ -17,6 +17,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 , currentProgram_(1)
 {
+    //TODO: add actual presets
     programs_.emplace_back("program one");
     programs_.emplace_back("program two");
     programs_.emplace_back("program three");
@@ -72,9 +73,10 @@ void NewProjectAudioProcessor::changeProgramName(int index, const juce::String& 
 
 void NewProjectAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    //engine_ =
-    //    hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
-    //visualizationBuffer_.setSize(getTotalNumInputChannels(), samplesPerBlock);
+    engine_ =
+        hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
+
+    visualizationBuffer_.setSize(getTotalNumInputChannels(), samplesPerBlock);
 }
 
 void NewProjectAudioProcessor::releaseResources()
@@ -91,7 +93,6 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    /*
     auto&& inputBuffer =
         hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(), static_cast<int>(buffer.getNumChannels()),
                                     static_cast<int>(buffer.getNumSamples()));
@@ -100,10 +101,9 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     buffer.copyFrom(0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom(1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
-    */
 
-    //const std::lock_guard<std::mutex> lock(bufferMutex_);
-    //pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
+    const std::lock_guard<std::mutex> lock(bufferMutex_);
+    pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
 }
 
 bool NewProjectAudioProcessor::hasEditor() const
@@ -129,8 +129,8 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void NewProjectAudioProcessor::pushNextAudioBlock(const float* data, int numSamples)
 {
-    //auto* bufferToWrite = visualizationBuffer_.getWritePointer(0);
-    //std::memcpy(bufferToWrite, data, numSamples * sizeof(float));
+    auto* bufferToWrite = visualizationBuffer_.getWritePointer(0);
+    std::memcpy(bufferToWrite, data, numSamples * sizeof(float));
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::createParameters()
@@ -167,8 +167,8 @@ juce::AudioProcessorValueTreeState& NewProjectAudioProcessor::getAudioProcessorV
 
 void NewProjectAudioProcessor::getLatestAudioBlock(float* data, int numSamples)
 {
-    //const std::lock_guard<std::mutex> lock(bufferMutex_);
+    const std::lock_guard<std::mutex> lock(bufferMutex_);
 
-    //auto* bufferToRead = visualizationBuffer_.getReadPointer(0);
-    //std::memcpy(data, bufferToRead, numSamples * sizeof(float));
+    auto* bufferToRead = visualizationBuffer_.getReadPointer(0);
+    std::memcpy(data, bufferToRead, numSamples * sizeof(float));
 }
