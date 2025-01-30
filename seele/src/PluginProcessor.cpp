@@ -17,8 +17,6 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
 , currentProgram_(1)
 {
-    setLatencySamples(16);
-
     programs_.emplace_back("program one");
     programs_.emplace_back("program two");
     programs_.emplace_back("program three");
@@ -74,8 +72,8 @@ void NewProjectAudioProcessor::changeProgramName(int index, const juce::String& 
 
 void NewProjectAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    engine_ =
-        hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
+    //engine_ =
+    //    hidonash::Factory().createEngine(*memberParameterSet_, sampleRate, samplesPerBlock, getTotalNumInputChannels());
     //visualizationBuffer_.setSize(getTotalNumInputChannels(), samplesPerBlock);
 }
 
@@ -93,6 +91,7 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts
 
 void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    /*
     auto&& inputBuffer =
         hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(), static_cast<int>(buffer.getNumChannels()),
                                     static_cast<int>(buffer.getNumSamples()));
@@ -101,6 +100,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     buffer.copyFrom(0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
     buffer.copyFrom(1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
+    */
 
     //const std::lock_guard<std::mutex> lock(bufferMutex_);
     //pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
